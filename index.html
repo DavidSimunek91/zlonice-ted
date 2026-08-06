@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zlonice teď</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌾</text></svg>">
+<style>
+:root{
+  --stone:#EDEAE0; --ink:#262019; --ink-soft:#5B5346;
+  --spruce:#3C5C42; --spruce-soft:#E1E7DA;
+  --gold:#A8791F; --gold-soft:#F3E8CE;
+  --line:#D7D0BE; --surface:#F7F5EE;
+  --sky:#3E5A70; --sky-soft:#DEE7EC;
+  --good:#3C7A44; --good-soft:#E1EFDF;
+  --warn:#B5791C; --warn-soft:#F5E7CC;
+  --danger:#A23B2E; --danger-soft:#F4E1DC;
+  --shadow:rgba(38,32,25,.09);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --stone:#171B15; --ink:#ECE7DA; --ink-soft:#AFA894;
+    --spruce:#8FB37E; --spruce-soft:#212A1C;
+    --gold:#D6A94A; --gold-soft:#332A15;
+    --line:#333A2B; --surface:#1D2118;
+    --sky:#8FAFC9; --sky-soft:#1C262C;
+    --good:#6FAE6F; --good-soft:#1E2B1D;
+    --warn:#D9A94A; --warn-soft:#332A15;
+    --danger:#D97A6A; --danger-soft:#33201B;
+    --shadow:rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --stone:#171B15; --ink:#ECE7DA; --ink-soft:#AFA894;
+  --spruce:#8FB37E; --spruce-soft:#212A1C;
+  --gold:#D6A94A; --gold-soft:#332A15;
+  --line:#333A2B; --surface:#1D2118;
+  --sky:#8FAFC9; --sky-soft:#1C262C;
+  --good:#6FAE6F; --good-soft:#1E2B1D;
+  --warn:#D9A94A; --warn-soft:#332A15;
+  --danger:#D97A6A; --danger-soft:#33201B;
+  --shadow:rgba(0,0,0,.4);
+}
+:root[data-theme="light"]{
+  --stone:#EDEAE0; --ink:#262019; --ink-soft:#5B5346;
+  --spruce:#3C5C42; --spruce-soft:#E1E7DA;
+  --gold:#A8791F; --gold-soft:#F3E8CE;
+  --line:#D7D0BE; --surface:#F7F5EE;
+  --sky:#3E5A70; --sky-soft:#DEE7EC;
+  --good:#3C7A44; --good-soft:#E1EFDF;
+  --warn:#B5791C; --warn-soft:#F5E7CC;
+  --danger:#A23B2E; --danger-soft:#F4E1DC;
+  --shadow:rgba(38,32,25,.09);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--stone); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.display{font-family:"Rockwell Nova","Rockwell","Roboto Slab","Zilla Slab",Georgia,serif;}
+a{color:inherit;}
+
+.hero{background:linear-gradient(180deg, var(--spruce-soft), var(--stone) 140%);border-bottom:1px solid var(--line);padding:2.6rem 1.4rem 2rem;}
+.hero-inner{max-width:1080px;margin:0 auto;}
+.eyebrow{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--spruce);display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem;}
+.eyebrow .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--spruce);}
+h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap:balance;letter-spacing:-.01em;}
+.hero-sub{color:var(--ink-soft);font-size:1.02rem;max-width:56ch;margin:0 0 1.4rem;}
+.hero-facts{display:flex;flex-wrap:wrap;gap:1.6rem;}
+.fact{display:flex;flex-direction:column;}
+.fact .k{font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);}
+.fact .v{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.15rem;font-weight:600;}
+
+.page{max-width:1080px;margin:0 auto;padding:0 1.4rem 4rem;}
+.section{margin-top:2.2rem;}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap;}
+.section-head h2{font-family:"Rockwell Nova","Rockwell","Roboto Slab",Georgia,serif;font-size:1.25rem;margin:0;}
+
+.tag{display:inline-flex;align-items:center;gap:.35rem;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;padding:.22rem .55rem;border-radius:999px;font-family:ui-monospace,monospace;}
+.tag.live{background:var(--good-soft);color:var(--good);}
+.tag.snapshot{background:var(--sky-soft);color:var(--sky);}
+.tag.soon{background:var(--warn-soft);color:var(--warn);}
+.tag .dot{width:.4rem;height:.4rem;border-radius:50%;background:currentColor;}
+
+.banner{border-radius:8px;padding:.9rem 1.2rem;display:flex;align-items:center;gap:.8rem;background:var(--good-soft);margin-top:1.6rem;}
+.banner .stripe{width:4px;align-self:stretch;border-radius:3px;background:var(--good);}
+.banner strong{display:block;font-size:.95rem;}
+.banner span{font-size:.82rem;color:var(--ink-soft);}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.2rem;box-shadow:0 1px 2px var(--shadow);}
+.card .k{font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem;}
+.card .v{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.9rem;font-weight:600;line-height:1;}
+.card .v small{font-size:1rem;font-weight:500;color:var(--ink-soft);}
+.card .sub{margin-top:.3rem;font-size:.82rem;color:var(--ink-soft);}
+.card.skel .v, .card.skel .sub{opacity:.35;}
+
+.forecast{display:flex;gap:.7rem;overflow-x:auto;padding-bottom:.3rem;}
+.fday{flex:0 0 auto;width:104px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.85rem .7rem;text-align:center;}
+.fday .d{font-size:.75rem;color:var(--ink-soft);text-transform:capitalize;margin-bottom:.5rem;}
+.fday .icon{font-size:1.5rem;margin-bottom:.4rem;}
+.fday .t{font-family:ui-monospace,monospace;font-size:.92rem;}
+.fday .t .max{font-weight:700;}
+.fday .t .min{color:var(--ink-soft);}
+.fday .p{margin-top:.3rem;font-size:.72rem;color:var(--sky);}
+
+/* air quality scale */
+.aqi-card{padding:1.3rem 1.4rem;}
+.aqi-top{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:1.1rem;}
+.aqi-badge{font-family:ui-monospace,monospace;font-size:2rem;font-weight:700;color:#fff;width:4.2rem;height:4.2rem;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.aqi-label{}
+.aqi-label .band{font-weight:700;font-size:1.05rem;}
+.aqi-label .desc{font-size:.85rem;color:var(--ink-soft);max-width:44ch;}
+.scale{position:relative;height:14px;border-radius:7px;margin:.6rem 0 .3rem;
+  background:linear-gradient(90deg,#4C9A4C 0%,#8FBF3F 20%,#E8C33D 40%,#E8892F 60%,#D14E3B 80%,#8B2E4A 100%);}
+.scale-marker{position:absolute;top:-5px;width:2px;height:24px;background:var(--ink);}
+.scale-marker::after{content:'';position:absolute;top:-6px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--ink);}
+.scale-ticks{display:flex;justify-content:space-between;font-size:.66rem;color:var(--ink-soft);font-family:ui-monospace,monospace;margin-bottom:1rem;}
+.aqi-metrics{display:flex;gap:1.4rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.9rem;}
+.aqi-metrics div{font-size:.82rem;color:var(--ink-soft);}
+.aqi-metrics b{display:block;font-family:ui-monospace,monospace;color:var(--ink);font-size:1rem;}
+
+/* water */
+.water-card{padding:1.3rem 1.4rem;}
+.water-top{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:1.1rem;}
+.water-number{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:2.3rem;font-weight:700;line-height:1;flex-shrink:0;}
+.water-number small{font-size:1.1rem;font-weight:500;color:var(--ink-soft);}
+.water-label .stage{font-weight:700;font-size:1.05rem;}
+.water-label .desc{font-size:.85rem;color:var(--ink-soft);max-width:50ch;}
+.water-scale{position:relative;height:14px;border-radius:7px;margin:.6rem 0 .3rem;
+  background:linear-gradient(90deg,#B5791C 0%,#B5791C 20%,#3E5A70 20%,#3E5A70 40%,#E8C33D 40%,#E8C33D 60%,#E8892F 60%,#E8892F 80%,#D14E3B 80%,#D14E3B 100%);}
+.water-marker{position:absolute;top:-5px;width:2px;height:24px;background:var(--ink);}
+.water-marker::after{content:'';position:absolute;top:-6px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--ink);}
+.water-ticks{display:flex;font-size:.66rem;color:var(--ink-soft);font-family:ui-monospace,monospace;margin-bottom:1rem;}
+.water-ticks span{width:20%;}
+.water-ticks span:nth-child(1){text-align:left;}
+.water-ticks span:nth-child(5){text-align:right;}
+.water-ticks span:not(:nth-child(1)):not(:nth-child(5)){text-align:center;}
+.water-stats{display:flex;gap:1.6rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.9rem;}
+.water-stats .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.water-stats .v{font-family:ui-monospace,monospace;font-weight:600;}
+
+.soon-card{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:1.1rem 1.2rem;color:var(--ink-soft);font-size:.9rem;}
+
+.obec{background:var(--spruce-soft); border:1px solid var(--line); border-radius:12px;padding:2rem clamp(1.2rem,4vw,2.6rem); margin-top:2.6rem;}
+.obec h2{font-family:"Rockwell Nova","Rockwell","Roboto Slab",Georgia,serif;font-size:1.5rem;margin:0 0 .3rem;}
+.obec .lede{color:var(--ink-soft);max-width:62ch;margin:0 0 1.6rem;}
+.obec-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:1.8rem;}
+@media (max-width:720px){.obec-grid{grid-template-columns:1fr;}}
+.story p{max-width:58ch;margin:0 0 .9rem;}
+.story .cite{font-size:.78rem;color:var(--ink-soft);font-style:italic;}
+.bars{display:flex;flex-direction:column;gap:.5rem;}
+.bar-row{display:grid;grid-template-columns:8.5rem 1fr 2.2rem;align-items:center;gap:.6rem;}
+.bar-row .lbl{font-size:.85rem;}
+.bar-track{height:9px;background:var(--surface);border:1px solid var(--line);border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--gold);}
+.bar-row .n{font-family:ui-monospace,monospace;font-size:.82rem;text-align:right;color:var(--ink-soft);}
+.stat-pair{display:flex;gap:1.6rem;margin-top:1.2rem;flex-wrap:wrap;}
+.stat-pair .stat .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.stat-pair .stat .v{font-family:ui-monospace,monospace;font-size:1.05rem;font-weight:600;}
+
+footer{max-width:1080px;margin:2.6rem auto 0;padding:1.4rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.78rem;}
+footer p{margin:.3rem 0;}
+footer a{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="dot"></span>obecní přehled — neoficiální, komunitní projekt</span>
+    <h1 class="display">Zlonice teď</h1>
+    <p class="hero-sub">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
+    <div class="hero-facts">
+      <div class="fact"><span class="k">obyvatel</span><span class="v">2 294</span></div>
+      <div class="fact"><span class="k">nadmořská výška</span><span class="v">223 m</span></div>
+      <div class="fact"><span class="k">okres</span><span class="v" style="font-size:1.02rem;">Kladno</span></div>
+      <div class="fact"><span class="k">aktualizováno</span><span class="v" id="clock" style="font-size:1rem;">—</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <div class="banner">
+    <div class="stripe"></div>
+    <div>
+      <strong>Beze zvláštních výstrah</strong>
+      <span>ČHMÚ výstrahy zatím nejsou napojené — připravujeme, ať neukazujeme špatná bezpečnostní data.</span>
+    </div>
+    <span class="tag soon" style="margin-left:auto;"><span class="dot"></span>připravujeme</span>
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Počasí</h2>
+      <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
+    </div>
+    <div class="grid" id="weatherCards">
+      <div class="card skel"><div class="k">Teplota</div><div class="v">—</div><div class="sub">načítám…</div></div>
+      <div class="card skel"><div class="k">Vlhkost</div><div class="v">—</div><div class="sub">načítám…</div></div>
+      <div class="card skel"><div class="k">Vítr</div><div class="v">—</div><div class="sub">načítám…</div></div>
+      <div class="card skel"><div class="k">Srážky teď</div><div class="v">—</div><div class="sub">načítám…</div></div>
+    </div>
+    <div class="forecast" id="forecastRow" style="margin-top:1rem;"></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Kvalita ovzduší</h2>
+      <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
+    </div>
+    <div class="card aqi-card" id="aqiCard">
+      <div class="aqi-top">
+        <div class="aqi-badge" id="aqiBadge" style="background:var(--ink-soft);">—</div>
+        <div class="aqi-label">
+          <div class="band" id="aqiBand">Načítám…</div>
+          <div class="desc" id="aqiDesc"></div>
+        </div>
+      </div>
+      <div class="scale" id="aqiScale"><div class="scale-marker" id="aqiMarker" style="left:0%;"></div></div>
+      <div class="scale-ticks"><span>0 dobrá</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100+ extrémní</span></div>
+      <div class="aqi-metrics" id="aqiMetrics"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Voda</h2>
+      <span class="tag snapshot"><span class="dot"></span>snímek · ČHMÚ, stanice Velvary (16 km)</span>
+    </div>
+    <div class="card water-card">
+      <div class="water-top">
+        <div class="water-number">18<small>cm</small></div>
+        <div class="water-label">
+          <div class="stage" style="color:var(--warn);">Sucho</div>
+          <div class="desc">Stanice Velvary, tok Bakovský potok — pod hranicí sucha (24 cm). Není to extrém ani povodňové riziko, ale tok je momentálně znatelně vyschlý.</div>
+        </div>
+      </div>
+      <div class="water-scale"><div class="water-marker" style="left:15%;"></div></div>
+      <div class="water-ticks"><span>sucho</span><span>normální</span><span>1. bdělost</span><span>2. pohotovost</span><span>3. ohrožení</span></div>
+      <div class="water-stats">
+        <div class="stat"><div class="k">hranice sucha</div><div class="v">24 cm</div></div>
+        <div class="stat"><div class="k">1. stupeň</div><div class="v">105 cm</div></div>
+        <div class="stat"><div class="k">2. stupeň</div><div class="v">145 cm</div></div>
+        <div class="stat"><div class="k">3. stupeň</div><div class="v">175 cm</div></div>
+      </div>
+      <p style="margin:.9rem 0 0;font-size:.78rem;color:var(--ink-soft);">Bakovský potok protéká stejnou oblastí jako Zlonice, nejbližší reálná stanice ČHMÚ ale leží 16 km po proudu. Stav ke 6. 8. 2026, 13:50 — obnovujeme zatím ručně, živé napojení je další krok.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Dopravní nehody v okolí</h2>
+      <span class="tag soon"><span class="dot"></span>připravujeme · CDV/ArcGIS</span>
+    </div>
+    <div class="soon-card">Napojení na mapu nehodovosti (Centrum dopravního výzkumu) je v přípravě.</div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Hospodaření obce</h2>
+      <span class="tag soon"><span class="dot"></span>připravujeme · MONITOR (MF ČR)</span>
+    </div>
+    <div class="soon-card">Přesný formát API portálu MONITOR ještě ověřujeme — než tam dáme čísla, chceme mít jistotu, že jsou správně.</div>
+  </section>
+
+  <div class="obec">
+    <h2 class="display">O Zlonicích</h2>
+    <p class="lede">Malá obec ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
+    <div class="obec-grid">
+      <div class="story">
+        <p>Zlonický zámek, chráněný jako kulturní památka od roku 1978, je spjatý s Antonínem Dvořákem — mladý skladatel se tu za vedení kantora Antonína Liehmanna učil hrát na housle a klavír. Bývalý zámecký chudobinec dnes hostí Památník Antonína Dvořáka.</p>
+        <p class="cite">Zdroj: Národní památkový ústav, antonin-dvorak.cz</p>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;">
+          <strong style="font-size:.92rem;">Místní firmy podle oboru</strong>
+          <span class="tag live"><span class="dot"></span>živě · ARES</span>
+        </div>
+        <div class="bars" id="aresBars">
+          <div class="bar-row"><span class="lbl">načítám…</span><span class="bar-track"><span class="bar-fill" style="width:0%;"></span></span><span class="n">—</span></div>
+        </div>
+        <div class="stat-pair" id="aresStats"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (snímek, obnovujeme zatím ručně). Výstrahy, dopravní nehody a hospodaření obce jsou v přípravě.</p>
+  <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
+</footer>
+
+<script>
+const LAT = 50.2875, LON = 14.0922;
+
+document.getElementById('clock').textContent = new Date().toLocaleString('cs-CZ', {
+  day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'
+});
+
+const WMO = {
+  0:['Jasno','☀️'],1:['Skoro jasno','🌤️'],2:['Polojasno','⛅'],3:['Zataženo','☁️'],
+  45:['Mlha','🌫️'],48:['Mlha','🌫️'],
+  51:['Mrholení','🌦️'],53:['Mrholení','🌦️'],55:['Mrholení','🌦️'],
+  61:['Déšť','🌧️'],63:['Déšť','🌧️'],65:['Vydatný déšť','🌧️'],
+  71:['Sněžení','🌨️'],73:['Sněžení','🌨️'],75:['Vydatné sněžení','🌨️'],
+  80:['Přeháňky','🌦️'],81:['Přeháňky','🌦️'],82:['Silné přeháňky','🌦️'],
+  95:['Bouřka','⛈️'],96:['Bouřka s kroupami','⛈️'],99:['Bouřka s kroupami','⛈️'],
+};
+const DAYS = ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'];
+
+async function loadWeather(){
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=5`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const c = data.current;
+    const wmo = WMO[c.weather_code] || ['—','·'];
+
+    document.getElementById('weatherCards').innerHTML = `
+      <div class="card"><div class="k">Teplota</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">pocitově ${c.apparent_temperature.toFixed(1)} °C</div></div>
+      <div class="card"><div class="k">Vlhkost</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div></div>
+      <div class="card"><div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div><div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h</div></div>
+      <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">${wmo[0]}</div></div>
+    `;
+
+    const days = data.daily.time;
+    const rows = days.map((iso, i) => {
+      const d = new Date(iso + 'T12:00:00');
+      const label = i === 0 ? 'dnes' : DAYS[d.getDay()];
+      const w = WMO[data.daily.weather_code[i]] || ['—','·'];
+      return `<div class="fday">
+        <div class="d">${label}</div>
+        <div class="icon">${w[1]}</div>
+        <div class="t"><span class="max">${Math.round(data.daily.temperature_2m_max[i])}°</span> <span class="min">${Math.round(data.daily.temperature_2m_min[i])}°</span></div>
+        <div class="p">${data.daily.precipitation_probability_max[i]} % srážky</div>
+      </div>`;
+    }).join('');
+    document.getElementById('forecastRow').innerHTML = rows;
+  }catch(e){
+    document.getElementById('weatherCards').innerHTML = `<div class="soon-card">Počasí se nepodařilo načíst (${e.message}). Zkus obnovit stránku.</div>`;
+  }
+}
+
+const EAQI_BANDS = [
+  {max:20, name:'Dobrá', color:'#4C9A4C', desc:'Kvalita ovzduší je vynikající, žádná omezení.'},
+  {max:40, name:'Uspokojivá', color:'#8FBF3F', desc:'Kvalita ovzduší je přijatelná pro naprostou většinu lidí.'},
+  {max:60, name:'Střední', color:'#E8C33D', desc:'Citlivější lidé (astmatici, senioři, děti) mohou pociťovat mírné projevy — omezit delší pobyt venku.'},
+  {max:80, name:'Špatná', color:'#E8892F', desc:'Zvýšené riziko pro citlivé skupiny, doporučeno omezit venkovní aktivity.'},
+  {max:100, name:'Velmi špatná', color:'#D14E3B', desc:'Riziko zdravotních projevů i u zdravých lidí při delším pobytu venku.'},
+  {max:Infinity, name:'Extrémně špatná', color:'#8B2E4A', desc:'Vážné zdravotní riziko — omezte pobyt venku na nutné minimum.'},
+];
+function bandFor(v){ return EAQI_BANDS.find(b => v <= b.max); }
+
+async function loadAirQuality(){
+  try{
+    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm10,pm2_5,ozone,nitrogen_dioxide,european_aqi&timezone=Europe%2FBerlin`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const c = data.current;
+    const eaqi = Math.round(c.european_aqi);
+    const band = bandFor(eaqi);
+
+    document.getElementById('aqiBadge').textContent = eaqi;
+    document.getElementById('aqiBadge').style.background = band.color;
+    document.getElementById('aqiBand').textContent = band.name + ' — evropský index kvality ovzduší (EAQI)';
+    document.getElementById('aqiDesc').textContent = band.desc;
+    document.getElementById('aqiMarker').style.left = Math.min(100, eaqi) + '%';
+    document.getElementById('aqiMetrics').innerHTML = `
+      <div>PM2,5<b>${c.pm2_5.toFixed(1)} µg/m³</b></div>
+      <div>PM10<b>${c.pm10.toFixed(1)} µg/m³</b></div>
+      <div>Ozon<b>${c.ozone.toFixed(0)} µg/m³</b></div>
+      <div>NO₂<b>${c.nitrogen_dioxide.toFixed(1)} µg/m³</b></div>
+    `;
+  }catch(e){
+    document.getElementById('aqiCard').innerHTML = `<div class="soon-card">Kvalitu ovzduší se nepodařilo načíst (${e.message}).</div>`;
+  }
+}
+
+const NACE_LABELS = {
+  '43':'Stavebnictví', '41':'Výstavba budov', '47':'Maloobchod', '46':'Velkoobchod',
+  '01':'Zemědělství', '94':'Členské organizace', '68':'Nemovitosti', '49':'Doprava',
+  '45':'Prodej/opravy vozidel', '25':'Kovovýroba',
+};
+
+async function loadAres(){
+  try{
+    const KOD_OBCE = 533114; // Zlonice, RÚIAN
+    let all = [];
+    for (let start = 0; start < 500; start += 100){
+      const res = await fetch('https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/vyhledat', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({sidlo:{kodObce:KOD_OBCE}, pocet:100, start}),
+      });
+      const data = await res.json();
+      all = all.concat(data.ekonomickeSubjekty || []);
+      if (!data.ekonomickeSubjekty || data.ekonomickeSubjekty.length < 100) break;
+    }
+    const active = all.filter(s => s.seznamRegistraci && s.seznamRegistraci.stavZdrojeRos === 'AKTIVNI');
+
+    const buckets = {};
+    active.forEach(s => {
+      const code = (s.czNace2008 && s.czNace2008[0]) || '';
+      const div = /^\d{2}/.test(code) ? code.slice(0,2) : '00';
+      buckets[div] = (buckets[div] || 0) + 1;
+    });
+    const entries = Object.entries(buckets).filter(([k]) => k !== '00').sort((a,b) => b[1]-a[1]);
+    const top = entries.slice(0,4);
+    const maxN = Math.max(...top.map(([,n]) => n));
+
+    const rows = top.map(([code,n]) => {
+      const label = NACE_LABELS[code] || ('CZ-NACE ' + code);
+      return `<div class="bar-row"><span class="lbl">${label}</span><span class="bar-track"><span class="bar-fill" style="width:${(n/maxN*100).toFixed(0)}%;"></span></span><span class="n">${n}</span></div>`;
+    }).join('');
+    document.getElementById('aresBars').innerHTML = rows;
+
+    const withDate = active.filter(s => s.datumVzniku).sort((a,b) => a.datumVzniku.localeCompare(b.datumVzniku));
+    const oldest = withDate[0], newest = withDate[withDate.length-1];
+    document.getElementById('aresStats').innerHTML = `
+      <div class="stat"><div class="k">aktivních subjektů</div><div class="v">${active.length}</div></div>
+      <div class="stat"><div class="k">nejstarší</div><div class="v">${oldest.obchodniJmeno} · ${oldest.datumVzniku.slice(0,4)}</div></div>
+      <div class="stat"><div class="k">nejnovější</div><div class="v">${newest.obchodniJmeno} · ${newest.datumVzniku.slice(0,4)}</div></div>
+    `;
+  }catch(e){
+    document.getElementById('aresBars').innerHTML = `<div class="soon-card">Data z ARESu se nepodařilo načíst (${e.message}).</div>`;
+  }
+}
+
+loadWeather();
+loadAirQuality();
+loadAres();
+</script>
+</body>
+</html>
