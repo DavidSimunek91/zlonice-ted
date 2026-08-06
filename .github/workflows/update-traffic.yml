@@ -1,0 +1,40 @@
+name: Update traffic data
+
+# Pravidelně (mimo běh appky v prohlížeči) stáhne dopravní data z ŘSD/NDIC
+# a uloží zjednodušený výsledek do data/traffic.json. Appka pak ten soubor
+# jen čte jako obyčejný statický JSON — API klíč nikdy nejde do klientského
+# kódu, zůstává jen tady jako GitHub Actions secret.
+#
+# Setup: Settings → Secrets and variables → Actions → New repository secret
+#   RSD_API_KEY = <klíč z mobilitydata.rsd.cz>
+# Dokud secret není nastavený, skript se sám ukončí bez chyby a nic nemění.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch and transform traffic data
+        env:
+          RSD_API_KEY: ${{ secrets.RSD_API_KEY }}
+        run: node scripts/update-traffic.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "traffic-data-bot"
+          git config user.email "actions@github.com"
+          git add data/traffic.json
+          git diff --staged --quiet || git commit -m "Update traffic data [skip ci]"
+          git push
