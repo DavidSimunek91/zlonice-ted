@@ -97,6 +97,10 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .card .v small{font-size:1rem;font-weight:500;color:var(--ink-soft);}
 .card .sub{margin-top:.3rem;font-size:.82rem;color:var(--ink-soft);}
 .card.skel .v, .card.skel .sub{opacity:.35;}
+.card .takeaway{margin-top:.55rem;display:inline-flex;align-items:center;font-size:.72rem;font-family:ui-monospace,monospace;padding:.18rem .55rem;border-radius:999px;cursor:help;}
+.card .takeaway.good{background:var(--good-soft);color:var(--good);}
+.card .takeaway.warn{background:var(--warn-soft);color:var(--warn);}
+.card .takeaway.danger{background:var(--danger-soft);color:var(--danger);}
 
 .forecast{display:flex;gap:.7rem;overflow-x:auto;padding-bottom:.3rem;}
 .fday{flex:0 0 auto;width:104px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.85rem .7rem;text-align:center;}
@@ -125,23 +129,23 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 
 /* water */
 .water-card{padding:1.3rem 1.4rem;}
-.water-top{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:1.1rem;}
-.water-number{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:2.3rem;font-weight:700;line-height:1;flex-shrink:0;}
-.water-number small{font-size:1.1rem;font-weight:500;color:var(--ink-soft);}
-.water-label .stage{font-weight:700;font-size:1.05rem;}
-.water-label .desc{font-size:.85rem;color:var(--ink-soft);max-width:50ch;}
-.water-scale{position:relative;height:14px;border-radius:7px;margin:.6rem 0 .3rem;
+.water-top{margin-bottom:1.3rem;}
+.water-top .stage{font-weight:700;font-size:1.1rem;display:flex;align-items:baseline;gap:.5rem;}
+.water-top .stage .val{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:.85rem;font-weight:500;color:var(--ink-soft);}
+.water-top .desc{margin-top:.15rem;font-size:.85rem;color:var(--ink-soft);max-width:50ch;}
+.water-scale{position:relative;height:14px;border-radius:7px;margin:1.6rem 0 .35rem;
   background:linear-gradient(90deg,#B5791C 0%,#B5791C 20%,#3E5A70 20%,#3E5A70 40%,#E8C33D 40%,#E8C33D 60%,#E8892F 60%,#E8892F 80%,#D14E3B 80%,#D14E3B 100%);}
 .water-marker{position:absolute;top:-5px;width:2px;height:24px;background:var(--ink);}
 .water-marker::after{content:'';position:absolute;top:-6px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--ink);}
-.water-ticks{display:flex;font-size:.66rem;color:var(--ink-soft);font-family:ui-monospace,monospace;margin-bottom:1rem;}
-.water-ticks span{width:20%;}
-.water-ticks span:nth-child(1){text-align:left;}
-.water-ticks span:nth-child(5){text-align:right;}
-.water-ticks span:not(:nth-child(1)):not(:nth-child(5)){text-align:center;}
-.water-stats{display:flex;gap:1.6rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.9rem;}
-.water-stats .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
-.water-stats .v{font-family:ui-monospace,monospace;font-weight:600;}
+.water-marker .tag{position:absolute;top:-26px;left:50%;transform:translateX(-50%);white-space:nowrap;
+  font-family:ui-monospace,monospace;font-size:.68rem;font-weight:600;background:var(--ink);color:var(--stone);padding:.1rem .4rem;border-radius:4px;}
+.water-ticks{display:flex;font-size:.68rem;color:var(--ink-soft);font-family:ui-monospace,monospace;margin-bottom:1rem;}
+.water-ticks span{width:20%;display:flex;flex-direction:column;gap:.1rem;}
+.water-ticks span:nth-child(1){align-items:flex-start;}
+.water-ticks span:nth-child(5){align-items:flex-end;}
+.water-ticks span:not(:nth-child(1)):not(:nth-child(5)){align-items:center;}
+.water-ticks .name{color:var(--ink);text-transform:none;letter-spacing:0;}
+.water-ticks .range{opacity:.7;font-size:.92em;}
 
 .soon-card{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:1.1rem 1.2rem;color:var(--ink-soft);font-size:.9rem;}
 
@@ -234,19 +238,16 @@ footer a{text-decoration:underline;}
     </div>
     <div class="card water-card">
       <div class="water-top">
-        <div class="water-number">18<small>cm</small></div>
-        <div class="water-label">
-          <div class="stage" style="color:var(--warn);">Sucho</div>
-          <div class="desc">Stanice Velvary, tok Bakovský potok — pod hranicí sucha (24 cm). Není to extrém ani povodňové riziko, ale tok je momentálně znatelně vyschlý.</div>
-        </div>
+        <div class="stage" style="color:var(--warn);">Sucho <span class="val">18 cm</span></div>
+        <div class="desc">Stanice Velvary, tok Bakovský potok — pod hranicí sucha (24 cm). Není to extrém ani povodňové riziko, ale tok je momentálně znatelně vyschlý.</div>
       </div>
-      <div class="water-scale"><div class="water-marker" style="left:15%;"></div></div>
-      <div class="water-ticks"><span>sucho</span><span>normální</span><span>1. bdělost</span><span>2. pohotovost</span><span>3. ohrožení</span></div>
-      <div class="water-stats">
-        <div class="stat"><div class="k">hranice sucha</div><div class="v">24 cm</div></div>
-        <div class="stat"><div class="k">1. stupeň</div><div class="v">105 cm</div></div>
-        <div class="stat"><div class="k">2. stupeň</div><div class="v">145 cm</div></div>
-        <div class="stat"><div class="k">3. stupeň</div><div class="v">175 cm</div></div>
+      <div class="water-scale"><div class="water-marker" style="left:15%;"><span class="tag">18 cm</span></div></div>
+      <div class="water-ticks">
+        <span><span class="name">sucho</span><span class="range">&lt; 24</span></span>
+        <span><span class="name">normální</span><span class="range">24–105</span></span>
+        <span><span class="name">1. bdělost</span><span class="range">105–145</span></span>
+        <span><span class="name">2. pohotovost</span><span class="range">145–175</span></span>
+        <span><span class="name">3. ohrožení</span><span class="range">&gt; 175</span></span>
       </div>
       <p style="margin:.9rem 0 0;font-size:.78rem;color:var(--ink-soft);">Bakovský potok protéká stejnou oblastí jako Zlonice, nejbližší reálná stanice ČHMÚ ale leží 16 km po proudu. Stav ke 6. 8. 2026, 13:50 — obnovujeme zatím ručně, živé napojení je další krok.</p>
     </div>
@@ -257,7 +258,7 @@ footer a{text-decoration:underline;}
       <h2>Dopravní nehody v okolí</h2>
       <span class="tag soon"><span class="dot"></span>připravujeme · CDV/ArcGIS</span>
     </div>
-    <div class="soon-card">Napojení na mapu nehodovosti (Centrum dopravního výzkumu) je v přípravě.</div>
+    <div class="soon-card">Jediná celostátní data o nehodách (NDIC) běží na testovacím serveru s prošlým certifikátem, oficiální appka CDV nemá veřejné API a krajský dopravní portál je dlouhodobě nedostupný — bez vlastního serveru na pozadí to zatím nejde napojit živě.</div>
   </section>
 
   <section class="section">
@@ -265,7 +266,7 @@ footer a{text-decoration:underline;}
       <h2>Hospodaření obce</h2>
       <span class="tag soon"><span class="dot"></span>připravujeme · MONITOR (MF ČR)</span>
     </div>
-    <div class="soon-card">Přesný formát API portálu MONITOR ještě ověřujeme — než tam dáme čísla, chceme mít jistotu, že jsou správně.</div>
+    <div class="soon-card">MONITOR pro Zlonice reálně existuje, ale vrací HTML/JS panel, ne data, a jeho CORS pravidla povolují volání jen z vlastní domény — prohlížeč by naše volání sám zablokoval. Potřeba malý pomocný server na pozadí, ne jen JS v appce.</div>
   </section>
 
   <div class="obec">
@@ -314,6 +315,35 @@ const WMO = {
 };
 const DAYS = ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'];
 
+// Komfortní pásma relativní vlhkosti — obecný odhad dopadu na dýchání/pocit tepla,
+// ne lékařský ukazatel.
+const HUMIDITY_BANDS = [
+  {max:30, name:'Sucho', level:'warn', desc:'Suchý vzduch — může dráždit oči a dýchací cesty, hlavně ve spojení s teplem.'},
+  {max:60, name:'Komfortní', level:'good', desc:'Příjemná vlhkost, dýchání ani pocit tepla nejsou výrazně ovlivněné.'},
+  {max:75, name:'Vlhko', level:'warn', desc:'Zvýšená vlhkost zesiluje pocit horka, může být dusno.'},
+  {max:Infinity, name:'Velmi vlhko', level:'danger', desc:'Vzduch nasycený vlhkostí — silný pocit dusna, hlavně při vyšších teplotách.'},
+];
+function humidityBand(pct){ return HUMIDITY_BANDS.find(b => pct <= b.max); }
+
+// Beaufortova stupnice síly větru — reálný meteorologický standard z roku 1805,
+// dodnes používaný. Hranice v km/h pro průměrnou rychlost (ne nárazy).
+const BEAUFORT = [
+  {max:1,  force:0,  name:'Bezvětří',              level:'good',   desc:'kouř stoupá svisle, naprostý klid'},
+  {max:5,  force:1,  name:'Vánek',                  level:'good',   desc:'kouř se mírně unáší'},
+  {max:11, force:2,  name:'Slabý vítr',              level:'good',   desc:'cítíte ho na tváři, listí šelestí'},
+  {max:19, force:3,  name:'Mírný vítr',              level:'good',   desc:'listí a větvičky v pohybu, vlaje praporek'},
+  {max:28, force:4,  name:'Dosti čerstvý vítr',      level:'warn',   desc:'zvedá prach a papír, hýbe větším větvemi'},
+  {max:38, force:5,  name:'Čerstvý vítr',            level:'warn',   desc:'menší stromky se pohybují, na vodě vlnky'},
+  {max:49, force:6,  name:'Silný vítr',              level:'warn',   desc:'silnější větve v pohybu, deštník se špatně drží'},
+  {max:61, force:7,  name:'Prudký vítr',             level:'danger', desc:'celé stromy se hýbou, chůze proti větru obtížná'},
+  {max:74, force:8,  name:'Bouřlivý vítr',           level:'danger', desc:'větve se lámou, chůze velmi obtížná'},
+  {max:88, force:9,  name:'Velmi bouřlivý vítr',     level:'danger', desc:'menší škody na střechách'},
+  {max:102,force:10, name:'Vichřice',                level:'danger', desc:'stromy vyvrácené, značné škody'},
+  {max:117,force:11, name:'Silná vichřice',          level:'danger', desc:'rozsáhlé škody'},
+  {max:Infinity,force:12,name:'Orkán',               level:'danger', desc:'ničivé škody'},
+];
+function beaufortFor(kmh){ return BEAUFORT.find(b => kmh <= b.max); }
+
 async function loadWeather(){
   try{
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=5`;
@@ -321,11 +351,13 @@ async function loadWeather(){
     const data = await res.json();
     const c = data.current;
     const wmo = WMO[c.weather_code] || ['—','·'];
+    const hBand = humidityBand(Math.round(c.relative_humidity_2m));
+    const wBand = beaufortFor(c.wind_speed_10m);
 
     document.getElementById('weatherCards').innerHTML = `
       <div class="card"><div class="k">Teplota</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">pocitově ${c.apparent_temperature.toFixed(1)} °C</div></div>
-      <div class="card"><div class="k">Vlhkost</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div></div>
-      <div class="card"><div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div><div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h</div></div>
+      <div class="card"><div class="k">Vlhkost</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div><div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div></div>
+      <div class="card"><div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div><div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h</div><div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force}° Bft · ${wBand.name}</div></div>
       <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">${wmo[0]}</div></div>
     `;
 
