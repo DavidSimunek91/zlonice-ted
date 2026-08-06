@@ -1,0 +1,8 @@
+{
+  "name": "zlonice-ted-data-pipeline",
+  "private": true,
+  "description": "Závislosti pro naplánované GitHub Actions skripty v scripts/ — appka samotná (index.html) žádný build krok nepoužívá.",
+  "dependencies": {
+    "fast-xml-parser": "^4.5.0"
+  }
+}

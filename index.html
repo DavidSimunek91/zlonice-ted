@@ -83,12 +83,21 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .tag.live{background:var(--good-soft);color:var(--good);}
 .tag.snapshot{background:var(--sky-soft);color:var(--sky);}
 .tag.soon{background:var(--warn-soft);color:var(--warn);}
+.tag.warn{background:var(--warn-soft);color:var(--warn);}
+.tag.danger{background:var(--danger-soft);color:var(--danger);}
 .tag .dot{width:.4rem;height:.4rem;border-radius:50%;background:currentColor;}
 
 .banner{border-radius:8px;padding:.9rem 1.2rem;display:flex;align-items:center;gap:.8rem;background:var(--good-soft);margin-top:1.6rem;}
 .banner .stripe{width:4px;align-self:stretch;border-radius:3px;background:var(--good);}
 .banner strong{display:block;font-size:.95rem;}
 .banner span{font-size:.82rem;color:var(--ink-soft);}
+.banner span a{color:inherit;text-decoration:underline;}
+.banner.warn{background:var(--warn-soft);}
+.banner.warn .stripe{background:var(--warn);}
+.banner.danger{background:var(--danger-soft);}
+.banner.danger .stripe{background:var(--danger);}
+.banner.unknown{background:var(--surface);border:1px dashed var(--line);}
+.banner.unknown .stripe{background:var(--ink-soft);}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.2rem;box-shadow:0 1px 2px var(--shadow);}
@@ -189,13 +198,13 @@ footer a{text-decoration:underline;}
 
 <main class="page">
 
-  <div class="banner">
+  <div class="banner" id="alertBanner">
     <div class="stripe"></div>
     <div>
-      <strong>Beze zvláštních výstrah</strong>
-      <span>ČHMÚ výstrahy zatím nejsou napojené — připravujeme, ať neukazujeme špatná bezpečnostní data.</span>
+      <strong id="alertHeadline">Kontroluji výstrahy…</strong>
+      <span id="alertDetail">Načítám aktuální stav z ČHMÚ.</span>
     </div>
-    <span class="tag soon" style="margin-left:auto;"><span class="dot"></span>připravujeme</span>
+    <span class="tag soon" id="alertTag" style="margin-left:auto;"><span class="dot"></span>načítám</span>
   </div>
 
   <section class="section">
@@ -293,7 +302,7 @@ footer a{text-decoration:underline;}
 </main>
 
 <footer>
-  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (snímek, obnovujeme zatím ručně). Výstrahy, dopravní nehody a hospodaření obce jsou v přípravě.</p>
+  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Výstrahy — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola každých 10 minut na pozadí). Voda — ČHMÚ opendata (snímek, obnovujeme zatím ručně). Dopravní nehody a hospodaření obce jsou v přípravě.</p>
   <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
 </footer>
 
@@ -464,6 +473,65 @@ async function loadAres(){
   }
 }
 
+// ČHMÚ výstrahy — appka sama na ČHMÚ nevolá (opendata.chmi.cz nemá CORS
+// hlavičky), čte jen data/alerts.json, který na pozadí naplňuje naplánovaný
+// GitHub Actions skript (scripts/update-alerts.mjs). Appka navíc kontroluje
+// stáří dat: bezpečnostní informace se nesmí tvářit jako aktuální, když
+// pipeline třeba přestala běžet.
+const ALERT_STALE_MS = 90 * 60 * 1000; // pipeline běží každých 10 min
+const SEVERITY_RANK = {Extreme:4, Severe:3, Moderate:2, Minor:1, Unknown:0};
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+function setAlertBanner(cls, tagCls, tagText, headline, detailHtml){
+  document.getElementById('alertBanner').className = 'banner' + (cls ? ' ' + cls : '');
+  document.getElementById('alertHeadline').textContent = headline;
+  document.getElementById('alertDetail').innerHTML = detailHtml;
+  const tag = document.getElementById('alertTag');
+  tag.className = 'tag ' + tagCls;
+  tag.innerHTML = `<span class="dot"></span>${tagText}`;
+}
+
+function unknownAlertState(reason){
+  setAlertBanner('unknown', 'warn', 'nelze ověřit',
+    'Aktuální výstrahy nelze ověřit',
+    `${escapeHtml(reason)} Zkontroluj prosím oficiální zdroj přímo: <a href="https://vystrahy-cr.chmi.cz/" target="_blank" rel="noopener">vystrahy-cr.chmi.cz</a>.`);
+}
+
+async function loadAlerts(){
+  try{
+    const res = await fetch('./data/alerts.json', {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    const ageMs = Date.now() - new Date(data.updated).getTime();
+    if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > ALERT_STALE_MS){
+      unknownAlertState('Automatická kontrola ČHMÚ výstrah teď neběží nebo selhala.');
+      return;
+    }
+
+    if (!data.hasActive){
+      const checked = new Date(data.updated).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+      setAlertBanner('', 'live', 'ověřeno',
+        'Beze zvláštních výstrah',
+        `ČHMÚ pro Zlonice (ORP Slaný) aktuálně nehlásí žádnou výstrahu. Ověřeno ${checked}.`);
+      return;
+    }
+
+    const worst = data.alerts.reduce((a,b) => (SEVERITY_RANK[b.severity] ?? 0) > (SEVERITY_RANK[a.severity] ?? 0) ? b : a);
+    const cls = (worst.severity === 'Extreme' || worst.severity === 'Severe') ? 'danger' : 'warn';
+    const names = data.alerts.map(a => a.event).join(' · ');
+    const detail = (worst.headline ? escapeHtml(worst.headline) + ' — ' : '') +
+      `<a href="${worst.web}" target="_blank" rel="noopener">více info</a>`;
+    setAlertBanner(cls, cls, data.alerts.length > 1 ? `${data.alerts.length} výstrahy` : 'výstraha', names, detail);
+  }catch(e){
+    unknownAlertState(`Nepodařilo se načíst data o výstrahách (${e.message}).`);
+  }
+}
+
+loadAlerts();
 loadWeather();
 loadAirQuality();
 loadAres();

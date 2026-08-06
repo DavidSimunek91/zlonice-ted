@@ -1,0 +1,18 @@
+{
+  "status": "ok",
+  "updated": "2026-08-06T22:13:03.908Z",
+  "sourceFile": "alert_cap_50_060914.xml",
+  "hasActive": true,
+  "alerts": [
+    {
+      "event": "Riziko požárů",
+      "severity": "Moderate",
+      "urgency": "Immediate",
+      "certainty": "Likely",
+      "headline": null,
+      "onset": "2026-08-06T11:10:58+02:00",
+      "expires": null,
+      "web": "https://www.firerisk.cz/"
+    }
+  ]
+}

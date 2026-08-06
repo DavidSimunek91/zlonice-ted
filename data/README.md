@@ -5,12 +5,17 @@ Appka je pořád čistý statický web (HTML/CSS/vanilla JS), žádný framework
 "appka si všechno tahá živě z API v prohlížeči" — generuje je automat
 (GitHub Actions) na pozadí, ne appka sama při načtení stránky.
 
-Důvod: některá data (např. ŘSD/NDIC) vyžadují API klíč. Klíč nejde dát do
-klientského JS appky, protože by byl veřejně vidět úplně každému (appka
-nemá žádný server, kde by se dal schovat). Řešení: malý skript běží na
-časovač mimo appku, drží klíč jako tajný GitHub Actions secret, zavolá
-API, výsledek zjednoduší a uloží sem jako obyčejný JSON bez klíče. Appka
-pak ten soubor čte úplně stejně snadno jako Open-Meteo.
+Důvod je jeden ze dvou:
+1. **Potřeba API klíč** (ŘSD/NDIC) — klíč nejde dát do klientského JS appky,
+   protože by byl veřejně vidět úplně každému (appka nemá žádný server, kde
+   by se dal schovat). Skript ho drží jako tajný GitHub Actions secret.
+2. **Zdroj nemá CORS hlavičky** (ČHMÚ) — prohlížeč by fetch z `github.io`
+   sám zablokoval, ať by appka dělala cokoli. Žádný klíč tu není potřeba,
+   jen musí to volání proběhnout mimo prohlížeč.
+
+V obou případech: malý skript běží na časovač mimo appku, výsledek
+zjednoduší a uloží sem jako obyčejný JSON. Appka pak ten soubor čte úplně
+stejně snadno jako Open-Meteo.
 
 ## Doprava (`traffic.json`)
 
@@ -25,3 +30,20 @@ pak ten soubor čte úplně stejně snadno jako Open-Meteo.
 Až přijde přístup od ŘSD, zbývá doplnit skutečné volání API do
 `scripts/update-traffic.mjs` (přesné místo je tam označené `TODO`) a
 appku napojit na čtení `data/traffic.json` místo textu "připravujeme".
+
+## Výstrahy ČHMÚ (`alerts.json`)
+
+- **Zdroj:** opendata.chmi.cz, CAP/XML formát (celostátní bulletin, ~2 MB)
+- **Aktualizace:** `.github/workflows/update-alerts.yml`, každých 10 minut
+- **Filtrování:** appka je pro obec Zlonice, která spadá pod **ORP Slaný**
+  (kód CISORP `2124`) — ne ORP Kladno, i když je Zlonice v okrese Kladno.
+  Tohle je ověřený detail (ČSÚ + přímo v CAP datech), ne odhad — záměna by
+  appce dávala výstrahy pro jinou oblast.
+- **Bezpečnostní pravidla, která se neobcházejí** (viz komentáře přímo ve
+  `scripts/update-alerts.mjs`):
+  - Když cokoli selže (síť, formát dat), skript napíše explicitní
+    `status: "error"`, nikdy tiše "beze zvláštních výstrah".
+  - Appka sama kontroluje stáří pole `updated` — když se pipeline zasekne
+    (stalo se nám to u GitHub Pages, může se to stát i tady), appka
+    přestane věřit starým datům a ukáže "nelze ověřit", ne poslední
+    známý stav.

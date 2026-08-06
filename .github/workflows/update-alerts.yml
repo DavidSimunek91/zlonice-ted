@@ -1,0 +1,36 @@
+name: Update ČHMÚ alerts
+
+# Stahuje aktuální CAP výstrahy ČHMÚ a filtruje je na ORP Slaný (Zlonice).
+# Veřejná data, žádný secret není potřeba. Běží často (10 min), protože jde
+# o bezpečnostní informace — appka navíc sama kontroluje stáří dat, viz
+# scripts/update-alerts.mjs a data/README.md.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm install --no-save
+
+      - name: Fetch and filter ČHMÚ alerts
+        run: node scripts/update-alerts.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "alerts-data-bot"
+          git config user.email "actions@github.com"
+          git add data/alerts.json
+          git diff --staged --quiet || git commit -m "Update ČHMÚ alerts [skip ci]"
+          git push
