@@ -1,0 +1,5 @@
+{
+  "status": "pending_access",
+  "note": "Čekáme na schválení přístupu k datům ŘSD/NDIC (mobilitydata.rsd.cz). Viz .github/workflows/update-traffic.yml a data/README.md.",
+  "updated": null
+}
