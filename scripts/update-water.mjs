@@ -2,7 +2,7 @@
 // Velvary, tok Bakovský potok (16 km od Zlonic, nejbližší reálná stanice).
 // Nahrazuje dřívější ručně vkládaný snímek: ČHMÚ tahle data aktualizuje
 // každých 10 minut, takže "ruční snímek jednou za čas" nikdy nebyl
-// dostatečně čerstvý na to, aby dával smysl v appce jménem "Zlonice teď".
+// dostatečně čerstvý na to, aby dával smysl v appce jménem "Ve Zlonicích".
 //
 // opendata.chmi.cz nemá CORS hlavičky (stejně jako u výstrah), takže appka
 // sama volat nemůže — tenhle skript běží na pozadí, appka čte jen výsledný
