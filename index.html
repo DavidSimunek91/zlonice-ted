@@ -59,6 +59,16 @@ body{
   background:var(--stone); color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   line-height:1.5; -webkit-font-smoothing:antialiased;
+  position:relative;
+}
+/* Jemná textura řádků polí táhnoucí se celou stránkou, ne jen hero —
+   sjednocuje vizuální identitu appky s krajinou Polabí. Karty se
+   živými daty mají vlastní --surface pozadí, takže zůstávají čisté
+   a čitelné, textura je vidět jen v mezerách mezi nimi. */
+body::before{
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background-image:repeating-linear-gradient(122deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 42px);
+  opacity:.22;
 }
 .display{font-family:"Rockwell Nova","Rockwell","Roboto Slab","Zilla Slab",Georgia,serif;}
 a{color:inherit;}
@@ -83,9 +93,11 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .fact .v{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.15rem;font-weight:600;}
 .fact .ctx{font-size:.72rem;color:var(--ink-soft);line-height:1.35;margin-top:.15rem;}
 
-.page{max-width:1080px;margin:0 auto;padding:0 1.4rem 4rem;}
-.section{margin-top:2.2rem;}
-.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap;}
+.page{max-width:1080px;margin:0 auto;padding:0 1.4rem 4rem;position:relative;z-index:1;}
+.section{margin-top:2.2rem;padding-top:1.6rem;border-top:1px solid var(--line);}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap;}
+.section-title{display:flex;align-items:center;gap:.6rem;}
+.section-icon{width:1.2rem;height:1.2rem;color:var(--spruce);flex:0 0 auto;}
 .section-head h2{font-family:"Rockwell Nova","Rockwell","Roboto Slab",Georgia,serif;font-size:1.25rem;margin:0;}
 
 .tag{display:inline-flex;align-items:center;gap:.35rem;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;padding:.22rem .55rem;border-radius:999px;font-family:ui-monospace,monospace;}
@@ -204,7 +216,9 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .stat-pair .stat .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
 .stat-pair .stat .v{font-family:ui-monospace,monospace;font-size:1.05rem;font-weight:600;}
 
-footer{max-width:1080px;margin:2.6rem auto 0;padding:1.4rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.78rem;}
+footer{max-width:1080px;margin:2.6rem auto 0;padding:1.6rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.78rem;}
+footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--spruce);margin-bottom:.9rem;}
+footer .foot-brand svg{width:1rem;height:1rem;}
 footer p{margin:.3rem 0;}
 footer a{text-decoration:underline;}
 </style>
@@ -265,7 +279,10 @@ footer a{text-decoration:underline;}
 
   <section class="section">
     <div class="section-head">
-      <h2>Počasí</h2>
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg>
+        <h2>Počasí</h2>
+      </div>
       <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
     </div>
     <div class="grid" id="weatherCards">
@@ -279,7 +296,10 @@ footer a{text-decoration:underline;}
 
   <section class="section">
     <div class="section-head">
-      <h2>Kvalita ovzduší</h2>
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg>
+        <h2>Kvalita ovzduší</h2>
+      </div>
       <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
     </div>
     <div class="card aqi-card" id="aqiCard">
@@ -298,7 +318,10 @@ footer a{text-decoration:underline;}
 
   <section class="section">
     <div class="section-head">
-      <h2>Voda</h2>
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg>
+        <h2>Voda</h2>
+      </div>
       <span class="tag soon" id="waterTag"><span class="dot"></span>načítám</span>
     </div>
     <div class="card water-card" id="waterCard">
@@ -321,7 +344,10 @@ footer a{text-decoration:underline;}
 
   <section class="section">
     <div class="section-head">
-      <h2>Autobus</h2>
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg>
+        <h2>Autobus</h2>
+      </div>
       <span class="tag snapshot"><span class="dot"></span>jízdní řád PID · aktualizace denně</span>
     </div>
     <div class="card dep-card" id="depCard">
@@ -336,14 +362,21 @@ footer a{text-decoration:underline;}
 
   <section class="section">
     <div class="section-head">
-      <h2>Dopravní nehody v okolí</h2>
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg>
+        <h2>Dopravní nehody v okolí</h2>
+      </div>
       <span class="tag soon"><span class="dot"></span>připravujeme · CDV/ArcGIS</span>
     </div>
     <div class="soon-card">Jediná celostátní data o nehodách (NDIC) běží na testovacím serveru s prošlým certifikátem, oficiální appka CDV nemá veřejné API a krajský dopravní portál je dlouhodobě nedostupný — bez vlastního serveru na pozadí to zatím nejde napojit živě. Registraci k živým datům ŘSD/NDIC jsme už podali, viz data/README.md v repu.</div>
   </section>
 
   <div class="obec">
-    <h2 class="display">O Zlonicích</h2>
+    <span class="eyebrow-rule"></span>
+    <div class="section-title">
+      <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg>
+      <h2 class="display">O Zlonicích</h2>
+    </div>
     <p class="lede">Malá obec ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
     <div class="obec-grid">
       <div class="story">
@@ -366,6 +399,10 @@ footer a{text-decoration:underline;}
 </main>
 
 <footer>
+  <div class="foot-brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20 6 8M12 20 12 4M18 20 18 8"/><ellipse cx="4.5" cy="9.5" rx="1.6" ry="2.7" transform="rotate(-25 4.5 9.5)" fill="currentColor" stroke="none"/><ellipse cx="7.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 7.5 7.5)" fill="currentColor" stroke="none"/><ellipse cx="10.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 10.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="13.5" cy="4" rx="1.6" ry="2.7" transform="rotate(20 13.5 4)" fill="currentColor" stroke="none"/><ellipse cx="16.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 16.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="19.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 19.5 7.5)" fill="currentColor" stroke="none"/></svg>
+    ve zlonicích · vezlonicich.cz
+  </div>
   <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní nehody jsou v přípravě.</p>
   <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
 </footer>
