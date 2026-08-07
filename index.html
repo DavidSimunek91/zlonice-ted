@@ -63,11 +63,19 @@ body{
 .display{font-family:"Rockwell Nova","Rockwell","Roboto Slab","Zilla Slab",Georgia,serif;}
 a{color:inherit;}
 
-.hero{background:linear-gradient(180deg, var(--spruce-soft), var(--stone) 140%);border-bottom:1px solid var(--line);padding:2.6rem 1.4rem 2rem;}
-.hero-inner{max-width:1080px;margin:0 auto;}
-.eyebrow{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--spruce);display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem;}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg, var(--spruce-soft), var(--stone) 140%);border-bottom:1px solid var(--line);padding:2.6rem 1.4rem 2rem;}
+.hero::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(122deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 42px);
+  opacity:.45;
+  -webkit-mask-image:linear-gradient(200deg, black, transparent 75%);
+  mask-image:linear-gradient(200deg, black, transparent 75%);}
+.hero-motif{position:absolute;right:-.5rem;bottom:-1rem;width:clamp(120px,20vw,210px);height:auto;color:var(--spruce);opacity:.15;pointer-events:none;}
+@media (max-width:640px){.hero-motif{opacity:.1;width:110px;}}
+.hero-inner{max-width:1080px;margin:0 auto;position:relative;z-index:1;}
+.eyebrow{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--spruce);display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;}
 .eyebrow .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--spruce);}
-h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap:balance;letter-spacing:-.01em;}
+.eyebrow-rule{display:block;width:2.6rem;height:2px;border-radius:2px;background:var(--gold);margin:0 0 1.2rem;}
+h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap:balance;letter-spacing:-.015em;}
 .hero-sub{color:var(--ink-soft);font-size:1.02rem;max-width:56ch;margin:0 0 1.4rem;}
 .hero-facts{display:flex;flex-wrap:wrap;gap:1.6rem;}
 .fact{display:flex;flex-direction:column;max-width:15.5rem;}
@@ -184,6 +192,8 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 @media (max-width:720px){.obec-grid{grid-template-columns:1fr;}}
 .story p{max-width:58ch;margin:0 0 .9rem;}
 .story .cite{font-size:.78rem;color:var(--ink-soft);font-style:italic;}
+.dateline{display:inline-block;font-family:ui-monospace,monospace;font-size:.74rem;font-weight:600;letter-spacing:.02em;background:var(--gold-soft);color:var(--gold);border-radius:5px;padding:.05rem .4rem;margin:0 .1rem;white-space:nowrap;}
+.obec-data-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.2rem;}
 .bars{display:flex;flex-direction:column;gap:.5rem;}
 .bar-row{display:grid;grid-template-columns:8.5rem 1fr 2.2rem;align-items:center;gap:.6rem;}
 .bar-row .lbl{font-size:.85rem;}
@@ -202,8 +212,30 @@ footer a{text-decoration:underline;}
 <body>
 
 <header class="hero">
+  <svg class="hero-motif" viewBox="0 0 160 220" fill="none" aria-hidden="true">
+    <path d="M40 210 C40 150, 34 110, 30 60" stroke="currentColor" stroke-width="2"/>
+    <path d="M80 214 C80 140, 76 90, 74 30" stroke="currentColor" stroke-width="2"/>
+    <path d="M118 210 C118 152, 122 112, 126 66" stroke="currentColor" stroke-width="2"/>
+    <g fill="currentColor">
+      <ellipse cx="24" cy="70" rx="7" ry="13" transform="rotate(-28 24 70)"/>
+      <ellipse cx="37" cy="58" rx="7" ry="13" transform="rotate(22 37 58)"/>
+      <ellipse cx="24" cy="92" rx="7" ry="13" transform="rotate(-30 24 92)"/>
+      <ellipse cx="37" cy="82" rx="7" ry="13" transform="rotate(20 37 82)"/>
+      <ellipse cx="67" cy="40" rx="7" ry="13" transform="rotate(-26 67 40)"/>
+      <ellipse cx="81" cy="28" rx="7" ry="13" transform="rotate(24 81 28)"/>
+      <ellipse cx="67" cy="60" rx="7" ry="13" transform="rotate(-30 67 60)"/>
+      <ellipse cx="81" cy="50" rx="7" ry="13" transform="rotate(20 81 50)"/>
+      <ellipse cx="67" cy="80" rx="7" ry="13" transform="rotate(-26 67 80)"/>
+      <ellipse cx="81" cy="70" rx="7" ry="13" transform="rotate(24 81 70)"/>
+      <ellipse cx="112" cy="76" rx="7" ry="13" transform="rotate(-28 112 76)"/>
+      <ellipse cx="125" cy="64" rx="7" ry="13" transform="rotate(22 125 64)"/>
+      <ellipse cx="112" cy="98" rx="7" ry="13" transform="rotate(-30 112 98)"/>
+      <ellipse cx="125" cy="88" rx="7" ry="13" transform="rotate(20 125 88)"/>
+    </g>
+  </svg>
   <div class="hero-inner">
     <span class="eyebrow"><span class="dot"></span>obecní přehled — neoficiální, komunitní projekt</span>
+    <span class="eyebrow-rule"></span>
     <h1 class="display">Zlonice teď</h1>
     <p class="hero-sub">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
     <div class="hero-facts">
@@ -315,10 +347,10 @@ footer a{text-decoration:underline;}
     <p class="lede">Malá obec ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
     <div class="obec-grid">
       <div class="story">
-        <p>Zlonický zámek, chráněný jako kulturní památka od roku 1978, je spjatý s Antonínem Dvořákem — mladý skladatel se tu za vedení kantora Antonína Liehmanna učil hrát na housle a klavír. Bývalý zámecký chudobinec dnes hostí Památník Antonína Dvořáka.</p>
+        <p>Zlonický zámek, chráněný jako kulturní památka od roku 1978, je spjatý s Antonínem Dvořákem — v letech <span class="dateline">1853–1856</span> se tu mladý skladatel za vedení kantora Antonína Liehmanna učil hrát na housle a klavír. Bývalý zámecký chudobinec dnes hostí Památník Antonína Dvořáka.</p>
         <p class="cite">Zdroj: Národní památkový ústav, antonin-dvorak.cz</p>
       </div>
-      <div>
+      <div class="obec-data-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;">
           <strong style="font-size:.92rem;">Místní firmy podle oboru</strong>
           <span class="tag live"><span class="dot"></span>živě · ARES</span>
