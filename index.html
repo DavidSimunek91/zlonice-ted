@@ -554,6 +554,8 @@ function setAlertBanner(cls, tagCls, tagText, headline, detailHtml){
   tag.innerHTML = `<span class="dot"></span>${tagText}`;
 }
 
+const SEVERITY_CS = {Extreme:'extrémní', Severe:'vysoká', Moderate:'střední', Minor:'nízká', Unknown:'neznámá'};
+
 function unknownAlertState(reason){
   setAlertBanner('unknown', 'warn', 'nelze ověřit',
     'Aktuální výstrahy nelze ověřit',
@@ -583,8 +585,21 @@ async function loadAlerts(){
     const worst = data.alerts.reduce((a,b) => (SEVERITY_RANK[b.severity] ?? 0) > (SEVERITY_RANK[a.severity] ?? 0) ? b : a);
     const cls = (worst.severity === 'Extreme' || worst.severity === 'Severe') ? 'danger' : 'warn';
     const names = data.alerts.map(a => a.event).join(' · ');
-    const detail = (worst.headline ? escapeHtml(worst.headline) + ' — ' : '') +
-      `<a href="${worst.web}" target="_blank" rel="noopener">více info</a>`;
+
+    // Headline z ČHMÚ chybí pro spoustu typů jevů (např. požáry) — bez
+    // náhradního textu by banner zůstal skoro prázdný, jen s odkazem.
+    let context;
+    if (worst.headline){
+      context = escapeHtml(worst.headline);
+    } else {
+      const parts = [`úroveň závažnosti: ${SEVERITY_CS[worst.severity] || worst.severity}`];
+      if (worst.onset){
+        const onsetTxt = new Date(worst.onset).toLocaleString('cs-CZ', {day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit'});
+        parts.push(`platí od ${onsetTxt}`);
+      }
+      context = escapeHtml(parts.join(', '));
+    }
+    const detail = `${context} — <a href="${worst.web}" target="_blank" rel="noopener">více info</a>`;
     setAlertBanner(cls, cls, data.alerts.length > 1 ? `${data.alerts.length} výstrahy` : 'výstraha', names, detail);
   }catch(e){
     unknownAlertState(`Nepodařilo se načíst data o výstrahách (${e.message}).`);
