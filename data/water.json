@@ -1,0 +1,1 @@
+{"status":"ok","updated":"2026-08-07T13:55:30.106Z","station":"Velvary","stream":"Bakovský potok","thresholds":{"dry":24,"spa1":105,"spa2":145,"spa3":175},"level":{"value":17,"unit":"CM","observedAt":"2026-08-07T13:30:00Z"},"flow":{"value":0.00513,"unit":"M3_S","observedAt":"2026-08-07T13:30:00Z"},"temperature":{"value":20.2,"unit":"0C","observedAt":"2026-08-07T13:30:00Z"}}

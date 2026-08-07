@@ -1,0 +1,33 @@
+name: Update water data
+
+# Nahrazuje dřívější ručně vkládaný snímek vody živými daty ze stanice
+# Velvary (ČHMÚ hydrologie). ČHMÚ tahle data aktualizuje každých 10 minut,
+# takže i appka se je snaží držet čerstvá. Veřejná data, žádný secret.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch live water data
+        run: node scripts/update-water.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "water-data-bot"
+          git config user.email "actions@github.com"
+          git add data/water.json
+          git diff --staged --quiet || git commit -m "Update water data [skip ci]"
+          git push

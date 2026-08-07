@@ -156,6 +156,9 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .water-ticks span:not(:nth-child(1)):not(:nth-child(5)){align-items:center;}
 .water-ticks .name{color:var(--ink);text-transform:none;letter-spacing:0;}
 .water-ticks .range{opacity:.7;font-size:.92em;}
+.water-extra{display:flex;gap:1.4rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.9rem;}
+.water-extra div{font-size:.82rem;color:var(--ink-soft);}
+.water-extra b{display:block;font-family:ui-monospace,monospace;color:var(--ink);font-size:1rem;font-weight:600;}
 
 .soon-card{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:1.1rem 1.2rem;color:var(--ink-soft);font-size:.9rem;}
 
@@ -264,22 +267,23 @@ footer a{text-decoration:underline;}
   <section class="section">
     <div class="section-head">
       <h2>Voda</h2>
-      <span class="tag snapshot"><span class="dot"></span>snímek · ČHMÚ, stanice Velvary (16 km)</span>
+      <span class="tag soon" id="waterTag"><span class="dot"></span>načítám</span>
     </div>
-    <div class="card water-card">
+    <div class="card water-card" id="waterCard">
       <div class="water-top">
-        <div class="stage" style="color:var(--warn);">Sucho <span class="val">18 cm</span></div>
-        <div class="desc">Stanice Velvary, tok Bakovský potok — pod hranicí sucha (24 cm). Není to extrém ani povodňové riziko, ale tok je momentálně znatelně vyschlý.</div>
+        <div class="stage" id="waterStage" style="color:var(--ink-soft);">Načítám…</div>
+        <div class="desc" id="waterDesc"></div>
       </div>
-      <div class="water-scale"><div class="water-marker" style="left:15%;"><span class="tag">18 cm</span></div></div>
-      <div class="water-ticks">
+      <div class="water-scale"><div class="water-marker" id="waterMarker" style="left:0%;"><span class="tag" id="waterMarkerTag"></span></div></div>
+      <div class="water-ticks" id="waterTicks">
         <span><span class="name">sucho</span><span class="range">&lt; 24</span></span>
         <span><span class="name">normální</span><span class="range">24–105</span></span>
         <span><span class="name">1. bdělost</span><span class="range">105–145</span></span>
         <span><span class="name">2. pohotovost</span><span class="range">145–175</span></span>
         <span><span class="name">3. ohrožení</span><span class="range">&gt; 175</span></span>
       </div>
-      <p style="margin:.9rem 0 0;font-size:.78rem;color:var(--ink-soft);">Bakovský potok protéká stejnou oblastí jako Zlonice, nejbližší reálná stanice ČHMÚ ale leží 16 km po proudu. Stav ke 6. 8. 2026, 13:50 — obnovujeme zatím ručně, živé napojení je další krok.</p>
+      <div class="water-extra" id="waterExtra"></div>
+      <p style="margin:1rem 0 0;font-size:.78rem;color:var(--ink-soft);" id="waterFooter">Stanice Velvary, tok Bakovský potok — nejbližší reálná stanice ČHMÚ, 16 km po proudu od Zlonic.</p>
     </div>
   </section>
 
@@ -330,7 +334,7 @@ footer a{text-decoration:underline;}
 </main>
 
 <footer>
-  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Výstrahy — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola každých 10 minut na pozadí). Voda — ČHMÚ opendata (snímek, obnovujeme zatím ručně). Dopravní nehody jsou v přípravě.</p>
+  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní nehody jsou v přípravě.</p>
   <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
 </footer>
 
@@ -740,7 +744,99 @@ async function loadDepartures(){
   }
 }
 
+// Voda — appka čte jen předzpracovaný data/water.json (ČHMÚ opendata nemá
+// CORS), viz scripts/update-water.mjs. Stejná bezpečnostní zásada jako u
+// výstrah: appka kontroluje stáří dat a při zastaralosti to řekne
+// nahlas, netváří se, že poslední známá hodnota je aktuální.
+const WATER_STALE_MS = 90 * 60 * 1000; // pipeline běží každých 15 min
+
+// Teplotní pásma vody — orientačně vůči zákonnému limitu pro kaprové vody
+// (28 °C, nařízení vlády 401/2015 Sb.) a typickému letnímu rozmezí
+// nížinného toku. Teplejší voda = méně rozpuštěného kyslíku pro ryby.
+const WATER_TEMP_BANDS = [
+  {max:15, name:'Chladná', level:'good', desc:'Chladnější než letní průměr nížinného potoka.'},
+  {max:20, name:'Normální', level:'good', desc:'Typická letní teplota pro nížinný tok, jako je Bakovský potok.'},
+  {max:24, name:'Teplejší', level:'warn', desc:'Nad letním průměrem — teplejší voda má míň rozpuštěného kyslíku, náročnější pro ryby.'},
+  {max:28, name:'Vysoká', level:'warn', desc:'Blíží se zákonnému limitu pro kaprové vody (28 °C) — znatelná zátěž pro vodní život.'},
+  {max:Infinity, name:'Extrémní', level:'danger', desc:'Na hranici nebo nad zákonným limitem pro kaprové vody — riziko nedostatku kyslíku a úhynu ryb.'},
+];
+function waterTempBand(c){ return WATER_TEMP_BANDS.find(b => c <= b.max); }
+
+function waterStageFor(level, th){
+  if (level < th.dry) return {name:'Sucho', color:'var(--warn)', pct: Math.max(0, Math.min(20, level/th.dry*20)),
+    desc:`pod hranicí sucha (${th.dry} cm). Není to extrém ani povodňové riziko, ale tok je momentálně znatelně vyschlý.`};
+  if (level < th.spa1) return {name:'Normální', color:'var(--good)', pct: 20 + (level-th.dry)/(th.spa1-th.dry)*20,
+    desc:'v běžném rozmezí, bez sucha i bez zvýšené aktivity.'};
+  if (level < th.spa2) return {name:'1. stupeň — bdělost', color:'var(--warn)', pct: 40 + (level-th.spa1)/(th.spa2-th.spa1)*20,
+    desc:'zvýšený stav, ČHMÚ sleduje vývoj. Není to ještě povodňové riziko pro okolí.'};
+  if (level < th.spa3) return {name:'2. stupeň — pohotovost', color:'var(--danger)', pct: 60 + (level-th.spa2)/(th.spa3-th.spa2)*20,
+    desc:'vyšší povodňová aktivita, sledujte oficiální zdroje ČHMÚ.'};
+  return {name:'3. stupeň — ohrožení', color:'var(--danger)', pct: Math.min(100, 80 + (level-th.spa3)/(th.spa3-th.spa2)*20),
+    desc:'nejvyšší stupeň povodňové aktivity — sledujte oficiální zdroje a pokyny obce.'};
+}
+
+async function loadWater(){
+  const tag = document.getElementById('waterTag');
+  try{
+    const res = await fetch('./data/water.json', {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    const ageMs = Date.now() - new Date(data.updated).getTime();
+    if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > WATER_STALE_MS){
+      tag.className = 'tag warn';
+      tag.innerHTML = '<span class="dot"></span>nelze ověřit';
+      document.getElementById('waterStage').textContent = 'Aktuální stav nelze ověřit';
+      document.getElementById('waterStage').style.color = 'var(--ink-soft)';
+      document.getElementById('waterDesc').textContent = 'Automatická kontrola dat ČHMÚ teď neběží nebo selhala. Poslední známá hodnota by mohla být zastaralá.';
+      document.getElementById('waterMarker').style.display = 'none';
+      document.getElementById('waterExtra').innerHTML = '';
+      return;
+    }
+
+    tag.className = 'tag live';
+    tag.innerHTML = `<span class="dot"></span>živě · stanice ${data.station} (16 km)`;
+
+    const th = data.thresholds;
+    const level = data.level.value;
+    const stage = waterStageFor(level, th);
+
+    const stageEl = document.getElementById('waterStage');
+    stageEl.style.color = stage.color;
+    stageEl.innerHTML = `${stage.name} <span class="val">${level} cm</span>`;
+    document.getElementById('waterDesc').textContent = `Stanice ${data.station}, tok ${data.stream} — ${stage.desc}`;
+
+    const marker = document.getElementById('waterMarker');
+    marker.style.display = '';
+    marker.style.left = stage.pct + '%';
+    document.getElementById('waterMarkerTag').textContent = `${level} cm`;
+
+    const extra = document.getElementById('waterExtra');
+    const parts = [];
+    if (data.temperature){
+      const t = data.temperature.value;
+      const band = waterTempBand(t);
+      parts.push(`<div>Teplota vody<b>${t.toFixed(1).replace('.', ',')} °C</b><div class="takeaway ${band.level}" title="${band.desc}">${band.name}</div></div>`);
+    }
+    if (data.flow){
+      const ls = data.flow.value * 1000;
+      parts.push(`<div>Průtok<b>${ls.toFixed(1).replace('.', ',')} l/s</b></div>`);
+    }
+    extra.innerHTML = parts.join('');
+
+    const observed = new Date(data.level.observedAt).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+    document.getElementById('waterFooter').textContent = `Stanice ${data.station}, tok ${data.stream} — nejbližší reálná stanice ČHMÚ, 16 km po proudu od Zlonic. Naměřeno ${observed}.`;
+  }catch(e){
+    tag.className = 'tag warn';
+    tag.innerHTML = '<span class="dot"></span>nelze ověřit';
+    document.getElementById('waterStage').textContent = 'Aktuální stav nelze ověřit';
+    document.getElementById('waterDesc').textContent = `Data o vodě se nepodařilo načíst (${e.message}).`;
+    document.getElementById('waterMarker').style.display = 'none';
+  }
+}
+
 loadAlerts();
+loadWater();
 loadWeather();
 loadAirQuality();
 loadAres();

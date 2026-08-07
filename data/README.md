@@ -68,3 +68,22 @@ appku napojit na čtení `data/traffic.json` místo textu "připravujeme".
   vyžadovalo Golemio real-time API s API klíčem a mnohem častější refresh
   (minuty, ne jednou denně). Je to jasně popsané jako "jízdní řád", ne
   živá data.
+
+## Voda (`water.json`)
+
+- **Zdroj:** ČHMÚ hydrologická opendata, stanice **Velvary** (tok Bakovský
+  potok, 16 km od Zlonic — nejbližší reálná stanice), `objID 0-203-1-202300`
+- **Aktualizace:** `.github/workflows/update-water.yml`, každých 15 minut
+  — ČHMÚ tahle data sám aktualizuje každých 10 minut, takže dřívější
+  ručně vkládaný snímek nikdy nebyl dostatečně čerstvý pro appku jménem
+  "Zlonice teď"
+- **Prahové hodnoty** (sucho/1./2./3. stupeň povodňové aktivity) se čtou
+  živě z metadat stanice při každém běhu, ne natvrdo v kódu — kdyby je
+  ČHMÚ někdy upravil
+- **Teplota vody:** appka ji interpretuje vůči zákonnému limitu pro
+  kaprové vody (28 °C, nařízení vlády č. 401/2015 Sb.) — Bakovský potok
+  je nížinný, kaprový tok, takže je to relevantní referenční hodnota,
+  ne odhad
+- **Stejná bezpečnostní zásada jako u výstrah:** appka kontroluje stáří
+  pole `updated` a při zastaralosti ukáže "nelze ověřit", ne poslední
+  známou (možná zastaralou) hodnotu
