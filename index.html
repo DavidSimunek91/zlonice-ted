@@ -159,6 +159,21 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 
 .soon-card{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:1.1rem 1.2rem;color:var(--ink-soft);font-size:.9rem;}
 
+/* autobus */
+.dep-card{padding:1.2rem 1.4rem;}
+.dep-top{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap;}
+.dep-top label{font-size:.78rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+.stop-select{font-family:ui-monospace,monospace;font-size:.85rem;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);}
+.dep-list{display:flex;flex-direction:column;}
+.dep-row{display:grid;grid-template-columns:2.9rem 1fr auto;gap:.7rem;align-items:center;padding:.5rem 0;border-bottom:1px dashed var(--line);}
+.dep-row:last-child{border-bottom:none;}
+.dep-route{font-family:ui-monospace,monospace;font-weight:700;font-size:.8rem;background:var(--gold-soft);color:var(--gold);border-radius:6px;padding:.2rem 0;text-align:center;}
+.dep-headsign{font-size:.88rem;}
+.dep-time{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-size:.9rem;}
+.dep-time .rel{color:var(--ink-soft);font-size:.76rem;margin-left:.35rem;}
+.dep-day-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin:.7rem 0 .3rem;}
+.dep-note{margin:1rem 0 0;font-size:.78rem;color:var(--ink-soft);}
+
 .obec{background:var(--spruce-soft); border:1px solid var(--line); border-radius:12px;padding:2rem clamp(1.2rem,4vw,2.6rem); margin-top:2.6rem;}
 .obec h2{font-family:"Rockwell Nova","Rockwell","Roboto Slab",Georgia,serif;font-size:1.5rem;margin:0 0 .3rem;}
 .obec .lede{color:var(--ink-soft);max-width:62ch;margin:0 0 1.6rem;}
@@ -265,6 +280,21 @@ footer a{text-decoration:underline;}
         <span><span class="name">3. ohrožení</span><span class="range">&gt; 175</span></span>
       </div>
       <p style="margin:.9rem 0 0;font-size:.78rem;color:var(--ink-soft);">Bakovský potok protéká stejnou oblastí jako Zlonice, nejbližší reálná stanice ČHMÚ ale leží 16 km po proudu. Stav ke 6. 8. 2026, 13:50 — obnovujeme zatím ručně, živé napojení je další krok.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Autobus</h2>
+      <span class="tag snapshot"><span class="dot"></span>jízdní řád PID · aktualizace denně</span>
+    </div>
+    <div class="card dep-card" id="depCard">
+      <div class="dep-top">
+        <label for="depStopSelect">Zastávka</label>
+        <select id="depStopSelect" class="stop-select"></select>
+      </div>
+      <div class="dep-list" id="depList"><div class="sub">načítám…</div></div>
+      <p class="dep-note">Jde o plánovaný jízdní řád (linky 590/591/594), ne živou polohu autobusu — zpoždění ani výluky tu nejsou. Zdroj: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>.</p>
     </div>
   </section>
 
@@ -606,10 +636,115 @@ async function loadAlerts(){
   }
 }
 
+// Autobusové odjezdy — appka čte jen předzpracovaný jízdní řád (PID GTFS
+// nemá CORS, navíc je to 46 MB zip), viz scripts/update-departures.mjs a
+// data/README.md. "Další odjezdy" appka počítá sama z aktuálního data a
+// dne v týdnu, ne z předpočítaného seznamu — pipeline běží jednou denně,
+// ale "za kolik minut" musí být vždycky čerstvé vůči hodinám návštěvníka.
+const DAY_LABELS = ['dnes', 'zítra'];
+
+function ymd(date){
+  return `${date.getFullYear()}${String(date.getMonth()+1).padStart(2,'0')}${String(date.getDate()).padStart(2,'0')}`;
+}
+
+function isServiceActiveOn(service, dateStr, dayIndex){
+  const exc = service.exceptions[dateStr];
+  if (exc === 1) return true;
+  if (exc === 2) return false;
+  if (dateStr < service.start || dateStr > service.end) return false;
+  return service.days[dayIndex];
+}
+
+// Vrátí další odjezdy pro zastávku — nejdřív ze zbytku dneška, a pokud jich
+// je málo, doplní začátkem zítřka (ať appka večer neukazuje jen prázdno).
+function upcomingDepartures(depData, stopName, count){
+  const deps = depData.stops[stopName] || [];
+  const now = new Date();
+  const results = [];
+
+  for (let dayOffset = 0; dayOffset <= 1 && results.length < count; dayOffset++){
+    const d = new Date(now);
+    d.setDate(d.getDate() + dayOffset);
+    const dateStr = ymd(d);
+    const dayIndex = (d.getDay() + 6) % 7; // GTFS: 0=pondělí … 6=neděle
+    const nowMinutes = dayOffset === 0 ? now.getHours()*60 + now.getMinutes() : -1;
+
+    const dayDeps = deps
+      .filter(dep => {
+        const svc = depData.services[dep.serviceId];
+        return svc && isServiceActiveOn(svc, dateStr, dayIndex);
+      })
+      .map(dep => {
+        const [h, m] = dep.time.split(':').map(Number);
+        return {...dep, minutes: h*60 + m, dayOffset};
+      })
+      .filter(dep => dep.minutes >= nowMinutes)
+      .sort((a,b) => a.minutes - b.minutes);
+
+    for (const dep of dayDeps){
+      if (results.length >= count) break;
+      results.push(dep);
+    }
+  }
+  return results;
+}
+
+function renderDepartures(depData, stopName){
+  const deps = upcomingDepartures(depData, stopName, 6);
+  const list = document.getElementById('depList');
+  if (deps.length === 0){
+    list.innerHTML = '<div class="sub">Pro tuhle zastávku a nejbližší dny appka nenašla žádný spoj linek 590/591/594.</div>';
+    return;
+  }
+
+  const now = new Date();
+  let lastDayOffset = null;
+  const rows = deps.map(dep => {
+    const h = String(Math.floor(dep.minutes/60)).padStart(2,'0');
+    const m = String(dep.minutes%60).padStart(2,'0');
+    let rel = '';
+    if (dep.dayOffset === 0){
+      const inMin = dep.minutes - (now.getHours()*60 + now.getMinutes());
+      rel = inMin <= 0 ? 'teď' : (inMin < 60 ? `za ${inMin} min` : `za ${(Math.round(inMin/60*10)/10).toFixed(1).replace('.', ',')} h`);
+    }
+    let dayLabel = '';
+    if (dep.dayOffset !== lastDayOffset){
+      lastDayOffset = dep.dayOffset;
+      dayLabel = `<div class="dep-day-label">${DAY_LABELS[dep.dayOffset]}</div>`;
+    }
+    return `${dayLabel}<div class="dep-row">
+      <span class="dep-route">${dep.route}</span>
+      <span class="dep-headsign">${dep.headsign}</span>
+      <span class="dep-time">${h}:${m}${rel ? `<span class="rel">${rel}</span>` : ''}</span>
+    </div>`;
+  }).join('');
+  list.innerHTML = rows;
+}
+
+async function loadDepartures(){
+  const card = document.getElementById('depCard');
+  const select = document.getElementById('depStopSelect');
+  try{
+    const res = await fetch('./data/departures.json', {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || 'neznámá chyba');
+
+    const stopNames = Object.keys(data.stops).sort((a,b) => a === 'Zlonice' ? -1 : b === 'Zlonice' ? 1 : a.localeCompare(b, 'cs'));
+    select.innerHTML = stopNames.map(name => `<option value="${name}">${name}</option>`).join('');
+    select.value = stopNames.includes('Zlonice') ? 'Zlonice' : stopNames[0];
+    select.addEventListener('change', () => renderDepartures(data, select.value));
+    renderDepartures(data, select.value);
+  }catch(e){
+    card.innerHTML = `<div class="soon-card">Jízdní řád se nepodařilo načíst (${e.message}).</div>`;
+  }
+}
+
 loadAlerts();
 loadWeather();
 loadAirQuality();
 loadAres();
+loadDepartures();
 </script>
 </body>
 </html>

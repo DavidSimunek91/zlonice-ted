@@ -9,9 +9,9 @@ Důvod je jeden ze dvou:
 1. **Potřeba API klíč** (ŘSD/NDIC) — klíč nejde dát do klientského JS appky,
    protože by byl veřejně vidět úplně každému (appka nemá žádný server, kde
    by se dal schovat). Skript ho drží jako tajný GitHub Actions secret.
-2. **Zdroj nemá CORS hlavičky** (ČHMÚ) — prohlížeč by fetch z `github.io`
-   sám zablokoval, ať by appka dělala cokoli. Žádný klíč tu není potřeba,
-   jen musí to volání proběhnout mimo prohlížeč.
+2. **Zdroj nemá CORS hlavičky** (ČHMÚ, PID GTFS) — prohlížeč by fetch z
+   `github.io` sám zablokoval, ať by appka dělala cokoli. Žádný klíč tu
+   není potřeba, jen musí to volání proběhnout mimo prohlížeč.
 
 V obou případech: malý skript běží na časovač mimo appku, výsledek
 zjednoduší a uloží sem jako obyčejný JSON. Appka pak ten soubor čte úplně
@@ -47,3 +47,24 @@ appku napojit na čtení `data/traffic.json` místo textu "připravujeme".
     (stalo se nám to u GitHub Pages, může se to stát i tady), appka
     přestane věřit starým datům a ukáže "nelze ověřit", ne poslední
     známý stav.
+
+## Autobusy (`departures.json`)
+
+- **Zdroj:** PID (Pražská integrovaná doprava) GTFS statická data,
+  `data.pid.cz/PID_GTFS.zip` (~46 MB, CC-BY licence, PID ho sám generuje
+  jednou denně kolem 4:00)
+- **Aktualizace:** `.github/workflows/update-departures.yml`, jednou denně
+  (jde jen o jízdní řád, ne živou polohu — častější běh by nic nezměnil)
+- **Filtrování:** appka je pro Zlonice, takže se z celého PID systému
+  (metro, tramvaje, stovky linek) vybírají jen linky **590, 591, 594**
+  a zastávky se jménem začínajícím "Zlonice" — jinak by výsledný soubor
+  musel obsahovat kus celého Česka.
+- **Co appka počítá sama, ne pipeline:** "další odjezdy za X minut" se
+  počítá v prohlížeči z aktuálního data/dne v týdnu a kalendáře platnosti
+  spojů (`calendar.txt` + výjimky z `calendar_dates.txt`), ne z
+  předpočítaného seznamu — jinak by po pár hodinách appka ukazovala
+  odjezdy, co už dávno ujely.
+- **Co appka NEukazuje:** zpoždění, výluky, live polohu autobusu — to by
+  vyžadovalo Golemio real-time API s API klíčem a mnohem častější refresh
+  (minuty, ne jednou denně). Je to jasně popsané jako "jízdní řád", ne
+  živá data.
