@@ -491,17 +491,29 @@ function beaufortFor(kmh){ return BEAUFORT.find(b => kmh <= b.max); }
 // Ikony pro karty zahradních tipů (jen vnitřek <svg>, viz section-icon).
 const MOW_ICON = '<circle cx="6" cy="6" r="2.3"/><circle cx="6" cy="18" r="2.3"/><path d="M8 7.5 19 18M19 6 8 16.5"/>';
 const WATER_ICON = '<rect x="3" y="10" width="9" height="7" rx="1.3"/><path d="M6 10c0-2 1-3 2.5-3s2.5 1 2.5 3"/><path d="M12 12l6-2.5-1.3 2.5H15"/><path d="M14.5 15l1 2M17 14l1 2"/>';
+const FLOWER_ICON = '<circle cx="12" cy="7" r="2.4"/><circle cx="7.5" cy="10" r="2.4"/><circle cx="16.5" cy="10" r="2.4"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M12 13.5V21"/>';
+const FERTILIZE_ICON = '<path d="M4 19h16"/><circle cx="7" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="17" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="13" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1" fill="currentColor" stroke="none"/>';
+const SPRAY_ICON = '<rect x="9" y="10" width="6" height="10" rx="1.3"/><path d="M11 10V7a2 2 0 0 1 2-2h1"/><path d="M16 6l3-1M16 8l3 1M16 4.5l2.5-2"/>';
+const PLANT_ICON = '<path d="M8 6l4-3 4 3"/><path d="M12 3v10"/><path d="M9 13a3 3 0 0 0 6 0"/><path d="M12 13v8"/>';
 const FROST_ICON = '<path d="M12 2v20M4.5 6l15 12M19.5 6l-15 12"/>';
 
 // Odvozené tipy pro zahradu — obecně uznávaná zahradnická praxe (ne
 // vymyšlené odhady): tráva se neseká mokrá (rosa/déšť) ani ve velkém vedru,
 // zalévá se nejlíp brzy ráno kvůli menšímu výparu a nižšímu riziku hub,
-// mráz hrozí, když noční minimum klesne k 0 °C.
+// listy záhonů a květin trpí spálením od kapek v poledním slunci, hnojení
+// a postřik patří spíš do chladnější části dne bez deště a bez silného
+// větru, přesazování snáší rostliny líp mimo poledního vedra, mráz hrozí,
+// když noční minimum klesne k 0 °C.
 function gardenTips(c, hourly, startIdx){
   const nowHour = new Date().getHours();
 
   const justRained = c.precipitation > 0.1 || (hourly.precipitation[Math.max(0, startIdx - 1)] ?? 0) > 0.1;
   const dewLikely = nowHour >= 4 && nowHour <= 9 && c.relative_humidity_2m >= 88;
+  const nextProb = hourly.precipitation_probability.slice(startIdx, startIdx + 6);
+  const rainSoon = justRained || (nextProb.length > 0 && Math.max(...nextProb) >= 60);
+  const morning = nowHour >= 5 && nowHour < 9;
+  const middayHeat = nowHour >= 11 && nowHour < 17;
+
   let mow;
   if (justRained){
     mow = {level:'danger', title:'Teď ne', text:'Prší nebo nedávno pršelo — mokrá tráva se hůř seká a shluky ucpávají sekačku.'};
@@ -513,17 +525,57 @@ function gardenTips(c, hourly, startIdx){
     mow = {level:'good', title:'Dobrý čas', text:'Sucho a mírná teplota — vhodné podmínky na sekání.'};
   }
 
-  const nextProb = hourly.precipitation_probability.slice(startIdx, startIdx + 6);
-  const rainSoon = justRained || (nextProb.length > 0 && Math.max(...nextProb) >= 60);
   let water;
   if (rainSoon){
     water = {level:'good', title:'Není potřeba', text:'Prší, nebo v nejbližších hodinách má podle předpovědi pršet — zalévání teď vynech.'};
-  } else if (nowHour >= 5 && nowHour < 9){
+  } else if (morning){
     water = {level:'good', title:'Teď je ideální čas', text:'Ráno je nejmenší výpar a tráva do večera oschne — nižší riziko houbových chorob.'};
-  } else if (nowHour >= 11 && nowHour < 17){
+  } else if (middayHeat){
     water = {level:'warn', title:'Radši počkej', text:'V poledne a odpoledne se voda hodně odpaří, než se dostane ke kořenům. Zalévej brzy ráno, nebo až podvečer.'};
   } else {
     water = {level:'warn', title:'Jde to, ale…', text:'Funguje to, ale tráva zůstane přes noc mokrá, což zvyšuje riziko houbových chorob. Ideální je spíš brzy ráno.'};
+  }
+
+  let flowers;
+  if (rainSoon){
+    flowers = {level:'good', title:'Není potřeba', text:'Prší, nebo brzy zaprší — záhony a květiny teď nezalévej.'};
+  } else if (morning){
+    flowers = {level:'good', title:'Teď je ideální čas', text:'Zalévej u kořenů, ne na listy. Ranní slunce kapkám na listech ještě neublíží.'};
+  } else if (middayHeat && c.temperature_2m >= 22){
+    flowers = {level:'danger', title:'Počkej do večera', text:'V plném poledním slunci mohou kapky na listech fungovat jako lupa a spálit je. Zalévej až podvečer, a i pak u kořenů.'};
+  } else {
+    flowers = {level:'warn', title:'Jde to, ale…', text:'Zalévej u kořenů, ne na listy, ať přes noc netvoří živnou půdu pro houbové choroby.'};
+  }
+
+  let fertilize;
+  if (rainSoon){
+    fertilize = {level:'warn', title:'Počkej', text:'Brzy má pršet — hnojivo by se hned vyplavilo, aniž by zabralo. Přihnoj až po dešti.'};
+  } else if (c.temperature_2m >= 28){
+    fertilize = {level:'danger', title:'Radši ne teď', text:'Ve vedru hrozí spálení kořenů, hlavně u minerálních hnojiv. Přihnojuj v chladnější části dne.'};
+  } else if (morning || (nowHour >= 18 && nowHour < 21)){
+    fertilize = {level:'good', title:'Dobrý čas', text:'Chladnější část dne a půda bývá vlhčí — hnojivo se lépe vstřebe. Před i po hnojení dobře zalij.'};
+  } else {
+    fertilize = {level:'warn', title:'Jde to, ale…', text:'Funguje to, ale nejdřív dobře zalij, ať hnojivo nespálí kořeny v suché půdě.'};
+  }
+
+  let spray;
+  if (rainSoon){
+    spray = {level:'warn', title:'Počkej', text:'Brzy má pršet — postřik by se hned smyl, dřív než zabere.'};
+  } else if (c.wind_speed_10m >= 20){
+    spray = {level:'warn', title:'Moc fouká', text:'Při silnějším větru se postřik snáší mimo rostliny. Počkej na klidnější počasí.'};
+  } else if (nowHour >= 10 && nowHour < 18){
+    spray = {level:'warn', title:'Radši počkej do večera', text:'Přes den jsou aktivní včely a jiní opylovači a postřik na slunci rychle uschne. Postřikuj brzy ráno nebo navečer.'};
+  } else {
+    spray = {level:'good', title:'Dobrý čas', text:'Klid, bez větru a mimo poledne — vhodné podmínky na postřik proti škůdcům či houbám.'};
+  }
+
+  let plant;
+  if (c.temperature_2m >= 27){
+    plant = {level:'danger', title:'Radši ne teď', text:'Ve vedru přesazené rostliny rychle vadnou, kořeny se ještě neuchytily. Počkej na chladnější chvíli.'};
+  } else if (morning || nowHour >= 17){
+    plant = {level:'good', title:'Dobrý čas', text:'Chladnější část dne — sazenice se lépe uchytí a míň vadnou. Po zasazení pořádně zalij.'};
+  } else {
+    plant = {level:'warn', title:'Jde to, ale…', text:'Přes den v plném slunci čerstvě zasazené rostliny spíš zastiň, nebo víc zalévej.'};
   }
 
   const nextTemps = hourly.temperature_2m.slice(startIdx, startIdx + 15);
@@ -541,6 +593,10 @@ function gardenTips(c, hourly, startIdx){
   return [
     {icon: MOW_ICON, label:'Sekání trávy', ...mow},
     {icon: WATER_ICON, label:'Zalévání trávníku', ...water},
+    {icon: FLOWER_ICON, label:'Zalévání záhonů a květin', ...flowers},
+    {icon: FERTILIZE_ICON, label:'Přihnojování', ...fertilize},
+    {icon: SPRAY_ICON, label:'Ochrana rostlin (postřik)', ...spray},
+    {icon: PLANT_ICON, label:'Sázení a přesazování', ...plant},
     {icon: FROST_ICON, label:'Riziko mrazu', ...frost},
   ];
 }
