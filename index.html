@@ -153,12 +153,23 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .hour-tile.night .bar{opacity:.55;}
 .hour-tile .t{font-family:ui-monospace,monospace;font-size:.74rem;font-weight:600;}
 
-.garden-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
-.garden-item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1rem 1.1rem;}
-.garden-item .gi-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;}
-.garden-item .gi-icon{width:1.1rem;height:1.1rem;color:var(--spruce);flex:0 0 auto;}
-.garden-item .gi-title{font-weight:600;font-size:.9rem;flex:1;}
-.garden-item .gi-text{font-size:.83rem;color:var(--ink-soft);line-height:1.5;margin-top:.5rem;}
+.garden-list{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.2rem 1rem;}
+.garden-row{display:grid;grid-template-columns:1.15rem 10.5rem 8.6rem 1fr;align-items:center;gap:.7rem;padding:.6rem 0;border-bottom:1px dashed var(--line);}
+.garden-row:last-child{border-bottom:none;}
+.garden-row .gi-icon{width:1.05rem;height:1.05rem;color:var(--spruce);flex:0 0 auto;}
+.garden-row .gr-label{font-weight:600;font-size:.84rem;}
+.garden-row .gr-badge{display:inline-flex;align-items:center;font-size:.68rem;font-family:ui-monospace,monospace;padding:.16rem .5rem;border-radius:999px;white-space:nowrap;justify-self:start;}
+.garden-row .gr-badge.good{background:var(--good-soft);color:var(--good);}
+.garden-row .gr-badge.warn{background:var(--warn-soft);color:var(--warn);}
+.garden-row .gr-badge.danger{background:var(--danger-soft);color:var(--danger);}
+.garden-row .gr-text{font-size:.78rem;color:var(--ink-soft);line-height:1.4;}
+@media (max-width:760px){
+  .garden-row{grid-template-columns:1.15rem 1fr auto;grid-template-areas:"icon label badge" "text text text";row-gap:.3rem;}
+  .garden-row .gi-icon{grid-area:icon;}
+  .garden-row .gr-label{grid-area:label;}
+  .garden-row .gr-badge{grid-area:badge;}
+  .garden-row .gr-text{grid-area:text;}
+}
 
 /* air quality scale */
 .aqi-card{padding:1.3rem 1.4rem;}
@@ -323,8 +334,8 @@ footer a{text-decoration:underline;}
       </div>
       <span class="tag live"><span class="dot"></span>živě · odvozeno z počasí</span>
     </div>
-    <div class="garden-grid" id="gardenCard">
-      <div class="garden-item"><div class="gi-top"><span class="gi-title">načítám…</span></div></div>
+    <div class="garden-list" id="gardenCard">
+      <div class="garden-row"><span class="gr-label">načítám…</span></div>
     </div>
   </section>
 
@@ -497,13 +508,21 @@ const SPRAY_ICON = '<rect x="9" y="10" width="6" height="10" rx="1.3"/><path d="
 const PLANT_ICON = '<path d="M8 6l4-3 4 3"/><path d="M12 3v10"/><path d="M9 13a3 3 0 0 0 6 0"/><path d="M12 13v8"/>';
 const FROST_ICON = '<path d="M12 2v20M4.5 6l15 12M19.5 6l-15 12"/>';
 
-// Odvozené tipy pro zahradu — obecně uznávaná zahradnická praxe (ne
-// vymyšlené odhady): tráva se neseká mokrá (rosa/déšť) ani ve velkém vedru,
-// zalévá se nejlíp brzy ráno kvůli menšímu výparu a nižšímu riziku hub,
-// listy záhonů a květin trpí spálením od kapek v poledním slunci, hnojení
-// a postřik patří spíš do chladnější části dne bez deště a bez silného
-// větru, přesazování snáší rostliny líp mimo poledního vedra, mráz hrozí,
-// když noční minimum klesne k 0 °C.
+// Odvozené tipy pro zahradu — podložené zdroji, ne jen odhadem:
+// - zalévání trávníku: ráno 5–9 h nejlepší (nejmenší výpar, tráva do
+//   večera oschne), 11–17 h se nikdy nedoporučuje (kapky na stéblech
+//   fungují jako lupa) a večer se navzdory rozšířenému mýtu taky
+//   nedoporučuje — mokrá tráva přes noc je živná půda pro plísně.
+//   [ireceptar.cz, lawndoctor.com, ask.extension.org]
+// - zalévání záhonů/květin: stejné ranní okno je nejlepší, večer je
+//   "druhá nejlepší volba s háčkem" — jen k zemi, ne na listy (plísně,
+//   slimáci); přes poledne hrozí spálení listů. [tiscali.cz/zpravy]
+// - postřik proti škůdcům: v ČR je aplikace na kvetoucí rostliny ze
+//   zákona omezená na dobu po skončení denního letu včel do 23 h.
+//   [Národní akční plán k bezpečnému používání pesticidů v ČR, MŽP]
+// - hnojení: chladnější část dne (ráno nebo podvečer), nikdy v plném
+//   poledním slunci (spálení). [hobbio.cz, dumazahrada.cz]
+// - sázení/přesazování a mráz: obecná zahradnická praxe.
 function gardenTips(c, hourly, startIdx){
   const nowHour = new Date().getHours();
 
@@ -529,22 +548,22 @@ function gardenTips(c, hourly, startIdx){
   if (rainSoon){
     water = {level:'good', title:'Není potřeba', text:'Prší, nebo v nejbližších hodinách má podle předpovědi pršet — zalévání teď vynech.'};
   } else if (morning){
-    water = {level:'good', title:'Teď je ideální čas', text:'Ráno je nejmenší výpar a tráva do večera oschne — nižší riziko houbových chorob.'};
+    water = {level:'good', title:'Teď je ideální čas', text:'Mezi 5. a 9. hodinou je nejmenší výpar a tráva do večera bezpečně oschne.'};
   } else if (middayHeat){
-    water = {level:'warn', title:'Radši počkej', text:'V poledne a odpoledne se voda hodně odpaří, než se dostane ke kořenům. Zalévej brzy ráno, nebo až podvečer.'};
+    water = {level:'danger', title:'Nikdy teď', text:'Mezi 11. a 17. hodinou fungují kapky na stéblech jako lupa a slunce trávu spálí. Většina vody navíc jen vyprchá.'};
   } else {
-    water = {level:'warn', title:'Jde to, ale…', text:'Funguje to, ale tráva zůstane přes noc mokrá, což zvyšuje riziko houbových chorob. Ideální je spíš brzy ráno.'};
+    water = {level:'warn', title:'Radši ne', text:'Odborníci zalévání trávníku večer nedoporučují — tráva zůstane přes noc mokrá, což je živná půda pro plísně. Počkej na ráno.'};
   }
 
   let flowers;
   if (rainSoon){
     flowers = {level:'good', title:'Není potřeba', text:'Prší, nebo brzy zaprší — záhony a květiny teď nezalévej.'};
   } else if (morning){
-    flowers = {level:'good', title:'Teď je ideální čas', text:'Zalévej u kořenů, ne na listy. Ranní slunce kapkám na listech ještě neublíží.'};
+    flowers = {level:'good', title:'Teď je ideální čas', text:'Zalévej u kořenů, ne na listy. Voda se dostane hluboko ke kořenům dřív, než ji slunce vysuší.'};
   } else if (middayHeat && c.temperature_2m >= 22){
-    flowers = {level:'danger', title:'Počkej do večera', text:'V plném poledním slunci mohou kapky na listech fungovat jako lupa a spálit je. Zalévej až podvečer, a i pak u kořenů.'};
+    flowers = {level:'danger', title:'Počkej do večera', text:'V plném poledním slunci fungují kapky na listech jako malé čočky a mohou je spálit. Počkej na podvečer, a i pak jen k zemi.'};
   } else {
-    flowers = {level:'warn', title:'Jde to, ale…', text:'Zalévej u kořenů, ne na listy, ať přes noc netvoří živnou půdu pro houbové choroby.'};
+    flowers = {level:'warn', title:'Jde to, s výhradou', text:'Večer je druhá nejlepší volba, ale zalévej opravdu jen u kořenů — mokré listí přes noc láká plísně i slimáky.'};
   }
 
   let fertilize;
@@ -563,10 +582,12 @@ function gardenTips(c, hourly, startIdx){
     spray = {level:'warn', title:'Počkej', text:'Brzy má pršet — postřik by se hned smyl, dřív než zabere.'};
   } else if (c.wind_speed_10m >= 20){
     spray = {level:'warn', title:'Moc fouká', text:'Při silnějším větru se postřik snáší mimo rostliny. Počkej na klidnější počasí.'};
-  } else if (nowHour >= 10 && nowHour < 18){
-    spray = {level:'warn', title:'Radši počkej do večera', text:'Přes den jsou aktivní včely a jiní opylovači a postřik na slunci rychle uschne. Postřikuj brzy ráno nebo navečer.'};
+  } else if (nowHour >= 19 && nowHour < 23){
+    spray = {level:'good', title:'Dobrý čas', text:'Včely už nelétají — na kvetoucí rostliny je u nás postřik ze zákona povolený jen v tomhle okně, do 23 h.'};
+  } else if (nowHour >= 23 || nowHour < 6){
+    spray = {level:'good', title:'Jde to', text:'V noci včely nelétají, ale zvaž, jestli postřik nepočká na zítřejší večer — bez slunce má víc času zabrat.'};
   } else {
-    spray = {level:'good', title:'Dobrý čas', text:'Klid, bez větru a mimo poledne — vhodné podmínky na postřik proti škůdcům či houbám.'};
+    spray = {level:'warn', title:'Počkej do večera', text:'Přes den jsou aktivní včely a jiní opylovači a postřik na slunci rychle uschne. Zákonné okno je po jejich denním letu, do 23 h.'};
   }
 
   let plant;
@@ -603,13 +624,11 @@ function gardenTips(c, hourly, startIdx){
 
 function renderGardenTips(c, hourly, startIdx){
   return gardenTips(c, hourly, startIdx).map(it => `
-    <div class="garden-item">
-      <div class="gi-top">
-        <svg class="gi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${it.icon}</svg>
-        <span class="gi-title">${it.label}</span>
-      </div>
-      <div class="takeaway ${it.level}">${it.title}</div>
-      <div class="gi-text">${it.text}</div>
+    <div class="garden-row">
+      <svg class="gi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${it.icon}</svg>
+      <span class="gr-label">${it.label}</span>
+      <span class="gr-badge ${it.level}">${it.title}</span>
+      <span class="gr-text">${it.text}</span>
     </div>
   `).join('');
 }
@@ -624,7 +643,7 @@ async function loadWeather(){
     const msg = `Počasí se nepodařilo načíst (${e.message}). Zkus obnovit stránku.`;
     document.getElementById('weatherCards').innerHTML = `<div class="soon-card">${msg}</div>`;
     document.getElementById('hourlyStrip').innerHTML = `<div class="sub">Nepodařilo se načíst.</div>`;
-    document.getElementById('gardenCard').innerHTML = `<div class="garden-item"><div class="gi-text">Nepodařilo se načíst podklady z počasí.</div></div>`;
+    document.getElementById('gardenCard').innerHTML = `<div class="garden-row"><span class="gr-text">Nepodařilo se načíst podklady z počasí.</span></div>`;
     return;
   }
 
@@ -701,7 +720,7 @@ async function loadWeather(){
   try{
     document.getElementById('gardenCard').innerHTML = renderGardenTips(c, data.hourly, startIdx);
   }catch(e){
-    document.getElementById('gardenCard').innerHTML = `<div class="garden-item"><div class="gi-text">Tipy pro zahradu se nepodařilo vyhodnotit.</div></div>`;
+    document.getElementById('gardenCard').innerHTML = `<div class="garden-row"><span class="gr-text">Tipy pro zahradu se nepodařilo vyhodnotit.</span></div>`;
   }
 }
 
