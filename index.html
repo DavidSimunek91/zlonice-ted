@@ -141,6 +141,25 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .fday .t .min{color:var(--ink-soft);}
 .fday .p{margin-top:.3rem;font-size:.72rem;color:var(--sky);}
 
+.hourly-head{font-size:.78rem;color:var(--ink-soft);margin:1.3rem 0 .5rem;}
+.hourly-strip{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.4rem;}
+.hour-tile{flex:0 0 auto;width:46px;display:flex;flex-direction:column;align-items:center;gap:.3rem;}
+.hour-tile .h{font-size:.7rem;color:var(--ink-soft);font-family:ui-monospace,monospace;}
+.hour-tile.now .h{color:var(--spruce);font-weight:700;}
+.hour-tile .icon{font-size:.95rem;}
+.hour-tile .bar-wrap{height:64px;display:flex;align-items:flex-end;}
+.hour-tile .bar{width:9px;border-radius:4px;background:var(--gold);min-height:4px;}
+.hour-tile.now .bar{background:var(--spruce);}
+.hour-tile.night .bar{opacity:.55;}
+.hour-tile .t{font-family:ui-monospace,monospace;font-size:.74rem;font-weight:600;}
+
+.garden-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.garden-item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1rem 1.1rem;}
+.garden-item .gi-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;}
+.garden-item .gi-icon{width:1.1rem;height:1.1rem;color:var(--spruce);flex:0 0 auto;}
+.garden-item .gi-title{font-weight:600;font-size:.9rem;flex:1;}
+.garden-item .gi-text{font-size:.83rem;color:var(--ink-soft);line-height:1.5;margin-top:.5rem;}
+
 /* air quality scale */
 .aqi-card{padding:1.3rem 1.4rem;}
 .aqi-top{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:1.1rem;}
@@ -292,6 +311,21 @@ footer a{text-decoration:underline;}
       <div class="card skel"><div class="k">Srážky teď</div><div class="v">—</div><div class="sub">načítám…</div></div>
     </div>
     <div class="forecast" id="forecastRow" style="margin-top:1rem;"></div>
+    <div class="hourly-head">Dnes po hodinách</div>
+    <div class="hourly-strip" id="hourlyStrip"><div class="sub">načítám…</div></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V10"/><path d="M12 10C12 6 9.5 4 5.5 4c0 4 2 7 6.5 6Z"/><path d="M12 10c0-3 2-5 6-5 0 3-2 6-6 5Z"/></svg>
+        <h2>Zahrada teď</h2>
+      </div>
+      <span class="tag live"><span class="dot"></span>živě · odvozeno z počasí</span>
+    </div>
+    <div class="garden-grid" id="gardenCard">
+      <div class="garden-item"><div class="gi-top"><span class="gi-title">načítám…</span></div></div>
+    </div>
   </section>
 
   <section class="section">
@@ -454,23 +488,107 @@ const BEAUFORT = [
 ];
 function beaufortFor(kmh){ return BEAUFORT.find(b => kmh <= b.max); }
 
+// Ikony pro karty zahradních tipů (jen vnitřek <svg>, viz section-icon).
+const MOW_ICON = '<circle cx="6" cy="6" r="2.3"/><circle cx="6" cy="18" r="2.3"/><path d="M8 7.5 19 18M19 6 8 16.5"/>';
+const WATER_ICON = '<rect x="3" y="10" width="9" height="7" rx="1.3"/><path d="M6 10c0-2 1-3 2.5-3s2.5 1 2.5 3"/><path d="M12 12l6-2.5-1.3 2.5H15"/><path d="M14.5 15l1 2M17 14l1 2"/>';
+const FROST_ICON = '<path d="M12 2v20M4.5 6l15 12M19.5 6l-15 12"/>';
+
+// Odvozené tipy pro zahradu — obecně uznávaná zahradnická praxe (ne
+// vymyšlené odhady): tráva se neseká mokrá (rosa/déšť) ani ve velkém vedru,
+// zalévá se nejlíp brzy ráno kvůli menšímu výparu a nižšímu riziku hub,
+// mráz hrozí, když noční minimum klesne k 0 °C.
+function gardenTips(c, hourly, startIdx){
+  const nowHour = new Date().getHours();
+
+  const justRained = c.precipitation > 0.1 || (hourly.precipitation[Math.max(0, startIdx - 1)] ?? 0) > 0.1;
+  const dewLikely = nowHour >= 4 && nowHour <= 9 && c.relative_humidity_2m >= 88;
+  let mow;
+  if (justRained){
+    mow = {level:'danger', title:'Teď ne', text:'Prší nebo nedávno pršelo — mokrá tráva se hůř seká a shluky ucpávají sekačku.'};
+  } else if (dewLikely){
+    mow = {level:'warn', title:'Ještě chvíli počkej', text:'Brzy ráno bývá tráva vlhká od rosy. Počkej, až kolem 9–10 h oschne.'};
+  } else if (c.temperature_2m >= 28){
+    mow = {level:'warn', title:'Radši ne teď', text:'Ve vedru nad 28 °C sekání trávu víc stresuje a rychle vysychá. Zkus brzy ráno nebo podvečer.'};
+  } else {
+    mow = {level:'good', title:'Dobrý čas', text:'Sucho a mírná teplota — vhodné podmínky na sekání.'};
+  }
+
+  const nextProb = hourly.precipitation_probability.slice(startIdx, startIdx + 6);
+  const rainSoon = justRained || (nextProb.length > 0 && Math.max(...nextProb) >= 60);
+  let water;
+  if (rainSoon){
+    water = {level:'good', title:'Není potřeba', text:'Prší, nebo v nejbližších hodinách má podle předpovědi pršet — zalévání teď vynech.'};
+  } else if (nowHour >= 5 && nowHour < 9){
+    water = {level:'good', title:'Teď je ideální čas', text:'Ráno je nejmenší výpar a tráva do večera oschne — nižší riziko houbových chorob.'};
+  } else if (nowHour >= 11 && nowHour < 17){
+    water = {level:'warn', title:'Radši počkej', text:'V poledne a odpoledne se voda hodně odpaří, než se dostane ke kořenům. Zalévej brzy ráno, nebo až podvečer.'};
+  } else {
+    water = {level:'warn', title:'Jde to, ale…', text:'Funguje to, ale tráva zůstane přes noc mokrá, což zvyšuje riziko houbových chorob. Ideální je spíš brzy ráno.'};
+  }
+
+  const nextTemps = hourly.temperature_2m.slice(startIdx, startIdx + 15);
+  const minNext = nextTemps.length > 0 ? Math.min(...nextTemps) : c.temperature_2m;
+  const minNextStr = minNext.toFixed(1).replace('.', ',');
+  let frost;
+  if (minNext <= 0){
+    frost = {level:'danger', title:'Hrozí mráz', text:`Do rána klesne teplota až na ${minNextStr} °C — přikryj citlivé rostliny nebo je přenes dovnitř.`};
+  } else if (minNext <= 3){
+    frost = {level:'warn', title:'Může být chladno', text:`Nejnižší teplota do rána ${minNextStr} °C — u citlivějších rostlin buď radši opatrný.`};
+  } else {
+    frost = {level:'good', title:'Bez rizika mrazu', text:`Do rána neklesne teplota pod ${minNextStr} °C.`};
+  }
+
+  return [
+    {icon: MOW_ICON, label:'Sekání trávy', ...mow},
+    {icon: WATER_ICON, label:'Zalévání trávníku', ...water},
+    {icon: FROST_ICON, label:'Riziko mrazu', ...frost},
+  ];
+}
+
+function renderGardenTips(c, hourly, startIdx){
+  return gardenTips(c, hourly, startIdx).map(it => `
+    <div class="garden-item">
+      <div class="gi-top">
+        <svg class="gi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${it.icon}</svg>
+        <span class="gi-title">${it.label}</span>
+      </div>
+      <div class="takeaway ${it.level}">${it.title}</div>
+      <div class="gi-text">${it.text}</div>
+    </div>
+  `).join('');
+}
+
 async function loadWeather(){
+  let data;
   try{
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=5`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=5`;
     const res = await fetch(url);
-    const data = await res.json();
-    const c = data.current;
+    data = await res.json();
+  }catch(e){
+    const msg = `Počasí se nepodařilo načíst (${e.message}). Zkus obnovit stránku.`;
+    document.getElementById('weatherCards').innerHTML = `<div class="soon-card">${msg}</div>`;
+    document.getElementById('hourlyStrip').innerHTML = `<div class="sub">Nepodařilo se načíst.</div>`;
+    document.getElementById('gardenCard').innerHTML = `<div class="garden-item"><div class="gi-text">Nepodařilo se načíst podklady z počasí.</div></div>`;
+    return;
+  }
+
+  const c = data.current;
+
+  try{
     const wmo = WMO[c.weather_code] || ['—','·'];
     const hBand = humidityBand(Math.round(c.relative_humidity_2m));
     const wBand = beaufortFor(c.wind_speed_10m);
-
     document.getElementById('weatherCards').innerHTML = `
       <div class="card"><div class="k">Teplota</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">pocitově ${c.apparent_temperature.toFixed(1)} °C</div></div>
       <div class="card"><div class="k">Vlhkost</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div><div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div></div>
       <div class="card"><div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div><div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h</div><div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force}° Bft · ${wBand.name}</div></div>
       <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">${wmo[0]}</div></div>
     `;
+  }catch(e){
+    document.getElementById('weatherCards').innerHTML = `<div class="soon-card">Počasí se nepodařilo zobrazit (${e.message}).</div>`;
+  }
 
+  try{
     const days = data.daily.time;
     const rows = days.map((iso, i) => {
       const d = new Date(iso + 'T12:00:00');
@@ -485,7 +603,49 @@ async function loadWeather(){
     }).join('');
     document.getElementById('forecastRow').innerHTML = rows;
   }catch(e){
-    document.getElementById('weatherCards').innerHTML = `<div class="soon-card">Počasí se nepodařilo načíst (${e.message}). Zkus obnovit stránku.</div>`;
+    document.getElementById('forecastRow').innerHTML = `<div class="sub">Předpověď na dny se nepodařilo zobrazit.</div>`;
+  }
+
+  // Index první hodiny v hourly poli, která ještě nenastala — od ní se
+  // počítá jak hodinový pruh, tak zahradní tipy (rosa/déšť teď, výhled
+  // do noci na mráz).
+  let startIdx = 0;
+  try{
+    const now = new Date();
+    const times = data.hourly.time.map(t => new Date(t));
+    startIdx = times.findIndex(t => t >= now);
+    if (startIdx === -1) startIdx = Math.max(0, times.length - 1);
+  }catch(e){ startIdx = 0; }
+
+  try{
+    const H = data.hourly;
+    const hrs = [];
+    for (let i = startIdx; i < Math.min(startIdx + 16, H.time.length); i++){
+      hrs.push({ time: new Date(H.time[i]), temp: H.temperature_2m[i], code: H.weather_code[i], isDay: H.is_day[i] });
+    }
+    const temps = hrs.map(h => h.temp);
+    const min = Math.min(...temps), max = Math.max(...temps);
+    const range = Math.max(max - min, 2);
+    const tiles = hrs.map((h, i) => {
+      const pct = Math.max(6, Math.round(((h.temp - min) / range) * 100));
+      const w = WMO[h.code] || ['—','·'];
+      const label = i === 0 ? 'teď' : String(h.time.getHours()).padStart(2, '0') + 'h';
+      return `<div class="hour-tile${i === 0 ? ' now' : ''}${h.isDay === 0 ? ' night' : ''}">
+        <div class="h">${label}</div>
+        <div class="icon">${w[1]}</div>
+        <div class="bar-wrap"><div class="bar" style="height:${pct}%;"></div></div>
+        <div class="t">${Math.round(h.temp)}°</div>
+      </div>`;
+    }).join('');
+    document.getElementById('hourlyStrip').innerHTML = tiles;
+  }catch(e){
+    document.getElementById('hourlyStrip').innerHTML = `<div class="sub">Hodinový průběh se nepodařilo zobrazit.</div>`;
+  }
+
+  try{
+    document.getElementById('gardenCard').innerHTML = renderGardenTips(c, data.hourly, startIdx);
+  }catch(e){
+    document.getElementById('gardenCard').innerHTML = `<div class="garden-item"><div class="gi-text">Tipy pro zahradu se nepodařilo vyhodnotit.</div></div>`;
   }
 }
 
