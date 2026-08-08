@@ -76,7 +76,7 @@ appku napojit na čtení `data/traffic.json` místo textu "připravujeme".
 - **Aktualizace:** `.github/workflows/update-water.yml`, každých 15 minut
   — ČHMÚ tahle data sám aktualizuje každých 10 minut, takže dřívější
   ručně vkládaný snímek nikdy nebyl dostatečně čerstvý pro appku jménem
-  "Zlonice teď"
+  "Ve Zlonicích"
 - **Prahové hodnoty** (sucho/1./2./3. stupeň povodňové aktivity) se čtou
   živě z metadat stanice při každém běhu, ne natvrdo v kódu — kdyby je
   ČHMÚ někdy upravil
