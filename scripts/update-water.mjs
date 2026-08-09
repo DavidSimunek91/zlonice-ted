@@ -55,6 +55,16 @@ async function main(){
       spa2: meta_.SPA2H,
       spa3: meta_.SPA3H,
     },
+    // Stejné stupně sucha/povodňové aktivity, ale v jednotkách průtoku
+    // (m³/s) — ČHMÚ je pro tuhle stanici vede paralelně k těm výškovým,
+    // takže i "Průtok" v appce může mít vlastní interpretaci (dřív měl
+    // jen holé číslo bez kontextu).
+    thresholdsFlow: {
+      dry: Number(meta_.DRYQ),
+      spa1: Number(meta_.SPA1Q),
+      spa2: Number(meta_.SPA2Q),
+      spa3: Number(meta_.SPA3Q),
+    },
     level: latest('H'),
     flow: latest('Q'),
     temperature: latest('TH'),
