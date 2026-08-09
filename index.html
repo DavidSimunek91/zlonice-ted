@@ -153,23 +153,13 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .hour-tile.night .bar{opacity:.55;}
 .hour-tile .t{font-family:ui-monospace,monospace;font-size:.74rem;font-weight:600;}
 
-.garden-list{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.2rem 1rem;}
-.garden-row{display:grid;grid-template-columns:1.15rem 10.5rem 8.6rem 1fr;align-items:center;gap:.7rem;padding:.6rem 0;border-bottom:1px dashed var(--line);}
-.garden-row:last-child{border-bottom:none;}
-.garden-row .gi-icon{width:1.05rem;height:1.05rem;color:var(--spruce);flex:0 0 auto;}
-.garden-row .gr-label{font-weight:600;font-size:.84rem;}
-.garden-row .gr-badge{display:inline-flex;align-items:center;font-size:.68rem;font-family:ui-monospace,monospace;padding:.16rem .5rem;border-radius:999px;white-space:nowrap;justify-self:start;}
-.garden-row .gr-badge.good{background:var(--good-soft);color:var(--good);}
-.garden-row .gr-badge.warn{background:var(--warn-soft);color:var(--warn);}
-.garden-row .gr-badge.danger{background:var(--danger-soft);color:var(--danger);}
-.garden-row .gr-text{font-size:.78rem;color:var(--ink-soft);line-height:1.4;}
-@media (max-width:760px){
-  .garden-row{grid-template-columns:1.15rem 1fr auto;grid-template-areas:"icon label badge" "text text text";row-gap:.3rem;}
-  .garden-row .gi-icon{grid-area:icon;}
-  .garden-row .gr-label{grid-area:label;}
-  .garden-row .gr-badge{grid-area:badge;}
-  .garden-row .gr-text{grid-area:text;}
-}
+.today-tips{display:flex;flex-wrap:wrap;gap:.5rem 1.3rem;margin-top:1rem;padding-top:.9rem;border-top:1px dashed var(--line);}
+.today-tip{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--ink-soft);}
+.today-tip svg{width:1rem;height:1rem;flex:0 0 auto;}
+.today-tip.good svg{color:var(--good);}
+.today-tip.warn svg{color:var(--warn);}
+.today-tip.danger svg{color:var(--danger);}
+.today-tip b{color:var(--ink);font-weight:600;}
 
 /* air quality scale */
 .aqi-card{padding:1.3rem 1.4rem;}
@@ -183,9 +173,11 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .scale-marker{position:absolute;top:-5px;width:2px;height:24px;background:var(--ink);}
 .scale-marker::after{content:'';position:absolute;top:-6px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--ink);}
 .scale-ticks{display:flex;justify-content:space-between;font-size:.66rem;color:var(--ink-soft);font-family:ui-monospace,monospace;margin-bottom:1rem;}
-.aqi-metrics{display:flex;gap:1.4rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.9rem;}
-.aqi-metrics div{font-size:.82rem;color:var(--ink-soft);}
-.aqi-metrics b{display:block;font-family:ui-monospace,monospace;color:var(--ink);font-size:1rem;}
+.aqi-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.1rem;border-top:1px dashed var(--line);padding-top:1rem;}
+.aqi-metric .lbl{font-size:.78rem;color:var(--ink-soft);}
+.aqi-metric b{display:block;font-family:ui-monospace,monospace;color:var(--ink);font-size:1.1rem;margin:.15rem 0 .45rem;}
+.aqi-metric b small{font-size:.7rem;color:var(--ink-soft);margin-left:.15rem;}
+.aqi-metric p{margin:.45rem 0 0;font-size:.78rem;color:var(--ink-soft);line-height:1.45;}
 
 /* water */
 .water-card{padding:1.3rem 1.4rem;}
@@ -328,19 +320,7 @@ footer a{text-decoration:underline;}
     <div class="forecast" id="forecastRow" style="margin-top:1rem;"></div>
     <div class="hourly-head">Dnes po hodinách</div>
     <div class="hourly-strip" id="hourlyStrip"><div class="sub">načítám…</div></div>
-  </section>
-
-  <section class="section">
-    <div class="section-head">
-      <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V10"/><path d="M12 10C12 6 9.5 4 5.5 4c0 4 2 7 6.5 6Z"/><path d="M12 10c0-3 2-5 6-5 0 3-2 6-6 5Z"/></svg>
-        <h2>Zahrada teď</h2>
-      </div>
-      <span class="tag live"><span class="dot"></span>živě · odvozeno z počasí</span>
-    </div>
-    <div class="garden-list" id="gardenCard">
-      <div class="garden-row"><span class="gr-label">načítám…</span></div>
-    </div>
+    <div class="today-tips" id="todayTips"></div>
   </section>
 
   <section class="section">
@@ -397,7 +377,10 @@ footer a{text-decoration:underline;}
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg>
         <h2>Autobus</h2>
       </div>
-      <span class="tag snapshot"><span class="dot"></span>jízdní řád PID · aktualizace denně</span>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <span class="tag snapshot"><span class="dot"></span>jízdní řád · denně</span>
+        <span class="tag live"><span class="dot"></span>zpoždění živě · Golemio</span>
+      </div>
     </div>
     <div class="card dep-card" id="depCard">
       <div class="dep-top">
@@ -503,138 +486,67 @@ const BEAUFORT = [
 ];
 function beaufortFor(kmh){ return BEAUFORT.find(b => kmh <= b.max); }
 
-// Ikony pro karty zahradních tipů (jen vnitřek <svg>, viz section-icon).
+// Ikony pro krátké "kdy je dobré co dělat" odznaky pod hodinovým počasím
+// (jen vnitřek <svg>, viz section-icon).
 const MOW_ICON = '<circle cx="6" cy="6" r="2.3"/><circle cx="6" cy="18" r="2.3"/><path d="M8 7.5 19 18M19 6 8 16.5"/>';
 const WATER_ICON = '<rect x="3" y="10" width="9" height="7" rx="1.3"/><path d="M6 10c0-2 1-3 2.5-3s2.5 1 2.5 3"/><path d="M12 12l6-2.5-1.3 2.5H15"/><path d="M14.5 15l1 2M17 14l1 2"/>';
-const FLOWER_ICON = '<circle cx="12" cy="7" r="2.4"/><circle cx="7.5" cy="10" r="2.4"/><circle cx="16.5" cy="10" r="2.4"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M12 13.5V21"/>';
-const FERTILIZE_ICON = '<path d="M4 19h16"/><circle cx="7" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="17" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="13" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1" fill="currentColor" stroke="none"/>';
 const SPRAY_ICON = '<rect x="9" y="10" width="6" height="10" rx="1.3"/><path d="M11 10V7a2 2 0 0 1 2-2h1"/><path d="M16 6l3-1M16 8l3 1M16 4.5l2.5-2"/>';
-const PLANT_ICON = '<path d="M8 6l4-3 4 3"/><path d="M12 3v10"/><path d="M9 13a3 3 0 0 0 6 0"/><path d="M12 13v8"/>';
 const FROST_ICON = '<path d="M12 2v20M4.5 6l15 12M19.5 6l-15 12"/>';
 
-// Odvozené tipy pro zahradu — podložené zdroji, ne jen odhadem:
-// - zalévání trávníku: ráno 5–9 h nejlepší (nejmenší výpar, tráva do
-//   večera oschne), 11–17 h se nikdy nedoporučuje (kapky na stéblech
-//   fungují jako lupa) a večer se navzdory rozšířenému mýtu taky
-//   nedoporučuje — mokrá tráva přes noc je živná půda pro plísně.
-//   [ireceptar.cz, lawndoctor.com, ask.extension.org]
-// - zalévání záhonů/květin: stejné ranní okno je nejlepší, večer je
-//   "druhá nejlepší volba s háčkem" — jen k zemi, ne na listy (plísně,
-//   slimáci); přes poledne hrozí spálení listů. [tiscali.cz/zpravy]
-// - postřik proti škůdcům: v ČR je aplikace na kvetoucí rostliny ze
-//   zákona omezená na dobu po skončení denního letu včel do 23 h.
-//   [Národní akční plán k bezpečnému používání pesticidů v ČR, MŽP]
-// - hnojení: chladnější část dne (ráno nebo podvečer), nikdy v plném
-//   poledním slunci (spálení). [hobbio.cz, dumazahrada.cz]
-// - sázení/přesazování a mráz: obecná zahradnická praxe.
-function gardenTips(c, hourly, startIdx){
-  const nowHour = new Date().getHours();
-
-  const justRained = c.precipitation > 0.1 || (hourly.precipitation[Math.max(0, startIdx - 1)] ?? 0) > 0.1;
-  const dewLikely = nowHour >= 4 && nowHour <= 9 && c.relative_humidity_2m >= 88;
-  const nextProb = hourly.precipitation_probability.slice(startIdx, startIdx + 6);
-  const rainSoon = justRained || (nextProb.length > 0 && Math.max(...nextProb) >= 60);
-  const morning = nowHour >= 5 && nowHour < 9;
-  const middayHeat = nowHour >= 11 && nowHour < 17;
-
-  let mow;
-  if (justRained){
-    mow = {level:'danger', title:'Teď ne', text:'Prší nebo nedávno pršelo — mokrá tráva se hůř seká a shluky ucpávají sekačku.'};
-  } else if (dewLikely){
-    mow = {level:'warn', title:'Ještě chvíli počkej', text:'Brzy ráno bývá tráva vlhká od rosy. Počkej, až kolem 9–10 h oschne.'};
-  } else if (c.temperature_2m >= 28){
-    mow = {level:'warn', title:'Radši ne teď', text:'Ve vedru nad 28 °C sekání trávu víc stresuje a rychle vysychá. Zkus brzy ráno nebo podvečer.'};
-  } else {
-    mow = {level:'good', title:'Dobrý čas', text:'Sucho a mírná teplota — vhodné podmínky na sekání.'};
+// Kdy je dnes dobré zalévat/sekat/postřikovat — místo samostatné "Zahrada"
+// sekce jen tři krátké odznaky přímo pod hodinovým počasím, se kterým jsou
+// svázané (odpovídají na "v kterou hodinu"). Podklady stejné jako dřív:
+// zalévání ráno 5–9 h (nejmenší výpar), nikdy 10–17 h (kapky = lupa), večer
+// se u trávníku nedoporučuje (plísně) [ireceptar.cz, lawndoctor.com];
+// sekání ne za rosy/deště ani ve vedru nad 28 °C; postřik na kvetoucí
+// rostliny má u nás zákonné okno 19–23 h (po letu včel)
+// [Národní akční plán k bezpečnému používání pesticidů v ČR, MŽP].
+function hourHasRain(H, idx){
+  return (H.precipitation[idx] ?? 0) > 0.1 || (H.precipitation_probability[idx] ?? 0) >= 60;
+}
+function hourGoodForWater(H, idx){
+  if (hourHasRain(H, idx)) return false;
+  const hr = new Date(H.time[idx]).getHours();
+  return hr >= 5 && hr < 9;
+}
+function hourGoodForMow(H, idx){
+  if ((H.precipitation[idx] ?? 0) > 0.1) return false;
+  const hr = new Date(H.time[idx]).getHours();
+  if (hr >= 4 && hr <= 9 && (H.relative_humidity_2m[idx] ?? 0) >= 88) return false; // rosa
+  if ((H.temperature_2m[idx] ?? 0) >= 28) return false;
+  return true;
+}
+function hourGoodForSpray(H, idx){
+  if (hourHasRain(H, idx)) return false;
+  const hr = new Date(H.time[idx]).getHours();
+  return hr >= 19 && hr < 23;
+}
+function nextGoodWindow(H, startIdx, predicate){
+  if (predicate(H, startIdx)) return {when:'teď', level:'good'};
+  for (let i = 1; i < Math.min(30, H.time.length - startIdx); i++){
+    if (predicate(H, startIdx + i)){
+      const t = new Date(H.time[startIdx + i]);
+      return {when:`od ${String(t.getHours()).padStart(2,'0')}:00`, level:'warn'};
+    }
   }
-
-  let water;
-  if (rainSoon){
-    water = {level:'good', title:'Není potřeba', text:'Prší, nebo v nejbližších hodinách má podle předpovědi pršet — zalévání teď vynech.'};
-  } else if (morning){
-    water = {level:'good', title:'Teď je ideální čas', text:'Mezi 5. a 9. hodinou je nejmenší výpar a tráva do večera bezpečně oschne.'};
-  } else if (middayHeat){
-    water = {level:'danger', title:'Nikdy teď', text:'Mezi 11. a 17. hodinou fungují kapky na stéblech jako lupa a slunce trávu spálí. Většina vody navíc jen vyprchá.'};
-  } else {
-    water = {level:'warn', title:'Radši ne', text:'Odborníci zalévání trávníku večer nedoporučují — tráva zůstane přes noc mokrá, což je živná půda pro plísně. Počkej na ráno.'};
-  }
-
-  let flowers;
-  if (rainSoon){
-    flowers = {level:'good', title:'Není potřeba', text:'Prší, nebo brzy zaprší — záhony a květiny teď nezalévej.'};
-  } else if (morning){
-    flowers = {level:'good', title:'Teď je ideální čas', text:'Zalévej u kořenů, ne na listy. Voda se dostane hluboko ke kořenům dřív, než ji slunce vysuší.'};
-  } else if (middayHeat && c.temperature_2m >= 22){
-    flowers = {level:'danger', title:'Počkej do večera', text:'V plném poledním slunci fungují kapky na listech jako malé čočky a mohou je spálit. Počkej na podvečer, a i pak jen k zemi.'};
-  } else {
-    flowers = {level:'warn', title:'Jde to, s výhradou', text:'Večer je druhá nejlepší volba, ale zalévej opravdu jen u kořenů — mokré listí přes noc láká plísně i slimáky.'};
-  }
-
-  let fertilize;
-  if (rainSoon){
-    fertilize = {level:'warn', title:'Počkej', text:'Brzy má pršet — hnojivo by se hned vyplavilo, aniž by zabralo. Přihnoj až po dešti.'};
-  } else if (c.temperature_2m >= 28){
-    fertilize = {level:'danger', title:'Radši ne teď', text:'Ve vedru hrozí spálení kořenů, hlavně u minerálních hnojiv. Přihnojuj v chladnější části dne.'};
-  } else if (morning || (nowHour >= 18 && nowHour < 21)){
-    fertilize = {level:'good', title:'Dobrý čas', text:'Chladnější část dne a půda bývá vlhčí — hnojivo se lépe vstřebe. Před i po hnojení dobře zalij.'};
-  } else {
-    fertilize = {level:'warn', title:'Jde to, ale…', text:'Funguje to, ale nejdřív dobře zalij, ať hnojivo nespálí kořeny v suché půdě.'};
-  }
-
-  let spray;
-  if (rainSoon){
-    spray = {level:'warn', title:'Počkej', text:'Brzy má pršet — postřik by se hned smyl, dřív než zabere.'};
-  } else if (c.wind_speed_10m >= 20){
-    spray = {level:'warn', title:'Moc fouká', text:'Při silnějším větru se postřik snáší mimo rostliny. Počkej na klidnější počasí.'};
-  } else if (nowHour >= 19 && nowHour < 23){
-    spray = {level:'good', title:'Dobrý čas', text:'Včely už nelétají — na kvetoucí rostliny je u nás postřik ze zákona povolený jen v tomhle okně, do 23 h.'};
-  } else if (nowHour >= 23 || nowHour < 6){
-    spray = {level:'good', title:'Jde to', text:'V noci včely nelétají, ale zvaž, jestli postřik nepočká na zítřejší večer — bez slunce má víc času zabrat.'};
-  } else {
-    spray = {level:'warn', title:'Počkej do večera', text:'Přes den jsou aktivní včely a jiní opylovači a postřik na slunci rychle uschne. Zákonné okno je po jejich denním letu, do 23 h.'};
-  }
-
-  let plant;
-  if (c.temperature_2m >= 27){
-    plant = {level:'danger', title:'Radši ne teď', text:'Ve vedru přesazené rostliny rychle vadnou, kořeny se ještě neuchytily. Počkej na chladnější chvíli.'};
-  } else if (morning || nowHour >= 17){
-    plant = {level:'good', title:'Dobrý čas', text:'Chladnější část dne — sazenice se lépe uchytí a míň vadnou. Po zasazení pořádně zalij.'};
-  } else {
-    plant = {level:'warn', title:'Jde to, ale…', text:'Přes den v plném slunci čerstvě zasazené rostliny spíš zastiň, nebo víc zalévej.'};
-  }
-
-  const nextTemps = hourly.temperature_2m.slice(startIdx, startIdx + 15);
-  const minNext = nextTemps.length > 0 ? Math.min(...nextTemps) : c.temperature_2m;
-  const minNextStr = minNext.toFixed(1).replace('.', ',');
-  let frost;
-  if (minNext <= 0){
-    frost = {level:'danger', title:'Hrozí mráz', text:`Do rána klesne teplota až na ${minNextStr} °C — přikryj citlivé rostliny nebo je přenes dovnitř.`};
-  } else if (minNext <= 3){
-    frost = {level:'warn', title:'Může být chladno', text:`Nejnižší teplota do rána ${minNextStr} °C — u citlivějších rostlin buď radši opatrný.`};
-  } else {
-    frost = {level:'good', title:'Bez rizika mrazu', text:`Do rána neklesne teplota pod ${minNextStr} °C.`};
-  }
-
-  return [
-    {icon: MOW_ICON, label:'Sekání trávy', ...mow},
-    {icon: WATER_ICON, label:'Zalévání trávníku', ...water},
-    {icon: FLOWER_ICON, label:'Zalévání záhonů a květin', ...flowers},
-    {icon: FERTILIZE_ICON, label:'Přihnojování', ...fertilize},
-    {icon: SPRAY_ICON, label:'Ochrana rostlin (postřik)', ...spray},
-    {icon: PLANT_ICON, label:'Sázení a přesazování', ...plant},
-    {icon: FROST_ICON, label:'Riziko mrazu', ...frost},
-  ];
+  return {when:'dnes už ne', level:'warn'};
 }
 
-function renderGardenTips(c, hourly, startIdx){
-  return gardenTips(c, hourly, startIdx).map(it => `
-    <div class="garden-row">
-      <svg class="gi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${it.icon}</svg>
-      <span class="gr-label">${it.label}</span>
-      <span class="gr-badge ${it.level}">${it.title}</span>
-      <span class="gr-text">${it.text}</span>
-    </div>
-  `).join('');
+function renderTodayTips(c, hourly, startIdx){
+  const chips = [
+    {icon: WATER_ICON, label:'Zalévání', ...nextGoodWindow(hourly, startIdx, hourGoodForWater)},
+    {icon: MOW_ICON, label:'Sekání', ...nextGoodWindow(hourly, startIdx, hourGoodForMow)},
+    {icon: SPRAY_ICON, label:'Postřik', ...nextGoodWindow(hourly, startIdx, hourGoodForSpray)},
+  ];
+
+  // Mráz jen když je to relevantní (jinak by odznak skoro pořád jen zabíral místo).
+  const nextTemps = hourly.temperature_2m.slice(startIdx, startIdx + 15);
+  const minNext = nextTemps.length > 0 ? Math.min(...nextTemps) : c.temperature_2m;
+  if (minNext <= 3){
+    chips.push({icon: FROST_ICON, label:'Mráz', when: minNext <= 0 ? 'hrozí do rána' : 'možný do rána', level: minNext <= 0 ? 'danger' : 'warn'});
+  }
+
+  return chips.map(ch => `<span class="today-tip ${ch.level}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ch.icon}</svg>${ch.label}: <b>${ch.when}</b></span>`).join('');
 }
 
 async function loadWeather(){
@@ -647,7 +559,7 @@ async function loadWeather(){
     const msg = `Počasí se nepodařilo načíst (${e.message}). Zkus obnovit stránku.`;
     document.getElementById('weatherCards').innerHTML = `<div class="soon-card">${msg}</div>`;
     document.getElementById('hourlyStrip').innerHTML = `<div class="sub">Nepodařilo se načíst.</div>`;
-    document.getElementById('gardenCard').innerHTML = `<div class="garden-row"><span class="gr-text">Nepodařilo se načíst podklady z počasí.</span></div>`;
+    document.getElementById('todayTips').innerHTML = '';
     return;
   }
 
@@ -686,8 +598,7 @@ async function loadWeather(){
   }
 
   // Index první hodiny v hourly poli, která ještě nenastala — od ní se
-  // počítá jak hodinový pruh, tak zahradní tipy (rosa/déšť teď, výhled
-  // do noci na mráz).
+  // počítá jak hodinový pruh, tak odznaky "kdy je dobré co dělat" pod ním.
   let startIdx = 0;
   try{
     const now = new Date();
@@ -722,9 +633,9 @@ async function loadWeather(){
   }
 
   try{
-    document.getElementById('gardenCard').innerHTML = renderGardenTips(c, data.hourly, startIdx);
+    document.getElementById('todayTips').innerHTML = renderTodayTips(c, data.hourly, startIdx);
   }catch(e){
-    document.getElementById('gardenCard').innerHTML = `<div class="garden-row"><span class="gr-text">Tipy pro zahradu se nepodařilo vyhodnotit.</span></div>`;
+    document.getElementById('todayTips').innerHTML = '';
   }
 }
 
@@ -738,25 +649,51 @@ const EAQI_BANDS = [
 ];
 function bandFor(v){ return EAQI_BANDS.find(b => v <= b.max); }
 
+// Jemné částice PM2,5 — orientační pásma vůči doporučením WHO z r. 2021
+// (roční průměr 5 µg/m³, 24h průměr 15 µg/m³) a ročnímu imisnímu limitu EU
+// (25 µg/m³). Appka ukazuje okamžitou hodnotu, ne průměr přes den/rok, takže
+// je to vodítko, ne přesný právní stav — proto jsou pásma popsaná slovně
+// ("co pro mě znamená"), ne jen jako čísla vůči limitu.
+// Zdroj: WHO Global Air Quality Guidelines 2021.
+const PM25_BANDS = [
+  {max:5, name:'Velmi nízká', level:'good', desc:'Pod ročním doporučením WHO (5 µg/m³) — vzduch prakticky bez jemných částic.'},
+  {max:15, name:'Nízká', level:'good', desc:'Pod 24hodinovým doporučením WHO (15 µg/m³) — bez dopadu na zdravé lidi.'},
+  {max:25, name:'Mírně zvýšená', level:'good', desc:'Nad doporučením WHO, ale pod ročním limitem EU (25 µg/m³) — většina lidí nic nepozná, citlivější mohou při delší zátěži pocítit podráždění.'},
+  {max:50, name:'Zvýšená', level:'warn', desc:'Citelně zvýšená úroveň — omezte delší intenzivní pohyb venku, hlavně děti, senioři a astmatici.'},
+  {max:Infinity, name:'Vysoká', level:'danger', desc:'Vysoké znečištění jemnými částicemi — omezte pobyt venku, zvlášť fyzickou zátěž.'},
+];
+function bandForPM25(v){ return PM25_BANDS.find(b => v <= b.max); }
+
+// Hrubší prachové částice PM10 — WHO 2021 (roční 15 µg/m³, 24h 45 µg/m³) a
+// denní imisní limit EU (50 µg/m³).
+const PM10_BANDS = [
+  {max:15, name:'Velmi nízká', level:'good', desc:'Pod ročním doporučením WHO (15 µg/m³).'},
+  {max:45, name:'Nízká', level:'good', desc:'Pod 24hodinovým doporučením WHO (45 µg/m³) — bez dopadu na zdravé lidi.'},
+  {max:50, name:'Mírně zvýšená', level:'good', desc:'Blízko dennímu limitu EU (50 µg/m³), citlivější lidé mohou při zátěži pocítit mírné podráždění.'},
+  {max:100, name:'Zvýšená', level:'warn', desc:'Nad denním limitem EU — omezte delší pobyt venku při fyzické zátěži.'},
+  {max:Infinity, name:'Vysoká', level:'danger', desc:'Vysoká úroveň prachových částic — omezte pobyt venku.'},
+];
+function bandForPM10(v){ return PM10_BANDS.find(b => v <= b.max); }
+
 // Ozon (přízemní O3) — orientační pásma vůči doporučení WHO (8h průměr 100 µg/m³)
 // a evropskému imisnímu limitu (120 µg/m³). Appka ukazuje okamžitou hodnotu,
 // ne 8h průměr, takže je to spíš vodítko než přesný právní stav.
 const O3_BANDS = [
-  {max:60, name:'Nízká', level:'good', desc:'Bez rizika, typická úroveň i mimo dopravní špičku.'},
-  {max:100, name:'Mírně zvýšená', level:'good', desc:'V normě, citlivější jedinci mohou při zátěži pocítit mírné podráždění.'},
-  {max:120, name:'Zvýšená', level:'warn', desc:'Blíží se doporučení WHO (100 µg/m³ za 8 h) — omezit náročnější aktivitu venku.'},
-  {max:180, name:'Vysoká', level:'warn', desc:'Nad evropským imisním limitem (120 µg/m³) — omezit déletrvající pobyt venku.'},
-  {max:Infinity, name:'Velmi vysoká', level:'danger', desc:'Zdravotní riziko i při krátkodobé zátěži venku.'},
+  {max:60, name:'Nízká', level:'good', desc:'Bez rizika, typická úroveň i mimo dopravní špičku. Nic neomezuj.'},
+  {max:100, name:'Mírně zvýšená', level:'good', desc:'Necítíš to a nic měnit nemusíš — jen lidé s astmatem nebo alergií mohou při náročnějším pohybu venku pocítit mírné podráždění dýchacích cest.'},
+  {max:120, name:'Zvýšená', level:'warn', desc:'Blíží se doporučení WHO (100 µg/m³ za 8 h) — u náročnější fyzické aktivity venku (běh, sport) zvaž přesun na ráno nebo večer, kdy bývá ozonu míň.'},
+  {max:180, name:'Vysoká', level:'warn', desc:'Nad evropským imisním limitem (120 µg/m³) — omezit déletrvající pobyt venku, hlavně sportovní výkon.'},
+  {max:Infinity, name:'Velmi vysoká', level:'danger', desc:'Zdravotní riziko i při krátkodobé zátěži venku — omez pobyt venku na nutné minimum.'},
 ];
 function bandForO3(v){ return O3_BANDS.find(b => v <= b.max); }
 
 // Oxid dusičitý (NO2) — orientační pásma vůči hodinovému imisnímu limitu EU
 // (200 µg/m³). Hlavní zdroj je doprava, proto bývá vyšší u silnic.
 const NO2_BANDS = [
-  {max:40, name:'Nízká', level:'good', desc:'Typická úroveň, odpovídá i ročnímu imisnímu limitu EU.'},
-  {max:100, name:'Mírná', level:'good', desc:'Běžná úroveň u frekventovanějších silnic.'},
-  {max:200, name:'Zvýšená', level:'warn', desc:'Blíží se hodinovému imisnímu limitu EU (200 µg/m³).'},
-  {max:400, name:'Vysoká', level:'danger', desc:'Nad hodinovým imisním limitem EU — zvýšené riziko pro dýchací cesty.'},
+  {max:40, name:'Nízká', level:'good', desc:'Typická úroveň, odpovídá i ročnímu imisnímu limitu EU. Bez omezení.'},
+  {max:100, name:'Mírná', level:'good', desc:'Běžná úroveň u frekventovanějších silnic, bez zdravotního dopadu pro většinu lidí.'},
+  {max:200, name:'Zvýšená', level:'warn', desc:'Blíží se hodinovému imisnímu limitu EU (200 µg/m³) — citlivější lidé by měli omezit delší pobyt u frekventovaných silnic.'},
+  {max:400, name:'Vysoká', level:'danger', desc:'Nad hodinovým imisním limitem EU — zvýšené riziko pro dýchací cesty, omez pobyt u rušných silnic.'},
   {max:Infinity, name:'Velmi vysoká', level:'danger', desc:'Vážné krátkodobé zdravotní riziko.'},
 ];
 function bandForNO2(v){ return NO2_BANDS.find(b => v <= b.max); }
@@ -769,6 +706,8 @@ async function loadAirQuality(){
     const c = data.current;
     const eaqi = Math.round(c.european_aqi);
     const band = bandFor(eaqi);
+    const pm25Band = bandForPM25(c.pm2_5);
+    const pm10Band = bandForPM10(c.pm10);
     const o3Band = bandForO3(c.ozone);
     const no2Band = bandForNO2(c.nitrogen_dioxide);
 
@@ -777,12 +716,18 @@ async function loadAirQuality(){
     document.getElementById('aqiBand').textContent = band.name + ' — evropský index kvality ovzduší (EAQI)';
     document.getElementById('aqiDesc').textContent = band.desc;
     document.getElementById('aqiMarker').style.left = Math.min(100, eaqi) + '%';
-    document.getElementById('aqiMetrics').innerHTML = `
-      <div>PM2,5<b>${c.pm2_5.toFixed(1)} µg/m³</b></div>
-      <div>PM10<b>${c.pm10.toFixed(1)} µg/m³</b></div>
-      <div>Ozon<b>${c.ozone.toFixed(0)} µg/m³</b><div class="takeaway ${o3Band.level}" title="${o3Band.desc}">${o3Band.name}</div></div>
-      <div>NO₂<b>${c.nitrogen_dioxide.toFixed(1)} µg/m³</b><div class="takeaway ${no2Band.level}" title="${no2Band.desc}">${no2Band.name}</div></div>
-    `;
+    const metric = (label, value, unit, band) => `
+      <div class="aqi-metric">
+        <span class="lbl">${label}</span>
+        <b>${value}<small>${unit}</small></b>
+        <div class="takeaway ${band.level}">${band.name}</div>
+        <p>${band.desc}</p>
+      </div>`;
+    document.getElementById('aqiMetrics').innerHTML =
+      metric('PM2,5 — jemné částice', c.pm2_5.toFixed(1), ' µg/m³', pm25Band) +
+      metric('PM10 — prachové částice', c.pm10.toFixed(1), ' µg/m³', pm10Band) +
+      metric('Ozon (O₃)', c.ozone.toFixed(0), ' µg/m³', o3Band) +
+      metric('Oxid dusičitý (NO₂)', c.nitrogen_dioxide.toFixed(1), ' µg/m³', no2Band);
   }catch(e){
     document.getElementById('aqiCard').innerHTML = `<div class="soon-card">Kvalitu ovzduší se nepodařilo načíst (${e.message}).</div>`;
   }
@@ -1103,6 +1048,18 @@ const WATER_TEMP_BANDS = [
 ];
 function waterTempBand(c){ return WATER_TEMP_BANDS.find(b => c <= b.max); }
 
+// Průtok (Q) — stejné stupně sucha/povodňové aktivity jako u vodního stavu,
+// jen ČHMÚ je pro tuhle stanici vede paralelně i v m³/s (thresholdsFlow),
+// ne odhad. Bez toho by "Průtok" v appce byla holá čísla bez kontextu.
+function flowBand(flowM3s, th){
+  if (!th || !(th.dry > 0)) return null;
+  if (flowM3s < th.dry) return {name:'Sucho', level:'warn', desc:`Pod hranicí sucha ČHMÚ pro tuhle stanici (${(th.dry*1000).toFixed(0)} l/s) — tok je znatelně vyschlý.`};
+  if (flowM3s < th.spa1) return {name:'Normální', level:'good', desc:'Běžný průtok pro tuhle stanici, bez sucha i bez zvýšené aktivity.'};
+  if (flowM3s < th.spa2) return {name:'Zvýšený', level:'warn', desc:'1. stupeň povodňové aktivity podle průtoku — ČHMÚ sleduje vývoj, zatím bez rizika pro okolí.'};
+  if (flowM3s < th.spa3) return {name:'Vysoký', level:'danger', desc:'2. stupeň povodňové aktivity podle průtoku — sledujte oficiální zdroje ČHMÚ.'};
+  return {name:'Extrémní', level:'danger', desc:'3. stupeň povodňové aktivity podle průtoku — nejvyšší stupeň, sledujte oficiální zdroje a pokyny obce.'};
+}
+
 function waterStageFor(level, th){
   if (level < th.dry) return {name:'Sucho', color:'var(--warn)', pct: Math.max(0, Math.min(20, level/th.dry*20)),
     desc:`pod hranicí sucha (${th.dry} cm). Není to extrém ani povodňové riziko, ale tok je momentálně znatelně vyschlý.`};
@@ -1161,7 +1118,9 @@ async function loadWater(){
     }
     if (data.flow){
       const ls = data.flow.value * 1000;
-      parts.push(`<div>Průtok<b>${ls.toFixed(1).replace('.', ',')} l/s</b></div>`);
+      const fBand = flowBand(data.flow.value, data.thresholdsFlow);
+      const fBadge = fBand ? `<div class="takeaway ${fBand.level}" title="${fBand.desc}">${fBand.name}</div>` : '';
+      parts.push(`<div>Průtok<b>${ls.toFixed(1).replace('.', ',')} l/s</b>${fBadge}</div>`);
     }
     extra.innerHTML = parts.join('');
 
