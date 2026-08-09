@@ -236,11 +236,18 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .bar-row{display:grid;grid-template-columns:8.5rem 1fr 2.2rem;align-items:center;gap:.6rem;}
 .bar-row .lbl{font-size:.85rem;}
 .bar-track{height:9px;background:var(--surface);border:1px solid var(--line);border-radius:5px;overflow:hidden;}
-.bar-fill{height:100%;background:var(--gold);}
+.bar-fill{display:block;height:100%;background:var(--gold);}
 .bar-row .n{font-family:ui-monospace,monospace;font-size:.82rem;text-align:right;color:var(--ink-soft);}
-.stat-pair{display:flex;gap:1.6rem;margin-top:1.2rem;flex-wrap:wrap;}
-.stat-pair .stat .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
-.stat-pair .stat .v{font-family:ui-monospace,monospace;font-size:1.05rem;font-weight:600;}
+.ares-count{margin-top:1.2rem;}
+.ares-count .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.ares-count .v{display:block;font-family:ui-monospace,monospace;font-size:2.1rem;font-weight:700;color:var(--ink);line-height:1.1;margin:.15rem 0 .35rem;}
+.ares-count .ctx{font-size:.78rem;color:var(--ink-soft);line-height:1.45;max-width:36ch;}
+.ares-history{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1.2rem;margin-top:1.1rem;padding-top:.9rem;border-top:1px dashed var(--line);}
+.ares-history .stat .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.ares-history .stat .v{font-family:ui-monospace,monospace;font-size:.86rem;font-weight:600;margin-top:.2rem;line-height:1.35;}
+@media (max-width:420px){
+  .ares-history{grid-template-columns:1fr;}
+}
 
 footer{max-width:1080px;margin:2.6rem auto 0;padding:1.6rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.78rem;}
 footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--spruce);margin-bottom:.9rem;}
@@ -423,7 +430,7 @@ footer a{text-decoration:underline;}
         <div class="bars" id="aresBars">
           <div class="bar-row"><span class="lbl">načítám…</span><span class="bar-track"><span class="bar-fill" style="width:0%;"></span></span><span class="n">—</span></div>
         </div>
-        <div class="stat-pair" id="aresStats"></div>
+        <div id="aresStats"></div>
       </div>
     </div>
   </div>
@@ -741,6 +748,29 @@ const NACE_LABELS = {
 
 const ARES_TIMEOUT_MS = 10000;
 
+// Kontext k počtu aktivních subjektů — orientační srovnání s celostátním
+// průměrem, ne přesná metodická analýza. ČSÚ eviduje v RES asi 1,3 mil.
+// aktivních ekonomických subjektů v tržních odvětvích (2023) při ~10,9 mil.
+// obyvatel ČR, tedy zhruba 119 na 1000 obyvatel. Zlonice mají 2 294 obyvatel
+// (stejné číslo jako v hero faktech výš). Číslo z ARESu zahrnuje i OSVČ a
+// firmy jen formálně sídlící na adrese v obci, ne nutně reálně místní
+// provoz — proto je to "orientačně", ne tvrzení o počtu skutečných
+// provozoven. Zdroj: ČSÚ, Statistika a My — Ekonomické subjekty.
+const CZ_ACTIVE_PER_1000 = 1300000 / 10900000 * 1000; // ≈ 119
+const ZLONICE_POPULATION = 2294;
+function aresCountContext(count){
+  const per1000 = count / ZLONICE_POPULATION * 1000;
+  const ratio = per1000 / CZ_ACTIVE_PER_1000;
+  const per1000Str = per1000.toFixed(0);
+  if (ratio >= 1.3){
+    return `To je ${per1000Str} na 1000 obyvatel — zhruba ${ratio.toFixed(1).replace('.', ',')}× víc než celostátní průměr (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.`;
+  }
+  if (ratio <= 0.7){
+    return `To je ${per1000Str} na 1000 obyvatel — pod celostátním průměrem (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.`;
+  }
+  return `To je ${per1000Str} na 1000 obyvatel — blízko celostátnímu průměru (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.`;
+}
+
 // Jeden dotaz na jednu stránku výsledků, s časovým limitem — bez něj by appka
 // při pomalé odpovědi ARESu zůstala navždy na "načítám…", což vypadá stejně
 // jako "nic se nenačetlo".
@@ -804,16 +834,19 @@ async function loadAres(){
   }
 
   try{
+    const countHtml = `<div class="ares-count"><span class="k">aktivních subjektů</span><span class="v">${active.length}</span><span class="ctx">${aresCountContext(active.length)}</span></div>`;
+
     const withDate = active.filter(s => s.datumVzniku).sort((a,b) => a.datumVzniku.localeCompare(b.datumVzniku));
     if (withDate.length === 0){
-      document.getElementById('aresStats').innerHTML = `<div class="stat"><div class="k">aktivních subjektů</div><div class="v">${active.length}</div></div>`;
+      document.getElementById('aresStats').innerHTML = countHtml;
       return;
     }
     const oldest = withDate[0], newest = withDate[withDate.length-1];
-    document.getElementById('aresStats').innerHTML = `
-      <div class="stat"><div class="k">aktivních subjektů</div><div class="v">${active.length}</div></div>
-      <div class="stat"><div class="k">nejstarší</div><div class="v">${oldest.obchodniJmeno} · ${oldest.datumVzniku.slice(0,4)}</div></div>
-      <div class="stat"><div class="k">nejnovější</div><div class="v">${newest.obchodniJmeno} · ${newest.datumVzniku.slice(0,4)}</div></div>
+    document.getElementById('aresStats').innerHTML = countHtml + `
+      <div class="ares-history">
+        <div class="stat"><div class="k">nejstarší</div><div class="v">${oldest.obchodniJmeno} · ${oldest.datumVzniku.slice(0,4)}</div></div>
+        <div class="stat"><div class="k">nejnovější</div><div class="v">${newest.obchodniJmeno} · ${newest.datumVzniku.slice(0,4)}</div></div>
+      </div>
     `;
   }catch(e){
     // Statistiky se nepovedly, ale bar graf výš zůstává vidět — tichý fail stačí.
