@@ -1,6 +1,9 @@
-// Aktualizuje data/departures.json z PID GTFS statických dat (jízdní řády,
-// ne živá poloha/zpoždění — na to by bylo potřeba Golemio API s klíčem a
-// mnohem častější refresh, viz data/README.md).
+// Aktualizuje data/departures.json z PID GTFS statických dat (jízdní řády).
+// Kromě samotného jízdního řádu ukládá i stop_id a trip_id jednotlivých
+// spojů — díky tomu si scripts/update-live-departures.mjs (živé zpoždění
+// z Golemio API, běží mnohem častěji) nemusí sám znovu stahovat a
+// prohledávat celý 46MB GTFS zip, jen si přečte tenhle už vyfiltrovaný
+// JSON a ptá se Golemia jen na ID zastávek, co nás zajímají.
 //
 // PID_GTFS.zip nemá CORS hlavičky, takže appka sama nemůže volat přímo —
 // tenhle skript běží na pozadí (GitHub Actions), stáhne ~46 MB zip, vyfiltruje
@@ -74,8 +77,12 @@ async function main(){
 
     const stops = parseCsvSync(await readFile(join(workDir, 'stops.txt')));
     const stopIdToName = new Map();
+    const stopIdsByName = {}; // stopName -> [stop_id, …] — jedno jméno může mít víc fyzických stop_id (různé nástupiště/směry)
     for (const s of stops){
-      if (s.stop_name && s.stop_name.startsWith('Zlonice')) stopIdToName.set(s.stop_id, s.stop_name);
+      if (s.stop_name && s.stop_name.startsWith('Zlonice')){
+        stopIdToName.set(s.stop_id, s.stop_name);
+        (stopIdsByName[s.stop_name] ||= []).push(s.stop_id);
+      }
     }
     console.log('Nalezené zastávky:', [...new Set(stopIdToName.values())]);
     if (stopIdToName.size === 0) throw new Error('Ve stops.txt se nenašla žádná zastávka "Zlonice*"');
@@ -127,6 +134,7 @@ async function main(){
         route: trip.route,
         headsign: trip.headsign,
         serviceId: trip.serviceId,
+        tripId,
       });
       usedServiceIds.add(trip.serviceId);
     }
@@ -159,6 +167,7 @@ async function main(){
       updated: new Date().toISOString(),
       routes: ROUTE_SHORT_NAMES,
       stops: departuresByStop,
+      stopIds: stopIdsByName,
       services,
     };
     writeFileSync(OUT_PATH, JSON.stringify(output) + '\n');
