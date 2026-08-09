@@ -224,6 +224,10 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .dep-headsign{font-size:.88rem;}
 .dep-time{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-size:.9rem;}
 .dep-time .rel{color:var(--ink-soft);font-size:.76rem;margin-left:.35rem;}
+.dep-delay{display:inline-block;margin-top:.2rem;font-size:.66rem;font-family:ui-monospace,monospace;padding:.06rem .42rem;border-radius:999px;}
+.dep-delay.good{background:var(--good-soft);color:var(--good);}
+.dep-delay.warn{background:var(--warn-soft);color:var(--warn);}
+.dep-delay.danger{background:var(--danger-soft);color:var(--danger);}
 .dep-day-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin:.7rem 0 .3rem;}
 .dep-note{margin:1rem 0 0;font-size:.78rem;color:var(--ink-soft);}
 
@@ -401,7 +405,7 @@ footer a{text-decoration:underline;}
         <select id="depStopSelect" class="stop-select"></select>
       </div>
       <div class="dep-list" id="depList"><div class="sub">načítám…</div></div>
-      <p class="dep-note">Jde o plánovaný jízdní řád (linky 590/591/594), ne živou polohu autobusu — zpoždění ani výluky tu nejsou. Zdroj: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>.</p>
+      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) a zobrazí se jen tam, kde je k dispozici — bez zpoždění to prostě jízdní řád beze změny. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
     </div>
   </section>
 
@@ -997,6 +1001,37 @@ function upcomingDepartures(depData, stopName, count){
   return results;
 }
 
+// Živé zpoždění (Golemio API, viz scripts/update-live-departures.mjs) je
+// doplněk k jízdnímu řádu, ne náhrada — když pipeline vypadne nebo secret
+// GOLEMIO_API_KEY ještě není nastavený, appka prostě zpoždění nezobrazí a
+// jízdní řád funguje dál přesně jako předtím. Nikdy nehádá "asi na čas".
+const LIVE_DEP_STALE_MS = 30 * 60 * 1000; // pipeline běží každých 5 min
+let liveDelaysByTrip = null;
+
+async function loadLiveDelays(){
+  try{
+    const res = await fetch('./data/live-departures.json', {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (data.status !== 'ok') { liveDelaysByTrip = null; return; }
+    if (Date.now() - new Date(data.updated).getTime() > LIVE_DEP_STALE_MS) { liveDelaysByTrip = null; return; }
+    liveDelaysByTrip = data.byTrip || {};
+  }catch(e){
+    liveDelaysByTrip = null;
+  }
+}
+
+function delayBadgeFor(tripId){
+  const live = liveDelaysByTrip && tripId ? liveDelaysByTrip[tripId] : null;
+  if (!live) return '';
+  if (live.isCanceled) return `<span class="dep-delay danger">zrušeno</span>`;
+  if (!live.delayAvailable || live.delayMinutes == null) return '';
+  const mins = live.delayMinutes;
+  if (mins <= 1) return `<span class="dep-delay good">na čase</span>`;
+  if (mins <= 5) return `<span class="dep-delay warn">+${mins} min</span>`;
+  return `<span class="dep-delay danger">+${mins} min</span>`;
+}
+
 function renderDepartures(depData, stopName){
   const deps = upcomingDepartures(depData, stopName, 6);
   const list = document.getElementById('depList');
@@ -1020,10 +1055,11 @@ function renderDepartures(depData, stopName){
       lastDayOffset = dep.dayOffset;
       dayLabel = `<div class="dep-day-label">${DAY_LABELS[dep.dayOffset]}</div>`;
     }
+    const delay = delayBadgeFor(dep.tripId);
     return `${dayLabel}<div class="dep-row">
       <span class="dep-route">${dep.route}</span>
       <span class="dep-headsign">${dep.headsign}</span>
-      <span class="dep-time">${h}:${m}${rel ? `<span class="rel">${rel}</span>` : ''}</span>
+      <span class="dep-time">${h}:${m}${rel ? `<span class="rel">${rel}</span>` : ''}${delay ? `<br>${delay}` : ''}</span>
     </div>`;
   }).join('');
   list.innerHTML = rows;
@@ -1032,6 +1068,7 @@ function renderDepartures(depData, stopName){
 async function loadDepartures(){
   const card = document.getElementById('depCard');
   const select = document.getElementById('depStopSelect');
+  await loadLiveDelays(); // nejdřív živé zpoždění (tichý fallback), pak vykreslíme jízdní řád
   try{
     const res = await fetch('./data/departures.json', {cache:'no-store'});
     if (!res.ok) throw new Error('HTTP ' + res.status);

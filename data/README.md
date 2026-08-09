@@ -64,10 +64,36 @@ appku napojit na čtení `data/traffic.json` místo textu "připravujeme".
   spojů (`calendar.txt` + výjimky z `calendar_dates.txt`), ne z
   předpočítaného seznamu — jinak by po pár hodinách appka ukazovala
   odjezdy, co už dávno ujely.
-- **Co appka NEukazuje:** zpoždění, výluky, live polohu autobusu — to by
-  vyžadovalo Golemio real-time API s API klíčem a mnohem častější refresh
-  (minuty, ne jednou denně). Je to jasně popsané jako "jízdní řád", ne
-  živá data.
+- **Navíc ukládá `stopIds`** (jméno zastávky → GTFS stop_id) a `tripId` u
+  každého spoje — vstup pro `update-live-departures.mjs` níž, ať nemusí
+  znovu stahovat a prohledávat celý zip jen kvůli pár ID.
+- **Co appka NEukazuje:** výluky, live polohu autobusu na mapě — jen
+  zpoždění (viz níž) a jízdní řád.
+
+## Živé zpoždění autobusů (`live-departures.json`)
+
+- **Zdroj:** [Golemio API](https://api.golemio.cz/pid/docs/openapi/)
+  (Pražská datová platforma, pod kterou spadá i PID), endpoint
+  `GET /v2/pid/departureboards` — vrací odjezdy pro dané `stop_id` rovnou
+  s živým zpožděním (`predicted` vs. `scheduled` čas, `delay.minutes`,
+  `is_canceled`, `is_at_stop`), ne surová GTFS-RT protobuf data, která by
+  se musela dekódovat.
+- **Aktualizace:** `.github/workflows/update-live-departures.yml`, každých
+  5 minut.
+- **Vyžaduje:** repo secret `GOLEMIO_API_KEY` — na rozdíl od ŘSD/NDIC je
+  registrace samoobslužná a okamžitá (jen e-mailové ověření), zdarma na
+  [api.golemio.cz/api-keys](https://api.golemio.cz/api-keys).
+- **Dokud secret není nastavený:** workflow nic nevolá, soubor zůstává ve
+  stavu `pending_access` a appka zpoždění prostě nezobrazuje — jízdní řád
+  funguje dál beze změny, ne s vymyšlenými čísly.
+- **Párování se statickým jízdním řádem:** appka spojuje živé zpoždění s
+  konkrétním spojem podle `tripId` (GTFS trip ID, stejný formát na obou
+  stranách) — spolehlivější než párování podle času odjezdu a linky, kde
+  by mohla nastat shoda náhodou.
+- **Stejná bezpečnostní zásada jako jinde:** appka kontroluje stáří pole
+  `updated` (práh 30 minut, pipeline běží co 5) a při zastaralosti nebo
+  chybě zpoždění tiše skryje, ne že by ukázala starou hodnotu jako
+  aktuální — pro tenhle konkrétní údaj je "nic" bezpečnější než "asi".
 
 ## Voda (`water.json`)
 

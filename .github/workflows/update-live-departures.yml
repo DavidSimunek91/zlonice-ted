@@ -1,0 +1,36 @@
+name: Update live bus delays
+
+# Živé zpoždění spojů (Golemio API) na zastávkách kolem Zlonic — doplňuje
+# denní jízdní řád (update-departures.yml) o to, co se mění v řádu minut,
+# ne jednou za den. Dokud repo secret GOLEMIO_API_KEY není nastavený,
+# skript nic nevolá a appka jen dál ukazuje jízdní řád beze zpoždění.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch live bus delays
+        env:
+          GOLEMIO_API_KEY: ${{ secrets.GOLEMIO_API_KEY }}
+        run: node scripts/update-live-departures.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "live-departures-bot"
+          git config user.email "actions@github.com"
+          git add data/live-departures.json
+          git diff --staged --quiet || git commit -m "Update live bus delays [skip ci]"
+          git push

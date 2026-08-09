@@ -1,0 +1,5 @@
+{
+  "status": "pending_access",
+  "message": "GOLEMIO_API_KEY není nastavený — registrace na api.golemio.cz/api-keys, pak repo secret.",
+  "updated": null
+}
