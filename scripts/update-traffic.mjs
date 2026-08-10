@@ -4,6 +4,16 @@
 // na časovač — appka sama žádné volání na ŘSD nedělá (přístup vyžaduje
 // Basic Auth s neveřejnými přihlašovacími údaji), jen čte výsledný JSON.
 //
+// PROXY (viz RSD_PROXY_URL níž): ŘSD blokuje spojení z datacenter IP
+// rozsahů GitHub Actions runnerů (connect timeout, ověřeno — z běžného
+// připojení přímé volání s týmiž údaji funguje bez problémů; portál ŘSD
+// navíc nenabízí žádné self-service nastavení IP whitelistu). Proto
+// požadavek místo přímo na ŘSD chodí přes malý Cloudflare Worker, který
+// ho jen transparentně přeposílá dál (viz X-Proxy-Key níž — chrání
+// Worker proti zneužití coby veřejná proxy, ŘSD přihlašovací údaje samy
+// o sobě nijak neukládá). Když RSD_PROXY_URL není nastavené, skript
+// volá ŘSD přímo — pro případ, že by se blokace v budoucnu zrušila.
+//
 // POZOR (přečti, než budeš ladit nesedící data): parser níž je napsaný
 // podle standardní struktury DATEX II v2.3 "Situation Publication"
 // (d2LogicalModel > payloadPublication > situation > situationRecord,
@@ -28,9 +38,36 @@ import { writeFileSync } from 'node:fs';
 import { XMLParser } from 'fast-xml-parser';
 
 const OUT_PATH = 'data/traffic.json';
-const SOURCE_URL = 'https://mobilitydata.rsd.cz/Resources/Dynamic/CommonTIDatex_v2/';
+const DIRECT_URL = 'https://mobilitydata.rsd.cz/Resources/Dynamic/CommonTIDatex_v2/';
+const PROXY_URL = process.env.RSD_PROXY_URL; // Cloudflare Worker relay, viz komentář výš
+const PROXY_KEY = process.env.PROXY_KEY;
 const USERNAME = process.env.RSD_USERNAME;
 const PASSWORD = process.env.RSD_PASSWORD;
+
+const FETCH_TIMEOUT_MS = 15_000;
+const MAX_ATTEMPTS = 3;
+
+// Jeden síťový zádrhel (výpadek, pomalá odpověď) by dřív celý běh rovnou
+// poslal do status:"error". Teď to zkusí 3x s krátkou prodlevou mezi
+// pokusy, než se vzdá — furt platí pravidlo, že po vyčerpání pokusů jde
+// chyba nahoru a skončí to explicitním "error", ne tichým nic.
+async function fetchWithRetry(url, options) {
+  let lastErr;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      return res;
+    } catch (err) {
+      clearTimeout(timer);
+      lastErr = err;
+      if (attempt < MAX_ATTEMPTS) await new Promise((r) => setTimeout(r, attempt * 2000));
+    }
+  }
+  throw lastErr;
+}
 
 // Stejné souřadnice, co appka používá pro počasí/ovzduší (viz index.html).
 const ZLONICE_LAT = 50.2875;
@@ -101,7 +138,11 @@ async function main() {
   }
 
   const auth = Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64');
-  const res = await fetch(SOURCE_URL, { headers: { Authorization: `Basic ${auth}` } });
+  const headers = { Authorization: `Basic ${auth}` };
+  const url = PROXY_URL || DIRECT_URL;
+  if (PROXY_URL) headers['X-Proxy-Key'] = PROXY_KEY || '';
+
+  const res = await fetchWithRetry(url, { headers });
   if (!res.ok) throw new Error(`ŘSD/NDIC API vrátilo HTTP ${res.status}`);
   const xml = await res.text();
 
