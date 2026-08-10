@@ -1,5 +1,1 @@
-{
-  "status": "error",
-  "updated": "2026-08-10T12:05:32.456Z",
-  "message": "fetch failed"
-}
+{"status":"ok","updated":"2026-08-10T14:02:30.785Z","radiusKm":20,"situations":[]}
