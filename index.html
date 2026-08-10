@@ -178,9 +178,18 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .aqi-metric b{display:block;font-family:ui-monospace,monospace;color:var(--ink);font-size:1.1rem;margin:.15rem 0 .45rem;}
 .aqi-metric b small{font-size:.7rem;color:var(--ink-soft);margin-left:.15rem;}
 .aqi-metric p{margin:.45rem 0 0;font-size:.78rem;color:var(--ink-soft);line-height:1.45;}
-.aqi-pollen{margin-top:.9rem;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.82rem;color:var(--ink-soft);}
-.aqi-pollen b{color:var(--ink);font-weight:600;}
-.aqi-pollen .pollen-item{font-family:ui-monospace,monospace;}
+.aqi-pollen{margin-top:1rem;padding:.85rem 1rem .95rem;border-radius:.7rem;background:var(--gold-soft);}
+.aqi-pollen-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:.15rem .5rem;margin-bottom:.7rem;}
+.aqi-pollen-head b{font-size:.85rem;color:var(--gold);font-weight:700;}
+.aqi-pollen-head span{font-size:.68rem;color:var(--ink-soft);}
+.pollen-grid{display:flex;flex-wrap:wrap;gap:.7rem 1.2rem;}
+.pollen-chip{min-width:4.8rem;flex:1 0 auto;}
+.pollen-chip-row{display:flex;align-items:baseline;gap:.3rem;margin-bottom:.3rem;white-space:nowrap;}
+.pollen-chip .pollen-icon{font-size:.85rem;}
+.pollen-chip .pollen-label{font-size:.72rem;color:var(--ink-soft);}
+.pollen-chip .pollen-value{font-family:ui-monospace,monospace;font-weight:700;font-size:.85rem;color:var(--ink);margin-left:auto;}
+.pollen-bar{width:100%;height:5px;border-radius:3px;background:var(--line);overflow:hidden;}
+.pollen-bar-fill{height:100%;border-radius:3px;background:var(--gold);}
 
 /* water */
 .water-card{padding:1.3rem 1.4rem;}
@@ -725,23 +734,35 @@ function bandForNO2(v){ return NO2_BANDS.find(b => v <= b.max); }
 // nová pipeline). Mimo pylovou sezónu appka pole buď nedostane, nebo budou
 // nulová — v obou případech radši řádek úplně schovat, než ukazovat
 // "0 zrn/m³" u šesti druhů, který nikoho nezajímá. Záměrně bez barevného
-// pásma dobrá/zvýšená/atd. — autoritativní prahy pro jednotlivé druhy pylu
-// se mezi zdroji liší a appka by je jen hádala; ukazujeme holé číslo.
-const POLLEN_LABELS = {
-  birch_pollen: 'Bříza', alder_pollen: 'Olše', grass_pollen: 'Tráva',
-  mugwort_pollen: 'Pelyněk', ragweed_pollen: 'Ambrózie', olive_pollen: 'Oliva',
+// pásma dobrá/zvýšená/atd. jako u PM/O₃/NO₂ — autoritativní zdravotní
+// prahy pro jednotlivé druhy pylu se mezi zdroji liší a appka by je jen
+// hádala. Zlatá (--gold) tady není zdravotní signál, jen barva pylu jako
+// takového. Lišta pod hodnotou je čistě relativní (vůči nejsilnějšímu
+// druhu dnes) — ne odvozená z nějaké zdravotní stupnice.
+const POLLEN_META = {
+  birch_pollen: {label:'Bříza', icon:'🌳'}, alder_pollen: {label:'Olše', icon:'🌲'},
+  grass_pollen: {label:'Tráva', icon:'🌾'}, mugwort_pollen: {label:'Pelyněk', icon:'🌿'},
+  ragweed_pollen: {label:'Ambrózie', icon:'🌱'}, olive_pollen: {label:'Oliva', icon:'🫒'},
 };
 const POLLEN_NOTICEABLE = 1; // grains/m³ — pod tím appka druh vůbec nezmiňuje
 
 function renderPollen(c){
   const el = document.getElementById('aqiPollen');
-  const items = Object.entries(POLLEN_LABELS)
-    .map(([key, label]) => ({label, value: c[key]}))
+  const items = Object.entries(POLLEN_META)
+    .map(([key, meta]) => ({...meta, value: c[key]}))
     .filter(p => typeof p.value === 'number' && p.value >= POLLEN_NOTICEABLE)
     .sort((a, b) => b.value - a.value);
   if (items.length === 0){ el.innerHTML = ''; return; }
-  const list = items.map(p => `<span class="pollen-item">${p.label} ${p.value.toFixed(1).replace('.', ',')}</span>`).join(' · ');
-  el.innerHTML = `<b>Pyl (dnes)</b> — ${list} zrn/m³ <span style="opacity:.75">(CAMS/Copernicus)</span>`;
+  const max = items[0].value;
+  const chips = items.map(p => {
+    const pct = Math.max(8, Math.round((p.value / max) * 100));
+    const val = p.value.toFixed(1).replace('.', ',');
+    return `<div class="pollen-chip">
+      <div class="pollen-chip-row"><span class="pollen-icon">${p.icon}</span><span class="pollen-label">${p.label}</span><span class="pollen-value">${val}</span></div>
+      <div class="pollen-bar"><div class="pollen-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 Pyl dnes</b><span>zrn/m³ · CAMS/Copernicus, síla řazená sestupně</span></div><div class="pollen-grid">${chips}</div>`;
 }
 
 async function loadAirQuality(){
