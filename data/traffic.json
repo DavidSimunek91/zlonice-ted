@@ -1,1 +1,5 @@
-{"status":"ok","updated":"2026-08-10T14:02:30.785Z","radiusKm":20,"situations":[]}
+{
+  "status": "error",
+  "updated": "2026-08-10T14:41:57.314Z",
+  "message": "This operation was aborted"
+}
