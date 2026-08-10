@@ -32,5 +32,21 @@ jobs:
           git config user.name "alerts-data-bot"
           git config user.email "actions@github.com"
           git add data/alerts.json
-          git diff --staged --quiet || git commit -m "Update ČHMÚ alerts [skip ci]"
-          git push
+          git diff --staged --quiet && { echo "Beze změny, nic k odeslání."; exit 0; }
+          git commit -m "Update ČHMÚ alerts [skip ci]"
+
+          # Víc pipeline v tomhle repu (traffic/water/alerts/departures) běží na
+          # stejný časovač a občas si šlápnou na paty při pushi do main — bez
+          # rebase+retry to shodí celý běh do červena, i když se data samotná
+          # v pořádku stáhla (viz krok výš).
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push odmítnut (pokus $attempt/5), rebasuju na aktuální main a zkouším znovu…"
+            git fetch origin main
+            git rebase origin/main
+            sleep $((attempt * 2))
+          done
+          echo "::error::Push se nepovedl ani po 5 pokusech."
+          exit 1
