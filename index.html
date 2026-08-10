@@ -419,7 +419,7 @@ footer a{text-decoration:underline;}
         <select id="depStopSelect" class="stop-select"></select>
       </div>
       <div class="dep-list" id="depList"><div class="sub">načítám…</div></div>
-      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
+      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "živě nedostupné" znamená, že live zpoždění teď appce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
     </div>
   </section>
 
@@ -497,6 +497,18 @@ const WMO = {
   95:['Bouřka','⛈️'],96:['Bouřka s kroupami','⛈️'],99:['Bouřka s kroupami','⛈️'],
 };
 const DAYS = ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'];
+
+// weather_code od Open-Meteo je "nejvýznamnější jev, co může ten den nastat",
+// takže i pravděpodobnost srážek jen 5 % dá kód přeháněk/deště — ikona pak
+// slibuje déšť, který skoro určitě nepřijde. Pod 40 % pravděpodobnosti proto
+// ikonu/text srážek nahrazujeme neutrálním "zataženo" — % zůstává vždycky
+// vidět vedle, takže se informace neztrácí, jen ikona nepřehání.
+const PRECIP_CODES = new Set([51,53,55,61,63,65,71,73,75,80,81,82,95,96,99]);
+const RAIN_ICON_MIN_PROB = 40;
+function weatherIconFor(code, probPct){
+  if (PRECIP_CODES.has(code) && (probPct ?? 100) < RAIN_ICON_MIN_PROB) return WMO[3];
+  return WMO[code] || ['—','·'];
+}
 
 // Komfortní pásma relativní vlhkosti — obecný odhad dopadu na dýchání/pocit tepla,
 // ne lékařský ukazatel.
@@ -625,7 +637,7 @@ async function loadWeather(){
     const rows = days.map((iso, i) => {
       const d = new Date(iso + 'T12:00:00');
       const label = i === 0 ? 'dnes' : DAYS[d.getDay()];
-      const w = WMO[data.daily.weather_code[i]] || ['—','·'];
+      const w = weatherIconFor(data.daily.weather_code[i], data.daily.precipitation_probability_max[i]);
       return `<div class="fday">
         <div class="d">${label}</div>
         <div class="icon">${w[1]}</div>
@@ -1169,15 +1181,17 @@ async function loadLiveDelays(){
 }
 
 function delayBadgeFor(tripId){
-  // liveDelaysByTrip === null znamená, že celá funkce živého zpoždění je
-  // teď vypnutá (chybí GOLEMIO_API_KEY, pipeline spadla, nebo jsou data
-  // stará) — v tom případě appka mlčí úplně, dep-note pod seznamem to
-  // vysvětluje jednou za všechny řádky.
+  // Dřív appka při liveDelaysByTrip === null (chybí GOLEMIO_API_KEY,
+  // pipeline spadla, nebo jsou data stará) mlčela úplně — u žádného spoje
+  // se neukázal žádný odznak, což vypadalo, jako by appka live zpoždění
+  // vůbec neuměla, ne že zrovna dočasně nefunguje. Teď se to řekne
+  // explicitně, stejný princip jako u konkrétního spoje bez dat níž:
+  // "nevíme" musí být vždycky vidět jako "nevíme", nikdy jako ticho.
+  if (!liveDelaysByTrip) return `<span class="dep-delay muted">živě nedostupné</span>`;
   // Když je funkce zapnutá, ale konkrétní spoj ještě live data nemá
   // (Golemio ho ještě nezačala sledovat, typicky dokud nevyjel), appka to
   // musí říct explicitně — jinak nejde rozeznat "ověřeno na čas" od
   // "nevíme", což je přesně to tiché hádání, které appka jinde odmítá.
-  if (!liveDelaysByTrip) return '';
   const live = tripId ? liveDelaysByTrip[tripId] : null;
   if (!live) return `<span class="dep-delay muted">zatím bez live dat</span>`;
   if (live.isCanceled) return `<span class="dep-delay danger">zrušeno</span>`;
