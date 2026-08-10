@@ -19,17 +19,31 @@ stejně snadno jako Open-Meteo.
 
 ## Doprava (`traffic.json`)
 
-- **Zdroj:** ŘSD/NDIC, portál mobilitydata.rsd.cz (formát DATEX II)
+- **Zdroj:** ŘSD/NDIC, portál mobilitydata.rsd.cz — odběr "DATEX II -
+  Běžné dopravní informace v2 (snímek)" (PULL, DATEX II verze 2.3).
+  Vybráno záměrně: appka nemá server na příjem, takže nešel PUSH varianta
+  stejného zdroje (`Založit odběr` u ní čeká URL, na kterou by ŘSD sama
+  posílala data).
 - **Aktualizace:** `.github/workflows/update-traffic.yml`, každých 15 minut
-- **Vyžaduje:** registraci na mobilitydata.rsd.cz + repo secret `RSD_API_KEY`
+- **Vyžaduje:** odběr schválený přes mobilitydata.rsd.cz + repo secrety
+  `RSD_USERNAME` a `RSD_PASSWORD` (Basic Auth, ne API klíč v hlavičce —
+  zadává se přímo ve formuláři odběru na portálu)
   (Settings → Secrets and variables → Actions → New repository secret)
-- **Dokud secret není nastavený:** workflow nic nemění, soubor zůstává ve
-  stavu `pending_access` a appka v sekci "Dopravní nehody v okolí" ukazuje
-  "připravujeme" — ne vymyšlená čísla.
-
-Až přijde přístup od ŘSD, zbývá doplnit skutečné volání API do
-`scripts/update-traffic.mjs` (přesné místo je tam označené `TODO`) a
-appku napojit na čtení `data/traffic.json` místo textu "připravujeme".
+- **Dokud secrety nejsou nastavené:** workflow nic nemění, soubor zůstává
+  ve stavu `pending_access` a appka v sekci "Dopravní nehody v okolí"
+  ukazuje "čeká se na přístup" — ne vymyšlená čísla.
+- **Filtrování:** appka počítá vzdálenost každé situace od Zlonic
+  (haversine, souřadnice ze `situationRecord` → `groupOfLocations` →
+  `locationForDisplay`) a ukazuje jen ty do 20 km. Situace bez zjistitelné
+  polohy v odpovědi appka záměrně přeskakuje, ne odhaduje.
+- **Neověřeno proti živé odpovědi:** parser v `scripts/update-traffic.mjs`
+  je napsaný podle standardní struktury DATEX II v2.3 "Situation
+  Publication", ale nebyl při implementaci ověřený proti skutečné
+  odpovědi tohohle konkrétního NDIC zdroje (nešlo předem získat vzorek).
+  Po prvním ostrém běhu pipeline zkontroluj commit do `data/traffic.json`
+  (nebo log běhu na GitHub Actions) — pokud struktura nesedí, skript by
+  měl selhat čistě do `status:"error"` (viz komentáře přímo ve skriptu),
+  appka mezitím ukáže "nelze ověřit".
 
 ## Výstrahy ČHMÚ (`alerts.json`)
 
