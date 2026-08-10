@@ -220,6 +220,7 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .dep-delay.good{background:var(--good-soft);color:var(--good);}
 .dep-delay.warn{background:var(--warn-soft);color:var(--warn);}
 .dep-delay.danger{background:var(--danger-soft);color:var(--danger);}
+.dep-delay.muted{background:var(--sky-soft);color:var(--sky);}
 .dep-day-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin:.7rem 0 .3rem;}
 .dep-note{margin:1rem 0 0;font-size:.78rem;color:var(--ink-soft);}
 
@@ -395,7 +396,7 @@ footer a{text-decoration:underline;}
         <select id="depStopSelect" class="stop-select"></select>
       </div>
       <div class="dep-list" id="depList"><div class="sub">načítám…</div></div>
-      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) a zobrazí se jen tam, kde je k dispozici — bez zpoždění to prostě jízdní řád beze změny. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
+      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
     </div>
   </section>
 
@@ -1000,10 +1001,19 @@ async function loadLiveDelays(){
 }
 
 function delayBadgeFor(tripId){
-  const live = liveDelaysByTrip && tripId ? liveDelaysByTrip[tripId] : null;
-  if (!live) return '';
+  // liveDelaysByTrip === null znamená, že celá funkce živého zpoždění je
+  // teď vypnutá (chybí GOLEMIO_API_KEY, pipeline spadla, nebo jsou data
+  // stará) — v tom případě appka mlčí úplně, dep-note pod seznamem to
+  // vysvětluje jednou za všechny řádky.
+  // Když je funkce zapnutá, ale konkrétní spoj ještě live data nemá
+  // (Golemio ho ještě nezačala sledovat, typicky dokud nevyjel), appka to
+  // musí říct explicitně — jinak nejde rozeznat "ověřeno na čas" od
+  // "nevíme", což je přesně to tiché hádání, které appka jinde odmítá.
+  if (!liveDelaysByTrip) return '';
+  const live = tripId ? liveDelaysByTrip[tripId] : null;
+  if (!live) return `<span class="dep-delay muted">zatím bez live dat</span>`;
   if (live.isCanceled) return `<span class="dep-delay danger">zrušeno</span>`;
-  if (!live.delayAvailable || live.delayMinutes == null) return '';
+  if (!live.delayAvailable || live.delayMinutes == null) return `<span class="dep-delay muted">zatím bez live dat</span>`;
   const mins = live.delayMinutes;
   if (mins <= 1) return `<span class="dep-delay good">na čase</span>`;
   if (mins <= 5) return `<span class="dep-delay warn">+${mins} min</span>`;
