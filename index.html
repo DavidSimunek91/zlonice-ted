@@ -216,8 +216,11 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 
 .soon-card{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:1.1rem 1.2rem;color:var(--ink-soft);font-size:.9rem;}
 
-.traffic-row{padding:.7rem 0;border-bottom:1px dashed var(--line);}
+.traffic-banner{margin:0 0 1rem;}
+.traffic-row{padding:.7rem 0;border-bottom:1px dashed var(--line);display:flex;gap:.7rem;align-items:flex-start;}
 .traffic-row:last-child{border-bottom:none;}
+.traffic-row-icon{font-size:1.15rem;line-height:1.5;flex:0 0 auto;}
+.traffic-row-body{flex:1 1 auto;min-width:0;}
 .traffic-head{display:flex;align-items:center;justify-content:space-between;gap:.7rem;flex-wrap:wrap;}
 .traffic-dist{font-family:ui-monospace,monospace;font-size:.78rem;color:var(--ink-soft);white-space:nowrap;}
 .traffic-comment{margin-top:.4rem;font-size:.88rem;}
@@ -416,7 +419,7 @@ footer a{text-decoration:underline;}
         <select id="depStopSelect" class="stop-select"></select>
       </div>
       <div class="dep-list" id="depList"><div class="sub">načítám…</div></div>
-      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
+      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "živě nedostupné" znamená, že live zpoždění teď appce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
     </div>
   </section>
 
@@ -424,12 +427,19 @@ footer a{text-decoration:underline;}
     <div class="section-head">
       <div class="section-title">
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg>
-        <h2>Dopravní nehody v okolí</h2>
+        <h2>Doprava v okolí</h2>
       </div>
       <span class="tag soon" id="trafficTag"><span class="dot"></span>načítám…</span>
     </div>
     <div class="card" id="trafficCard">
-      <div id="trafficList"><div class="sub">načítám…</div></div>
+      <div class="banner traffic-banner" id="trafficBanner">
+        <div class="stripe"></div>
+        <div>
+          <strong id="trafficHeadline">Kontroluji dopravní situaci…</strong>
+          <span id="trafficDetail">Načítám data ŘSD/NDIC.</span>
+        </div>
+      </div>
+      <div id="trafficList"></div>
       <p class="dep-note">Zdroj: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Appka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení.</p>
     </div>
   </section>
@@ -487,6 +497,18 @@ const WMO = {
   95:['Bouřka','⛈️'],96:['Bouřka s kroupami','⛈️'],99:['Bouřka s kroupami','⛈️'],
 };
 const DAYS = ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'];
+
+// weather_code od Open-Meteo je "nejvýznamnější jev, co může ten den nastat",
+// takže i pravděpodobnost srážek jen 5 % dá kód přeháněk/deště — ikona pak
+// slibuje déšť, který skoro určitě nepřijde. Pod 40 % pravděpodobnosti proto
+// ikonu/text srážek nahrazujeme neutrálním "zataženo" — % zůstává vždycky
+// vidět vedle, takže se informace neztrácí, jen ikona nepřehání.
+const PRECIP_CODES = new Set([51,53,55,61,63,65,71,73,75,80,81,82,95,96,99]);
+const RAIN_ICON_MIN_PROB = 40;
+function weatherIconFor(code, probPct){
+  if (PRECIP_CODES.has(code) && (probPct ?? 100) < RAIN_ICON_MIN_PROB) return WMO[3];
+  return WMO[code] || ['—','·'];
+}
 
 // Komfortní pásma relativní vlhkosti — obecný odhad dopadu na dýchání/pocit tepla,
 // ne lékařský ukazatel.
@@ -615,7 +637,7 @@ async function loadWeather(){
     const rows = days.map((iso, i) => {
       const d = new Date(iso + 'T12:00:00');
       const label = i === 0 ? 'dnes' : DAYS[d.getDay()];
-      const w = WMO[data.daily.weather_code[i]] || ['—','·'];
+      const w = weatherIconFor(data.daily.weather_code[i], data.daily.precipitation_probability_max[i]);
       return `<div class="fday">
         <div class="d">${label}</div>
         <div class="icon">${w[1]}</div>
@@ -994,20 +1016,34 @@ async function loadAlerts(){
 // nejasného/starého se ukáže jako "nelze ověřit", ne jako "žádné situace".
 const TRAFFIC_STALE_MS = 60 * 60 * 1000; // pipeline běží co 15 min, klidná rezerva
 
-function trafficTypeLabel(type){
+// Typ situace určuje nejen popisek, ale i ikonu a "závažnost" (danger/warn)
+// — nehoda a překážka na silnici jsou přímé riziko (červená), práce na
+// silnici/uzavírka/kolony jsou obvykle plánované nebo informační (jantarová).
+// Cíl: člověk pozná stav i bez čtení textu, jen z barvy a ikony.
+function trafficTypeInfo(type){
   const t = String(type || '').toLowerCase();
-  if (t.includes('accident')) return 'Nehoda';
-  if (t.includes('roadworks') || t.includes('maintenance') || t.includes('construction')) return 'Práce na silnici';
-  if (t.includes('obstruction')) return 'Překážka na silnici';
-  if (t.includes('management') || t.includes('closure') || t.includes('restriction')) return 'Uzavírka/omezení';
-  if (t.includes('abnormaltraffic')) return 'Kolony/mimořádný provoz';
-  return 'Dopravní situace';
+  if (t.includes('accident')) return {label:'Nehoda', icon:'💥', level:'danger'};
+  if (t.includes('obstruction')) return {label:'Překážka na silnici', icon:'⚠️', level:'danger'};
+  if (t.includes('roadworks') || t.includes('maintenance') || t.includes('construction')) return {label:'Práce na silnici', icon:'🚧', level:'warn'};
+  if (t.includes('management') || t.includes('closure') || t.includes('restriction')) return {label:'Uzavírka/omezení', icon:'⛔', level:'warn'};
+  if (t.includes('abnormaltraffic')) return {label:'Kolony/mimořádný provoz', icon:'🐢', level:'warn'};
+  return {label:'Dopravní situace', icon:'ℹ️', level:'warn'};
 }
 
-function setTrafficTag(cls, text){
+function setTrafficBanner(cls, tagCls, tagText, headline, detailHtml){
+  document.getElementById('trafficBanner').className = 'banner traffic-banner' + (cls ? ' ' + cls : '');
+  document.getElementById('trafficHeadline').textContent = headline;
+  document.getElementById('trafficDetail').innerHTML = detailHtml;
   const tag = document.getElementById('trafficTag');
-  tag.className = 'tag ' + cls;
-  tag.innerHTML = `<span class="dot"></span>${text}`;
+  tag.className = 'tag ' + tagCls;
+  tag.innerHTML = `<span class="dot"></span>${tagText}`;
+}
+
+function unknownTrafficState(reason){
+  setTrafficBanner('unknown', 'warn', 'nelze ověřit',
+    '❓ Dopravní situaci nelze ověřit',
+    `${escapeHtml(reason)} Zkontroluj prosím oficiální zdroj přímo: <a href="https://dopravniinfo.cz" target="_blank" rel="noopener">dopravniinfo.cz</a>.`);
+  document.getElementById('trafficList').innerHTML = '';
 }
 
 async function loadTraffic(){
@@ -1018,40 +1054,56 @@ async function loadTraffic(){
     const data = await res.json();
 
     if (data.status === 'pending_access'){
-      setTrafficTag('soon', 'čeká se na přístup');
-      list.innerHTML = `<div class="sub">${escapeHtml(data.note || 'Čekáme na schválení přístupu k datům ŘSD/NDIC.')}</div>`;
+      setTrafficBanner('unknown', 'soon', 'čeká se na přístup',
+        '⏳ Čeká se na přístup k dopravním datům',
+        escapeHtml(data.note || 'Čekáme na schválení přístupu k datům ŘSD/NDIC.'));
+      list.innerHTML = '';
       return;
     }
 
     const ageMs = Date.now() - new Date(data.updated).getTime();
     if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > TRAFFIC_STALE_MS){
-      setTrafficTag('warn', 'nelze ověřit');
-      list.innerHTML = '<div class="sub">Automatická kontrola dopravních dat ŘSD/NDIC teď neběží nebo selhala. Zkontroluj prosím oficiální zdroj přímo: <a href="https://dopravniinfo.cz" target="_blank" rel="noopener">dopravniinfo.cz</a>.</div>';
+      unknownTrafficState('Automatická kontrola dopravních dat ŘSD/NDIC teď neběží nebo selhala.');
       return;
     }
+
+    const checked = new Date(data.updated).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
 
     if (data.situations.length === 0){
-      setTrafficTag('live', 'ověřeno');
-      const checked = new Date(data.updated).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
-      list.innerHTML = `<div class="sub">ŘSD/NDIC aktuálně nehlásí žádnou dopravní situaci do ${data.radiusKm} km od Zlonic. Ověřeno ${checked}.</div>`;
+      setTrafficBanner('', 'live', 'ověřeno',
+        '✅ Klidno, žádné dopravní problémy',
+        `ŘSD/NDIC aktuálně nehlásí žádnou dopravní situaci do ${data.radiusKm} km od Zlonic. Ověřeno ${checked}.`);
+      list.innerHTML = '';
       return;
     }
 
-    setTrafficTag('danger', data.situations.length > 1 ? `${data.situations.length} situace` : '1 situace');
+    const infos = data.situations.map(s => trafficTypeInfo(s.type));
+    const worstLevel = infos.some(i => i.level === 'danger') ? 'danger' : 'warn';
+    const count = data.situations.length;
+    const headlineIcon = worstLevel === 'danger' ? '🚨' : '🚧';
+    const headlineText = worstLevel === 'danger'
+      ? (count > 1 ? `Pozor, ${count} dopravní situace v okolí` : 'Pozor, nehoda v okolí')
+      : (count > 1 ? `${count} dopravní situace v okolí` : '1 dopravní situace v okolí');
+    setTrafficBanner(worstLevel, worstLevel, count > 1 ? `${count} situace` : '1 situace',
+      `${headlineIcon} ${headlineText}`,
+      `Ověřeno ${checked}, okruh ${data.radiusKm} km od Zlonic.`);
+
     list.innerHTML = data.situations.map(s => {
-      const label = escapeHtml(trafficTypeLabel(s.type));
+      const info = trafficTypeInfo(s.type);
       const comment = s.comment ? escapeHtml(s.comment) : '';
       const dist = s.distanceKm.toFixed(1).replace('.', ',');
       const start = s.startTime ? new Date(s.startTime).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'}) : null;
       return `<div class="traffic-row">
-        <div class="traffic-head"><span class="takeaway danger">${label}</span><span class="traffic-dist">${dist} km od Zlonic</span></div>
-        ${comment ? `<div class="traffic-comment">${comment}</div>` : ''}
-        ${start ? `<div class="traffic-time">platí od ${start}</div>` : ''}
+        <div class="traffic-row-icon">${info.icon}</div>
+        <div class="traffic-row-body">
+          <div class="traffic-head"><span class="takeaway ${info.level}">${escapeHtml(info.label)}</span><span class="traffic-dist">${dist} km od Zlonic</span></div>
+          ${comment ? `<div class="traffic-comment">${comment}</div>` : ''}
+          ${start ? `<div class="traffic-time">platí od ${start}</div>` : ''}
+        </div>
       </div>`;
     }).join('');
   }catch(e){
-    setTrafficTag('warn', 'nelze ověřit');
-    list.innerHTML = `<div class="sub">Dopravní data se nepodařilo načíst (${escapeHtml(e.message)}).</div>`;
+    unknownTrafficState(`Dopravní data se nepodařilo načíst (${e.message}).`);
   }
 }
 
@@ -1129,15 +1181,17 @@ async function loadLiveDelays(){
 }
 
 function delayBadgeFor(tripId){
-  // liveDelaysByTrip === null znamená, že celá funkce živého zpoždění je
-  // teď vypnutá (chybí GOLEMIO_API_KEY, pipeline spadla, nebo jsou data
-  // stará) — v tom případě appka mlčí úplně, dep-note pod seznamem to
-  // vysvětluje jednou za všechny řádky.
+  // Dřív appka při liveDelaysByTrip === null (chybí GOLEMIO_API_KEY,
+  // pipeline spadla, nebo jsou data stará) mlčela úplně — u žádného spoje
+  // se neukázal žádný odznak, což vypadalo, jako by appka live zpoždění
+  // vůbec neuměla, ne že zrovna dočasně nefunguje. Teď se to řekne
+  // explicitně, stejný princip jako u konkrétního spoje bez dat níž:
+  // "nevíme" musí být vždycky vidět jako "nevíme", nikdy jako ticho.
+  if (!liveDelaysByTrip) return `<span class="dep-delay muted">živě nedostupné</span>`;
   // Když je funkce zapnutá, ale konkrétní spoj ještě live data nemá
   // (Golemio ho ještě nezačala sledovat, typicky dokud nevyjel), appka to
   // musí říct explicitně — jinak nejde rozeznat "ověřeno na čas" od
   // "nevíme", což je přesně to tiché hádání, které appka jinde odmítá.
-  if (!liveDelaysByTrip) return '';
   const live = tripId ? liveDelaysByTrip[tripId] : null;
   if (!live) return `<span class="dep-delay muted">zatím bez live dat</span>`;
   if (live.isCanceled) return `<span class="dep-delay danger">zrušeno</span>`;

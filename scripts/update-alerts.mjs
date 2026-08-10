@@ -20,6 +20,31 @@ import { XMLParser } from 'fast-xml-parser';
 const OUT_PATH = 'data/alerts.json';
 const CAP_DIR = 'https://opendata.chmi.cz/meteorology/weather/alerts/cap/';
 
+const FETCH_TIMEOUT_MS = 15_000;
+const MAX_ATTEMPTS = 3;
+
+// Stejný vzor jako u ŘSD dopravních dat (scripts/update-traffic.mjs): jeden
+// síťový zádrhel (výpadek, pomalá odpověď opendata.chmi.cz) by dřív rovnou
+// poslal celý běh do status:"error" a appka by na chvíli ukázala "nelze
+// ověřit", i když šlo jen o přechodnou chybu. Teď to zkusí 3x s odstupem.
+async function fetchWithRetry(url, options) {
+  let lastErr;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      return res;
+    } catch (err) {
+      clearTimeout(timer);
+      lastErr = err;
+      if (attempt < MAX_ATTEMPTS) await new Promise((r) => setTimeout(r, attempt * 2000));
+    }
+  }
+  throw lastErr;
+}
+
 // Zlonice spadá pod ORP Slaný (ne ORP Kladno — to je jiná obec s rozšířenou
 // působností ve stejném okrese). Ověřeno: ČSÚ "2124 - SO ORP Slaný" a přímo
 // v CAP datech, kde areaDesc s kódem CISORP 2124 vždy obsahuje "Slaný".
@@ -34,7 +59,7 @@ function isRealWarning(event) {
 }
 
 async function findLatestCapFile() {
-  const res = await fetch(CAP_DIR);
+  const res = await fetchWithRetry(CAP_DIR);
   if (!res.ok) throw new Error(`Nepodařilo se načíst seznam souborů (HTTP ${res.status})`);
   const html = await res.text();
 
@@ -61,7 +86,7 @@ function areaHasZlonice(area) {
 
 async function main() {
   const filename = await findLatestCapFile();
-  const res = await fetch(CAP_DIR + filename);
+  const res = await fetchWithRetry(CAP_DIR + filename);
   if (!res.ok) throw new Error(`Nepodařilo se stáhnout ${filename} (HTTP ${res.status})`);
   const xml = await res.text();
 
