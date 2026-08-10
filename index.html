@@ -178,6 +178,9 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .aqi-metric b{display:block;font-family:ui-monospace,monospace;color:var(--ink);font-size:1.1rem;margin:.15rem 0 .45rem;}
 .aqi-metric b small{font-size:.7rem;color:var(--ink-soft);margin-left:.15rem;}
 .aqi-metric p{margin:.45rem 0 0;font-size:.78rem;color:var(--ink-soft);line-height:1.45;}
+.aqi-pollen{margin-top:.9rem;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.82rem;color:var(--ink-soft);}
+.aqi-pollen b{color:var(--ink);font-weight:600;}
+.aqi-pollen .pollen-item{font-family:ui-monospace,monospace;}
 
 /* water */
 .water-card{padding:1.3rem 1.4rem;}
@@ -357,6 +360,7 @@ footer a{text-decoration:underline;}
       <div class="scale" id="aqiScale"><div class="scale-marker" id="aqiMarker" style="left:0%;"></div></div>
       <div class="scale-ticks"><span>0 dobrá</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100+ extrémní</span></div>
       <div class="aqi-metrics" id="aqiMetrics"></div>
+      <div class="aqi-pollen" id="aqiPollen"></div>
     </div>
   </section>
 
@@ -716,9 +720,33 @@ const NO2_BANDS = [
 ];
 function bandForNO2(v){ return NO2_BANDS.find(b => v <= b.max); }
 
+// Pyl — CAMS (Copernicus Atmosphere Monitoring Service) data, appka je bere
+// stejným přímým voláním na Open-Meteo jako zbytek kvality ovzduší (žádná
+// nová pipeline). Mimo pylovou sezónu appka pole buď nedostane, nebo budou
+// nulová — v obou případech radši řádek úplně schovat, než ukazovat
+// "0 zrn/m³" u šesti druhů, který nikoho nezajímá. Záměrně bez barevného
+// pásma dobrá/zvýšená/atd. — autoritativní prahy pro jednotlivé druhy pylu
+// se mezi zdroji liší a appka by je jen hádala; ukazujeme holé číslo.
+const POLLEN_LABELS = {
+  birch_pollen: 'Bříza', alder_pollen: 'Olše', grass_pollen: 'Tráva',
+  mugwort_pollen: 'Pelyněk', ragweed_pollen: 'Ambrózie', olive_pollen: 'Oliva',
+};
+const POLLEN_NOTICEABLE = 1; // grains/m³ — pod tím appka druh vůbec nezmiňuje
+
+function renderPollen(c){
+  const el = document.getElementById('aqiPollen');
+  const items = Object.entries(POLLEN_LABELS)
+    .map(([key, label]) => ({label, value: c[key]}))
+    .filter(p => typeof p.value === 'number' && p.value >= POLLEN_NOTICEABLE)
+    .sort((a, b) => b.value - a.value);
+  if (items.length === 0){ el.innerHTML = ''; return; }
+  const list = items.map(p => `<span class="pollen-item">${p.label} ${p.value.toFixed(1).replace('.', ',')}</span>`).join(' · ');
+  el.innerHTML = `<b>Pyl (dnes)</b> — ${list} zrn/m³ <span style="opacity:.75">(CAMS/Copernicus)</span>`;
+}
+
 async function loadAirQuality(){
   try{
-    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm10,pm2_5,ozone,nitrogen_dioxide,european_aqi&timezone=Europe%2FBerlin`;
+    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm10,pm2_5,ozone,nitrogen_dioxide,european_aqi,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen&timezone=Europe%2FBerlin`;
     const res = await fetch(url);
     const data = await res.json();
     const c = data.current;
@@ -746,6 +774,7 @@ async function loadAirQuality(){
       metric('PM10 — prachové částice', c.pm10.toFixed(1), ' µg/m³', pm10Band) +
       metric('Ozon (O₃)', c.ozone.toFixed(0), ' µg/m³', o3Band) +
       metric('Oxid dusičitý (NO₂)', c.nitrogen_dioxide.toFixed(1), ' µg/m³', no2Band);
+    renderPollen(c);
   }catch(e){
     document.getElementById('aqiCard').innerHTML = `<div class="soon-card">Kvalitu ovzduší se nepodařilo načíst (${e.message}).</div>`;
   }
