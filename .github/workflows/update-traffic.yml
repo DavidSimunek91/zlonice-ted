@@ -6,8 +6,10 @@ name: Update traffic data
 # kódu, zůstává jen tady jako GitHub Actions secret.
 #
 # Setup: Settings → Secrets and variables → Actions → New repository secret
-#   RSD_API_KEY = <klíč z mobilitydata.rsd.cz>
-# Dokud secret není nastavený, skript se sám ukončí bez chyby a nic nemění.
+#   RSD_USERNAME, RSD_PASSWORD = přístupové údaje k odběru "DATEX II -
+#   Běžné dopravní informace v2 (snímek)" z mobilitydata.rsd.cz (Basic Auth,
+#   ne API klíč v hlavičce)
+# Dokud secrety nejsou nastavené, skript se sám ukončí bez chyby a nic nemění.
 
 on:
   schedule:
@@ -26,9 +28,12 @@ jobs:
         with:
           node-version: '20'
 
+      - run: npm install --no-save
+
       - name: Fetch and transform traffic data
         env:
-          RSD_API_KEY: ${{ secrets.RSD_API_KEY }}
+          RSD_USERNAME: ${{ secrets.RSD_USERNAME }}
+          RSD_PASSWORD: ${{ secrets.RSD_PASSWORD }}
         run: node scripts/update-traffic.mjs
 
       - name: Commit if changed

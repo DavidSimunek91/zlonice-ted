@@ -204,6 +204,13 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 
 .soon-card{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:1.1rem 1.2rem;color:var(--ink-soft);font-size:.9rem;}
 
+.traffic-row{padding:.7rem 0;border-bottom:1px dashed var(--line);}
+.traffic-row:last-child{border-bottom:none;}
+.traffic-head{display:flex;align-items:center;justify-content:space-between;gap:.7rem;flex-wrap:wrap;}
+.traffic-dist{font-family:ui-monospace,monospace;font-size:.78rem;color:var(--ink-soft);white-space:nowrap;}
+.traffic-comment{margin-top:.4rem;font-size:.88rem;}
+.traffic-time{margin-top:.25rem;font-size:.76rem;color:var(--ink-soft);}
+
 /* autobus */
 .dep-card{padding:1.2rem 1.4rem;}
 .dep-top{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap;}
@@ -406,9 +413,12 @@ footer a{text-decoration:underline;}
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg>
         <h2>Dopravní nehody v okolí</h2>
       </div>
-      <span class="tag soon"><span class="dot"></span>připravujeme · CDV/ArcGIS</span>
+      <span class="tag soon" id="trafficTag"><span class="dot"></span>načítám…</span>
     </div>
-    <div class="soon-card">Jediná celostátní data o nehodách (NDIC) běží na testovacím serveru s prošlým certifikátem, oficiální appka CDV nemá veřejné API a krajský dopravní portál je dlouhodobě nedostupný — bez vlastního serveru na pozadí to zatím nejde napojit živě. Registraci k živým datům ŘSD/NDIC jsme už podali, viz data/README.md v repu.</div>
+    <div class="card" id="trafficCard">
+      <div id="trafficList"><div class="sub">načítám…</div></div>
+      <p class="dep-note">Zdroj: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Appka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení.</p>
+    </div>
   </section>
 
   <div class="obec">
@@ -443,7 +453,7 @@ footer a{text-decoration:underline;}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20 6 8M12 20 12 4M18 20 18 8"/><ellipse cx="4.5" cy="9.5" rx="1.6" ry="2.7" transform="rotate(-25 4.5 9.5)" fill="currentColor" stroke="none"/><ellipse cx="7.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 7.5 7.5)" fill="currentColor" stroke="none"/><ellipse cx="10.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 10.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="13.5" cy="4" rx="1.6" ry="2.7" transform="rotate(20 13.5 4)" fill="currentColor" stroke="none"/><ellipse cx="16.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 16.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="19.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 19.5 7.5)" fill="currentColor" stroke="none"/></svg>
     ve zlonicích · vezlonicich.cz
   </div>
-  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní nehody jsou v přípravě.</p>
+  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní situace — <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (kontrola na pozadí každých 15 minut).</p>
   <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
 </footer>
 
@@ -927,6 +937,74 @@ async function loadAlerts(){
   }
 }
 
+// Dopravní situace (nehody, uzavírky, práce na silnici) — ŘSD/NDIC,
+// viz scripts/update-traffic.mjs a data/README.md. Appka nikdy nevolá
+// ŘSD přímo (Basic Auth s neveřejnými údaji), jen čte předzpracovaný
+// JSON. Stejná bezpečnostní zásada jako u výstrah ČHMÚ: cokoli
+// nejasného/starého se ukáže jako "nelze ověřit", ne jako "žádné situace".
+const TRAFFIC_STALE_MS = 60 * 60 * 1000; // pipeline běží co 15 min, klidná rezerva
+
+function trafficTypeLabel(type){
+  const t = String(type || '').toLowerCase();
+  if (t.includes('accident')) return 'Nehoda';
+  if (t.includes('roadworks') || t.includes('maintenance') || t.includes('construction')) return 'Práce na silnici';
+  if (t.includes('obstruction')) return 'Překážka na silnici';
+  if (t.includes('management') || t.includes('closure') || t.includes('restriction')) return 'Uzavírka/omezení';
+  if (t.includes('abnormaltraffic')) return 'Kolony/mimořádný provoz';
+  return 'Dopravní situace';
+}
+
+function setTrafficTag(cls, text){
+  const tag = document.getElementById('trafficTag');
+  tag.className = 'tag ' + cls;
+  tag.innerHTML = `<span class="dot"></span>${text}`;
+}
+
+async function loadTraffic(){
+  const list = document.getElementById('trafficList');
+  try{
+    const res = await fetch('./data/traffic.json', {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    if (data.status === 'pending_access'){
+      setTrafficTag('soon', 'čeká se na přístup');
+      list.innerHTML = `<div class="sub">${escapeHtml(data.note || 'Čekáme na schválení přístupu k datům ŘSD/NDIC.')}</div>`;
+      return;
+    }
+
+    const ageMs = Date.now() - new Date(data.updated).getTime();
+    if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > TRAFFIC_STALE_MS){
+      setTrafficTag('warn', 'nelze ověřit');
+      list.innerHTML = '<div class="sub">Automatická kontrola dopravních dat ŘSD/NDIC teď neběží nebo selhala. Zkontroluj prosím oficiální zdroj přímo: <a href="https://dopravniinfo.cz" target="_blank" rel="noopener">dopravniinfo.cz</a>.</div>';
+      return;
+    }
+
+    if (data.situations.length === 0){
+      setTrafficTag('live', 'ověřeno');
+      const checked = new Date(data.updated).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+      list.innerHTML = `<div class="sub">ŘSD/NDIC aktuálně nehlásí žádnou dopravní situaci do ${data.radiusKm} km od Zlonic. Ověřeno ${checked}.</div>`;
+      return;
+    }
+
+    setTrafficTag('danger', data.situations.length > 1 ? `${data.situations.length} situace` : '1 situace');
+    list.innerHTML = data.situations.map(s => {
+      const label = escapeHtml(trafficTypeLabel(s.type));
+      const comment = s.comment ? escapeHtml(s.comment) : '';
+      const dist = s.distanceKm.toFixed(1).replace('.', ',');
+      const start = s.startTime ? new Date(s.startTime).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'}) : null;
+      return `<div class="traffic-row">
+        <div class="traffic-head"><span class="takeaway danger">${label}</span><span class="traffic-dist">${dist} km od Zlonic</span></div>
+        ${comment ? `<div class="traffic-comment">${comment}</div>` : ''}
+        ${start ? `<div class="traffic-time">platí od ${start}</div>` : ''}
+      </div>`;
+    }).join('');
+  }catch(e){
+    setTrafficTag('warn', 'nelze ověřit');
+    list.innerHTML = `<div class="sub">Dopravní data se nepodařilo načíst (${escapeHtml(e.message)}).</div>`;
+  }
+}
+
 // Autobusové odjezdy — appka čte jen předzpracovaný jízdní řád (PID GTFS
 // nemá CORS, navíc je to 46 MB zip), viz scripts/update-departures.mjs a
 // data/README.md. "Další odjezdy" appka počítá sama z aktuálního data a
@@ -1184,6 +1262,7 @@ loadWeather();
 loadAirQuality();
 loadAres();
 loadDepartures();
+loadTraffic();
 </script>
 </body>
 </html>
