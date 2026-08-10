@@ -9,7 +9,11 @@ name: Update traffic data
 #   RSD_USERNAME, RSD_PASSWORD = přístupové údaje k odběru "DATEX II -
 #   Běžné dopravní informace v2 (snímek)" z mobilitydata.rsd.cz (Basic Auth,
 #   ne API klíč v hlavičce)
-# Dokud secrety nejsou nastavené, skript se sám ukončí bez chyby a nic nemění.
+#   RSD_PROXY_URL, PROXY_KEY = adresa a klíč Cloudflare Workeru, který
+#   požadavek přeposílá na ŘSD (GitHub Actions runnery mají odsud connect
+#   timeout, viz komentář ve scripts/update-traffic.mjs). Bez těchto dvou
+#   secretů skript volá ŘSD přímo.
+# Dokud RSD_USERNAME/RSD_PASSWORD nejsou nastavené, skript se sám ukončí bez chyby a nic nemění.
 
 on:
   schedule:
@@ -34,6 +38,8 @@ jobs:
         env:
           RSD_USERNAME: ${{ secrets.RSD_USERNAME }}
           RSD_PASSWORD: ${{ secrets.RSD_PASSWORD }}
+          RSD_PROXY_URL: ${{ secrets.RSD_PROXY_URL }}
+          PROXY_KEY: ${{ secrets.PROXY_KEY }}
         run: node scripts/update-traffic.mjs
 
       - name: Commit if changed
