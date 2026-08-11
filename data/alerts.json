@@ -1,7 +1,7 @@
 {
   "status": "ok",
-  "updated": "2026-08-11T06:33:32.338Z",
-  "sourceFile": "alert_cap_50_100805.xml",
+  "updated": "2026-08-11T07:52:06.738Z",
+  "sourceFile": "alert_cap_50_110746.xml",
   "hasActive": true,
   "alerts": [
     {
@@ -10,7 +10,7 @@
       "urgency": "Immediate",
       "certainty": "Likely",
       "headline": null,
-      "onset": "2026-08-10T10:04:45+02:00",
+      "onset": "2026-08-11T09:45:16+02:00",
       "expires": null,
       "web": "https://www.firerisk.cz/"
     }
