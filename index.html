@@ -55,6 +55,7 @@
 
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
+html{scroll-behavior:smooth;}
 body{
   background:var(--stone); color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -94,7 +95,23 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .fact .ctx{font-size:.72rem;color:var(--ink-soft);line-height:1.35;margin-top:.15rem;}
 
 .page{max-width:1080px;margin:0 auto;padding:0 1.4rem 4rem;position:relative;z-index:1;}
+.section, .obec{scroll-margin-top:4.4rem;}
 .section{margin-top:2.2rem;padding-top:1.6rem;border-top:1px solid var(--line);}
+
+/* Rychlá navigace po sekcích — sticky pruh "pilulek", stejné ikony jako
+   u nadpisů sekcí (žádné nové kreslení). Na mobilu i webu stejná
+   komponenta: vodorovně scrollovatelný řádek bez zalomení, ne hamburger
+   (jeden tap = jedna sekce, ne dva). Aktivní sekce se zvýrazňuje sama
+   podle polohy scrollu (viz IntersectionObserver v <script>). */
+.section-nav{position:sticky;top:0;z-index:20;background:var(--stone);border-bottom:1px solid var(--line);}
+.section-nav-inner{max-width:1080px;margin:0 auto;display:flex;gap:.45rem;overflow-x:auto;padding:.55rem 1.4rem;scrollbar-width:none;-ms-overflow-style:none;}
+.section-nav-inner::-webkit-scrollbar{display:none;}
+.nav-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:999px;font-size:.82rem;color:var(--ink-soft);text-decoration:none;white-space:nowrap;border:1px solid transparent;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
+.nav-pill svg{width:1rem;height:1rem;flex:0 0 auto;color:var(--spruce);}
+.nav-pill:hover{background:var(--surface);}
+.nav-pill.active{background:var(--spruce-soft);color:var(--spruce);border-color:var(--spruce);font-weight:600;}
+.nav-pill.active svg{color:var(--spruce);}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap;}
 .section-title{display:flex;align-items:center;gap:.6rem;}
 .section-icon{width:1.2rem;height:1.2rem;color:var(--spruce);flex:0 0 auto;}
@@ -325,6 +342,17 @@ footer a{text-decoration:underline;}
   </div>
 </header>
 
+<nav class="section-nav" id="sectionNav" aria-label="Rychlá navigace po sekcích">
+  <div class="section-nav-inner">
+    <a href="#weather" class="nav-pill" data-target="weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg><span>Počasí</span></a>
+    <a href="#air" class="nav-pill" data-target="air"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg><span>Ovzduší</span></a>
+    <a href="#water" class="nav-pill" data-target="water"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg><span>Voda</span></a>
+    <a href="#bus" class="nav-pill" data-target="bus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg><span>Autobus</span></a>
+    <a href="#traffic" class="nav-pill" data-target="traffic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg><span>Doprava</span></a>
+    <a href="#obec" class="nav-pill" data-target="obec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg><span>Obec</span></a>
+  </div>
+</nav>
+
 <main class="page">
 
   <div class="banner" id="alertBanner">
@@ -336,7 +364,7 @@ footer a{text-decoration:underline;}
     <span class="tag soon" id="alertTag" style="margin-left:auto;"><span class="dot"></span>načítám</span>
   </div>
 
-  <section class="section">
+  <section class="section" id="weather">
     <div class="section-head">
       <div class="section-title">
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg>
@@ -356,7 +384,7 @@ footer a{text-decoration:underline;}
     <div class="today-tips" id="todayTips"></div>
   </section>
 
-  <section class="section">
+  <section class="section" id="air">
     <div class="section-head">
       <div class="section-title">
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg>
@@ -379,7 +407,7 @@ footer a{text-decoration:underline;}
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="water">
     <div class="section-head">
       <div class="section-title">
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg>
@@ -405,7 +433,7 @@ footer a{text-decoration:underline;}
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="bus">
     <div class="section-head">
       <div class="section-title">
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg>
@@ -426,7 +454,7 @@ footer a{text-decoration:underline;}
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="traffic">
     <div class="section-head">
       <div class="section-title">
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg>
@@ -447,7 +475,7 @@ footer a{text-decoration:underline;}
     </div>
   </section>
 
-  <div class="obec">
+  <div class="obec" id="obec">
     <span class="eyebrow-rule"></span>
     <div class="section-title">
       <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg>
@@ -489,6 +517,36 @@ const LAT = 50.2875, LON = 14.0922;
 document.getElementById('clock').textContent = new Date().toLocaleString('cs-CZ', {
   day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'
 });
+
+// Rychlá navigace po sekcích (#sectionNav) — zvýrazňuje pilulku aktuální
+// sekce podle scrollu. rootMargin zúží "viditelné" pásmo na horní třetinu
+// viewportu (hned pod stickym navem) — z těch, co do pásma zasahují, bereme
+// nejvýš položenou. Pásmo blízko horního okraje (ne uprostřed obrazovky) je
+// spolehlivé i po kliknutí na kotvu u krátkých sekcí, kde by prostřední
+// pásmo mohlo přeskočit rovnou na další sekci pod ní.
+(function initSectionNav(){
+  const nav = document.getElementById('sectionNav');
+  if (!nav) return;
+  const links = [...nav.querySelectorAll('.nav-pill')];
+  const targets = links
+    .map(a => document.getElementById(a.dataset.target))
+    .filter(Boolean);
+  if (targets.length === 0) return;
+
+  function setActive(id){
+    links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+  }
+  setActive(targets[0].id); // než se stihne vyhodnotit scroll, ať není pruh úplně prázdný
+
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries.filter(e => e.isIntersecting);
+    if (visible.length === 0) return;
+    visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    setActive(visible[0].target.id);
+  }, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+
+  targets.forEach(t => observer.observe(t));
+})();
 
 const WMO = {
   0:['Jasno','☀️'],1:['Skoro jasno','🌤️'],2:['Polojasno','⛅'],3:['Zataženo','☁️'],
