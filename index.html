@@ -131,6 +131,9 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .card .takeaway.good{background:var(--good-soft);color:var(--good);}
 .card .takeaway.warn{background:var(--warn-soft);color:var(--warn);}
 .card .takeaway.danger{background:var(--danger-soft);color:var(--danger);}
+.card .sub-row{margin-top:.65rem;padding-top:.55rem;border-top:1px dashed var(--line);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;font-size:.8rem;color:var(--ink-soft);cursor:help;}
+.card .sub-row b{font-family:ui-monospace,monospace;color:var(--ink);font-weight:600;}
+.card .sub-row .takeaway{margin-top:0;margin-left:auto;}
 
 .forecast{display:flex;gap:.7rem;overflow-x:auto;padding-bottom:.3rem;}
 .fday{flex:0 0 auto;width:104px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.85rem .7rem;text-align:center;}
@@ -520,6 +523,20 @@ const HUMIDITY_BANDS = [
 ];
 function humidityBand(pct){ return HUMIDITY_BANDS.find(b => pct <= b.max); }
 
+// Orientační pásma vlhkosti povrchu půdy (0-1 cm, objemový obsah vody v %).
+// POZOR: skutečný bod vadnutí i polní kapacita se výrazně liší podle typu
+// půdy (písčitá/hlinitá/jílovitá) — appka pro Zlonice žádný ověřený rozbor
+// půdy nemá, takže tohle jsou obecné orientační hranice, ne přesná
+// agronomická diagnóza. Stejná opatrnost jako u pylu: raději hrubý, ale
+// popsaný odhad než tvářit se na přesnost, kterou appka nemá.
+const SOIL_MOISTURE_BANDS = [
+  {max:10, name:'Velmi sucho', level:'danger', desc:'Svrchní vrstva půdy je hodně vysušená — orientačně, přesný práh závisí na typu půdy. Bez zálivky hrozí rostlinám stres suchem.'},
+  {max:20, name:'Sucho', level:'warn', desc:'Svrchní vrstva půdy je suchá — orientačně, přesný práh závisí na typu půdy. Zvaž zálivku, hlavně u mladých rostlin.'},
+  {max:35, name:'Vlhko', level:'good', desc:'Přiměřená vlhkost povrchu půdy — orientačně, přesný práh závisí na typu půdy.'},
+  {max:Infinity, name:'Nasyceno', level:'warn', desc:'Svrchní vrstva půdy je hodně vlhká až nasycená — orientačně, přesný práh závisí na typu půdy. Další zálivka teď není potřeba.'},
+];
+function soilMoistureBand(pct){ return SOIL_MOISTURE_BANDS.find(b => pct <= b.max); }
+
 // Beaufortova stupnice síly větru — reálný meteorologický standard z roku 1805,
 // dodnes používaný. Hranice v km/h pro průměrnou rychlost (ne nárazy).
 const BEAUFORT = [
@@ -611,7 +628,7 @@ function renderTodayTips(c, hourly, startIdx){
 async function loadWeather(){
   let data;
   try{
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=5`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure,soil_moisture_0_to_1cm&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=5`;
     const res = await fetch(url);
     data = await res.json();
   }catch(e){
@@ -625,14 +642,24 @@ async function loadWeather(){
   const c = data.current;
 
   try{
-    const wmo = WMO[c.weather_code] || ['—','·'];
     const hBand = humidityBand(Math.round(c.relative_humidity_2m));
     const wBand = beaufortFor(c.wind_speed_10m);
+    // Vlhkost půdy (0-1 cm, povrch) — modelovaný odhad (land-surface model),
+    // ne měření senzorem přímo ve Zlonicích, proto title vysvětlivka jako
+    // u ostatních "appka odhaduje" hodnot na webu. Vlastní hodnotící odznak
+    // (soilBand), ne jen holé číslo — ale oddělený od odznaku vlhkosti
+    // vzduchu, ať je jasné, ke které hodnotě se který vztahuje.
+    const soilPct = typeof c.soil_moisture_0_to_1cm === 'number' ? Math.round(c.soil_moisture_0_to_1cm * 100) : null;
+    const soilBand = soilPct != null ? soilMoistureBand(soilPct) : null;
     document.getElementById('weatherCards').innerHTML = `
       <div class="card"><div class="k">Teplota</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">pocitově ${c.apparent_temperature.toFixed(1)} °C</div></div>
-      <div class="card"><div class="k">Vlhkost</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div><div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div></div>
+      <div class="card">
+        <div class="k">Vlhkost vzduchu</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div>
+        <div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div>
+        ${soilBand ? `<div class="sub-row" title="Modelovaný odhad vlhkosti povrchu půdy (0–1 cm), ne měření senzorem na místě. ${soilBand.desc}">Půda (0–1 cm) <b>${soilPct} %</b><span class="takeaway ${soilBand.level}">${soilBand.name}</span></div>` : ''}
+      </div>
       <div class="card"><div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div><div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h</div><div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force}° Bft · ${wBand.name}</div></div>
-      <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">${wmo[0]}</div></div>
+      <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div></div>
     `;
   }catch(e){
     document.getElementById('weatherCards').innerHTML = `<div class="soon-card">Počasí se nepodařilo zobrazit (${e.message}).</div>`;
