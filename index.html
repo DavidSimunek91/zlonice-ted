@@ -562,8 +562,14 @@ function hourGoodForWater(H, idx){
   const hr = new Date(H.time[idx]).getHours();
   return hr >= 5 && hr < 9;
 }
+// Kolik hodin zpátky ještě počítáme trávu jako mokrou od deště — nejde jen
+// o hodinu, kdy pršelo, tráva schne postupně i po přeháňce.
+const MOW_WET_LOOKBACK_HOURS = 3;
 function hourGoodForMow(H, idx){
   if ((H.precipitation[idx] ?? 0) > 0.1) return false;
+  for (let i = Math.max(0, idx - MOW_WET_LOOKBACK_HOURS); i < idx; i++){
+    if ((H.precipitation[i] ?? 0) > 0.1) return false; // tráva ještě mokrá od nedávného deště
+  }
   const hr = new Date(H.time[idx]).getHours();
   if (hr >= 4 && hr <= 9 && (H.relative_humidity_2m[idx] ?? 0) >= 88) return false; // rosa
   if ((H.temperature_2m[idx] ?? 0) >= 28) return false;
@@ -759,14 +765,26 @@ function bandForNO2(v){ return NO2_BANDS.find(b => v <= b.max); }
 // pásma dobrá/zvýšená/atd. jako u PM/O₃/NO₂ — autoritativní zdravotní
 // prahy pro jednotlivé druhy pylu se mezi zdroji liší a appka by je jen
 // hádala. Zlatá (--gold) tady není zdravotní signál, jen barva pylu jako
-// takového. Lišta pod hodnotou je čistě relativní (vůči nejsilnějšímu
-// druhu dnes) — ne odvozená z nějaké zdravotní stupnice.
+// takového.
+//
+// Lišta NENÍ relativní vůči nejsilnějšímu druhu dneška — to dřív dělalo
+// z jakéhokoliv "nejsilnějšího" druhu plnou lištu, i když šlo o pár
+// zanedbatelných zrn/m³ (tráva 3,6 vypadala stejně "naplno" jako bříza 87).
+// Místo toho je to odmocninová škála se společným stropem pro všechny
+// druhy (POLLEN_BAR_CAP) — čistě vizuální kotva na absolutní hodnotě, ne
+// tvrzení o závažnosti (ta se mezi druhy i zdroji liší, viz výš).
+// Odmocnina dělá rozdíly v nižších hodnotách čitelnější než lineární škála.
 const POLLEN_META = {
   birch_pollen: {label:'Bříza', icon:'🌳'}, alder_pollen: {label:'Olše', icon:'🌲'},
   grass_pollen: {label:'Tráva', icon:'🌾'}, mugwort_pollen: {label:'Pelyněk', icon:'🌿'},
   ragweed_pollen: {label:'Ambrózie', icon:'🌱'}, olive_pollen: {label:'Oliva', icon:'🫒'},
 };
 const POLLEN_NOTICEABLE = 1; // grains/m³ — pod tím appka druh vůbec nezmiňuje
+const POLLEN_BAR_CAP = 50; // grn/m³ — nad touhle hodnotou je lišta prostě plná
+
+function pollenBarPct(value){
+  return Math.max(8, Math.min(100, Math.round((Math.sqrt(value) / Math.sqrt(POLLEN_BAR_CAP)) * 100)));
+}
 
 function renderPollen(c){
   const el = document.getElementById('aqiPollen');
@@ -775,9 +793,8 @@ function renderPollen(c){
     .filter(p => typeof p.value === 'number' && p.value >= POLLEN_NOTICEABLE)
     .sort((a, b) => b.value - a.value);
   if (items.length === 0){ el.innerHTML = ''; return; }
-  const max = items[0].value;
   const chips = items.map(p => {
-    const pct = Math.max(8, Math.round((p.value / max) * 100));
+    const pct = pollenBarPct(p.value);
     const val = p.value.toFixed(1).replace('.', ',');
     return `<div class="pollen-chip">
       <div class="pollen-chip-row"><span class="pollen-icon">${p.icon}</span><span class="pollen-label">${p.label}</span><span class="pollen-value">${val}</span></div>
