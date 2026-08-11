@@ -611,7 +611,7 @@ function renderTodayTips(c, hourly, startIdx){
 async function loadWeather(){
   let data;
   try{
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=5`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure,soil_moisture_0_to_1cm&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=5`;
     const res = await fetch(url);
     data = await res.json();
   }catch(e){
@@ -628,11 +628,15 @@ async function loadWeather(){
     const wmo = WMO[c.weather_code] || ['—','·'];
     const hBand = humidityBand(Math.round(c.relative_humidity_2m));
     const wBand = beaufortFor(c.wind_speed_10m);
+    // Vlhkost půdy (0-1 cm, povrch) — modelovaný odhad (land-surface model),
+    // ne měření senzorem přímo ve Zlonicích, proto title vysvětlivka jako
+    // u ostatních "appka odhaduje" hodnot na webu.
+    const soilPct = typeof c.soil_moisture_0_to_1cm === 'number' ? Math.round(c.soil_moisture_0_to_1cm * 100) : null;
     document.getElementById('weatherCards').innerHTML = `
       <div class="card"><div class="k">Teplota</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">pocitově ${c.apparent_temperature.toFixed(1)} °C</div></div>
-      <div class="card"><div class="k">Vlhkost</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div><div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div></div>
+      <div class="card"><div class="k">Vlhkost</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div><div class="sub" title="Modelovaný odhad vlhkosti povrchu půdy (0–1 cm), ne měření senzorem na místě.">${soilPct != null ? `půda ${soilPct} %` : 'půda —'}</div><div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div></div>
       <div class="card"><div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div><div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h</div><div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force}° Bft · ${wBand.name}</div></div>
-      <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">${wmo[0]}</div></div>
+      <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">${wmo[0]} · tlak ${c.surface_pressure.toFixed(1)} hPa</div></div>
     `;
   }catch(e){
     document.getElementById('weatherCards').innerHTML = `<div class="soon-card">Počasí se nepodařilo zobrazit (${e.message}).</div>`;
