@@ -1,18 +1,18 @@
 {
   "status": "ok",
-  "updated": "2026-08-11T11:54:17.827Z",
-  "sourceFile": "alert_cap_50_110746.xml",
+  "updated": "2026-08-11T13:12:28.153Z",
+  "sourceFile": "alert_cap_70_111200.xml",
   "hasActive": true,
   "alerts": [
     {
-      "event": "Riziko požárů",
-      "severity": "Moderate",
+      "event": "Hydrologické sucho",
+      "severity": "Severe",
       "urgency": "Immediate",
-      "certainty": "Likely",
+      "certainty": "Observed",
       "headline": null,
-      "onset": "2026-08-11T09:45:16+02:00",
+      "onset": "2026-08-11T14:00:00+02:00",
       "expires": null,
-      "web": "https://www.firerisk.cz/"
+      "web": "https://hamr.chmi.cz/"
     }
   ]
 }
