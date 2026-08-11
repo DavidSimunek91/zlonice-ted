@@ -14,6 +14,14 @@
 // o sobě nijak neukládá). Když RSD_PROXY_URL není nastavené, skript
 // volá ŘSD přímo — pro případ, že by se blokace v budoucnu zrušila.
 //
+// POZOR: ani Cloudflare Worker není spolehlivá 100% záchrana — ověřeno
+// (11.8.2026): i cesta Worker→ŘSD občas skončí na Cloudflare 522
+// (connection timed out), zřejmě proto, že Workers mají sdílený výstupní
+// IP fond napříč všemi zákazníky Cloudflare, ne vyhrazenou IP. Reálně to
+// vychází na ~25 % úspěšnost jednotlivých běhů, ne blokaci na 100 %. Proto
+// níž v main().catch() při chybě NEpřepisujeme poslední DOBRÁ data —
+// viz komentář tam.
+//
 // POZOR (přečti, než budeš ladit nesedící data): parser níž je napsaný
 // podle standardní struktury DATEX II v2.3 "Situation Publication"
 // (d2LogicalModel > payloadPublication > situation > situationRecord,
@@ -30,11 +38,15 @@
 //
 // Bezpečnostní pravidla, stejná jako u ostatních zdrojů v tomhle repu:
 //   1. Cokoli se nepovede (síť, auth, formát, chybějící očekávaná pole) →
-//      explicitní status:"error", NIKDY tiše "žádné situace" jen proto,
-//      že jsme nic nenašli/nerozparsovali.
-//   2. Appka na frontendu navíc kontroluje stáří pole `updated`.
+//      NIKDY tiše "žádné situace" jen proto, že jsme nic nenašli/
+//      nerozparsovali. Když ale existují poslední DOBRÁ data, necháváme
+//      je beze změny místo přepsání chybou (viz main().catch() níž) —
+//      appka pořád nikdy neukáže vymyšlené/hádané "žádné situace", jen
+//      neztrácí poslední ověřenou pravdu kvůli jednomu zádrhelu.
+//   2. Appka na frontendu navíc kontroluje stáří pole `updated` — proto
+//      bod 1 funguje: dlouhodobý výpadek se i tak správně projeví.
 
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { XMLParser } from 'fast-xml-parser';
 
 const OUT_PATH = 'data/traffic.json';
@@ -199,6 +211,30 @@ async function main() {
 
 main().catch((err) => {
   console.error('Aktualizace dopravních dat selhala:', err);
+
+  // ŘSD/Cloudflare relace bývá nespolehlivá (viz komentář nahoře, ~25 %
+  // úspěšnost) — jeden neúspěšný běh z mnoha by dřív hned přepsal
+  // poslední DOBRÁ data chybovým stavem, takže appka hlásila "nelze
+  // ověřit" mnohem častěji, než odpovídalo realitě. Když poslední
+  // zapsaná data mají status "ok", necháváme je beze změny — appka na
+  // frontendu si stáří pole `updated` hlídá sama (TRAFFIC_STALE_MS),
+  // takže dlouhodobý výpadek pořád správně skončí v "nelze ověřit", jen
+  // ne po každém jednotlivém škobrtnutí.
+  let previousWasOk = false;
+  try {
+    if (existsSync(OUT_PATH)) {
+      previousWasOk = JSON.parse(readFileSync(OUT_PATH, 'utf-8'))?.status === 'ok';
+    }
+  } catch {
+    // Poškozený/nečitelný předchozí soubor — nemáme co zachovat,
+    // spadneme do zápisu chybového stavu níž.
+  }
+
+  if (previousWasOk) {
+    console.log('Poslední data byla v pořádku, ponechávám je beze změny místo přepsání chybou.');
+    return;
+  }
+
   const output = { status: 'error', updated: new Date().toISOString(), message: String(err.message || err) };
   writeFileSync(OUT_PATH, JSON.stringify(output, null, 2) + '\n');
 });
