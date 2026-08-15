@@ -1,0 +1,8 @@
+# Veřejný vstup pro relay-server.mjs — Caddy zajišťuje automatické TLS
+# (Let's Encrypt) a přepošle dál na proces poslouchající na localhost.
+# Nahraď doménu za tu, kterou skutečně nasměruješ (A záznam) na
+# rezervovanou statickou IP z Oracle Cloud — viz README.md, krok 5.
+
+rsd-relay.vezlonicich.cz {
+	reverse_proxy 127.0.0.1:8787
+}
