@@ -1,0 +1,20 @@
+[Unit]
+Description=RSD/NDIC relay - stala IP pro pripadny allowlist u RSD
+After=network.target
+
+[Service]
+Type=simple
+Environment=RELAY_PORT=8787
+# Nahraď hodnotou z GitHub secretu PROXY_KEY (stejná, co používal dřív
+# Cloudflare Worker — nemusí se generovat nová).
+Environment=PROXY_KEY=REPLACE_ME
+ExecStart=/usr/bin/node /opt/rsd-relay/relay-server.mjs
+Restart=on-failure
+RestartSec=5
+User=rsd-relay
+NoNewPrivileges=true
+ProtectSystem=strict
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
