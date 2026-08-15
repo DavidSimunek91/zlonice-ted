@@ -1,29 +1,9 @@
 {
   "status": "ok",
-  "updated": "2026-08-15T17:47:22.960Z",
+  "updated": "2026-08-15T18:00:48.098Z",
   "sourceFile": "alert_cap_50_150822.xml",
   "hasActive": true,
   "alerts": [
-    {
-      "event": "Vysoké teploty",
-      "severity": "Moderate",
-      "urgency": "Expected",
-      "certainty": "Likely",
-      "headline": null,
-      "onset": "2026-08-15T11:00:00+02:00",
-      "expires": "2026-08-15T20:00:00+02:00",
-      "web": "https://vystrahy-cr.chmi.cz/"
-    },
-    {
-      "event": "Silná zátěž teplem",
-      "severity": "Moderate",
-      "urgency": "Expected",
-      "certainty": "Likely",
-      "headline": null,
-      "onset": "2026-08-15T11:00:00+02:00",
-      "expires": "2026-08-15T20:00:00+02:00",
-      "web": "https://vystrahy-cr.chmi.cz/"
-    },
     {
       "event": "Riziko požárů",
       "severity": "Moderate",
