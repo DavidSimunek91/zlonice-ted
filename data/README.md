@@ -109,6 +109,58 @@ stejně snadno jako Open-Meteo.
   chybě zpoždění tiše skryje, ne že by ukázala starou hodnotu jako
   aktuální — pro tenhle konkrétní údaj je "nic" bezpečnější než "asi".
 
+## Řemeslníci a služby (`tradespeople.json`)
+
+- **Zdroj 1 (páteř dat):** [ARES](https://ares.gov.cz) / Živnostenský
+  rejstřík (RŽP) — veřejný registr, žádný klíč, CORS povolený i pro appku
+  (appka na to i tak přímo nesahá, viz níž proč). Endpoint
+  `ekonomicke-subjekty-rzp/{ico}` dává u každého živnostníka konkrétní
+  živnosti (`predmetPodnikani`) — text jako "Zednictví" nebo "Montáž,
+  opravy, revize a zkoušky elektrických zařízení", ne jen obecný kód oboru
+  jako u dlaždice "Místní firmy podle oboru" výš. Dává i adresu místa
+  podnikání a datum vzniku živnosti. **Nedává telefon ani e-mail** —
+  živnostenský rejstřík tohle neeviduje, appka místo toho ukazuje jen to,
+  co se podaří obohatit ze zdroje 2, jinak nic.
+- **Zdroj 2 (jen obohacení kontaktu):** OpenStreetMap přes Overpass API —
+  když se najde POI (`craft=*`/`shop=*`) se shodným jménem I oborem jako u
+  ARES záznamu, přidá se telefon/web (viz `matchOsm()` ve skriptu).
+  Pokrytí je nahodilé (jen kdo se sám zapsal do OSM/Mapy.cz) a shoda musí
+  být jednoznačná — nikdy nepřidává nové lidi, jen občas dovybaví kontakt
+  u někoho, koho už máme z ARESu.
+  - **Overpass vyžaduje smysluplnou `User-Agent` hlavičku**, jinak rovnou
+    vrací HTTP 429 (ověřeno) — viz hlavička ve skriptu. I tak je to
+    jediný veřejný Overpass zdroj se sdíleným výstupním provozem napříč
+    všemi uživateli, takže jednotlivé běhy občas selžou na 429/504 přetížením
+    — skript v tom případě pokračuje BEZ obohacení kontaktů (nikdy nespadne
+    kvůli tomuhle bonusu), zkusí to znovu příští týden.
+  - firmy.cz / Zlaté stránky nemají otevřené API (jen komerční scraping
+    služby typu Merk.cz) — proto se nepoužívají.
+- **Rozsah (v1): jen samotné Zlonice** (kódObce 533114, RÚIAN — pokrývá i
+  místní části jako Břešťany), ne okolní obce. Vědomé rozhodnutí kvůli
+  rozsahu první verze, ne technické omezení — `KOD_OBCE` ve skriptu jde
+  rozšířit na víc obcí, kdyby appka chtěla pokrýt širší okolí.
+- **Co appka počítá za "řemeslníka":** jen živnosti, jejichž
+  `predmetPodnikani` je v ruční mapě `PREDMET_TO_CATEGORY` ve skriptu (~20
+  kategorií — zedník, elektrikář, instalatér, švadlena...). Obecná volná
+  živnost ("Výroba, obchod a služby neuvedené v přílohách 1 až 3
+  živnostenského zákona", má ji skoro každý OSVČ) se záměrně ignoruje, ať
+  appka neukazuje kdejakého e-shopáře jako řemeslníka.
+- **Aktualizace:** `.github/workflows/update-tradespeople.yml`, jednou
+  týdně (pondělí) — živnostenský rejstřík se mění řádově měsíčně, častější
+  běh by jen zbytečně zatěžoval ARES stovkami dotazů (jeden na osobu).
+- **Bezpečnostní pravidla:**
+  - Když selže seznam subjektů z ARESu úplně, nebo se podaří načíst míň
+    než 70 % detailů aktivních živnostníků → celý běh skončí jako chyba a
+    poslední DOBRÁ data zůstanou beze změny (stejné pravidlo jako u
+    traffic/water pipeline).
+  - Jednotlivé neúspěšné dotazy na pár konkrétních lidí (timeout) běh
+    nezastaví, ten člověk se v daném běhu vynechá — loguje se kolik.
+- **Veřejnost dat:** živnostenský rejstřík je ze zákona veřejný rejstřík
+  přesně za účelem dohledatelnosti "kdo podniká v čem, kde" — appka tady
+  nezveřejňuje nic, co by ARES/RŽP už samo nezveřejňovalo. Adresa je
+  adresa **místa podnikání** (ne nutně trvalého bydliště), jak ji sám
+  živnostník při registraci uvedl.
+
 ## Voda (`water.json`)
 
 - **Zdroj:** ČHMÚ hydrologická opendata, stanice **Velvary** (tok Bakovský
