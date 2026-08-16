@@ -292,6 +292,24 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
   .ares-history{grid-template-columns:1fr;}
 }
 
+/* řemeslníci */
+.trade-filters{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0 1.2rem;}
+.trade-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .7rem;border-radius:999px;font-size:.8rem;background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
+.trade-chip .n{font-family:ui-monospace,monospace;font-size:.72rem;opacity:.75;}
+.trade-chip:hover{border-color:var(--spruce);}
+.trade-chip.active{background:var(--spruce-soft);color:var(--spruce);border-color:var(--spruce);font-weight:600;}
+.trade-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.8rem;}
+.trade-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.9rem 1rem;}
+.trade-card-head{display:flex;align-items:flex-start;gap:.6rem;}
+.trade-card-head .icon{font-size:1.25rem;line-height:1.3;flex:0 0 auto;}
+.trade-card-head strong{display:block;font-size:.92rem;line-height:1.3;}
+.trade-cats{font-size:.76rem;color:var(--ink-soft);margin-top:.1rem;}
+.trade-meta{margin-top:.55rem;font-size:.78rem;color:var(--ink-soft);}
+.trade-contact{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);}
+.trade-phone{display:inline-flex;align-items:center;gap:.3rem;font-size:.84rem;font-weight:600;color:var(--good);text-decoration:none;}
+.trade-find{font-size:.8rem;color:var(--sky);text-decoration:underline;}
+.trade-empty{grid-column:1/-1;}
+
 footer{max-width:1080px;margin:2.6rem auto 0;padding:1.6rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.78rem;}
 footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--spruce);margin-bottom:.9rem;}
 footer .foot-brand svg{width:1rem;height:1rem;}
@@ -350,6 +368,7 @@ footer a{text-decoration:underline;}
     <a href="#bus" class="nav-pill" data-target="bus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg><span>Autobus</span></a>
     <a href="#traffic" class="nav-pill" data-target="traffic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg><span>Doprava</span></a>
     <a href="#obec" class="nav-pill" data-target="obec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg><span>Obec</span></a>
+    <a href="#tradespeople" class="nav-pill" data-target="tradespeople"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg><span>Řemeslníci</span></a>
   </div>
 </nav>
 
@@ -500,6 +519,21 @@ footer a{text-decoration:underline;}
     </div>
   </div>
 
+  <section class="section" id="tradespeople">
+    <div class="section-head">
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg>
+        <h2>Řemeslníci a služby</h2>
+      </div>
+      <span class="tag soon" id="tradeTag"><span class="dot"></span>načítám…</span>
+    </div>
+    <div class="card" id="tradeCard">
+      <p class="dep-note" style="margin-top:0;">Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web appka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt".</p>
+      <div class="trade-filters" id="tradeFilters"></div>
+      <div class="trade-grid" id="tradeGrid"></div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
@@ -507,7 +541,7 @@ footer a{text-decoration:underline;}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20 6 8M12 20 12 4M18 20 18 8"/><ellipse cx="4.5" cy="9.5" rx="1.6" ry="2.7" transform="rotate(-25 4.5 9.5)" fill="currentColor" stroke="none"/><ellipse cx="7.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 7.5 7.5)" fill="currentColor" stroke="none"/><ellipse cx="10.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 10.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="13.5" cy="4" rx="1.6" ry="2.7" transform="rotate(20 13.5 4)" fill="currentColor" stroke="none"/><ellipse cx="16.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 16.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="19.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 19.5 7.5)" fill="currentColor" stroke="none"/></svg>
     ve zlonicích · vezlonicich.cz
   </div>
-  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní situace — <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (kontrola na pozadí každých 15 minut).</p>
+  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Řemeslníci a služby — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES / živnostenský rejstřík</a> a <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> (aktualizace jednou týdně). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní situace — <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (kontrola na pozadí každých 15 minut).</p>
   <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
 </footer>
 
@@ -1462,6 +1496,95 @@ async function loadWater(){
   }
 }
 
+// Řemeslníci a služby — appka sama na ARES/OSM nevolá stovky dotazů (to
+// dělá jednou týdně scripts/update-tradespeople.mjs na pozadí), jen čte
+// hotový data/tradespeople.json. Kategorie/lidi appka nefiltruje na
+// serveru — filtr podle oboru je čistě klientský přepínač viditelnosti
+// karet, ať je to instantní bez dalšího fetch.
+const TRADE_STALE_MS = 24 * 24 * 60 * 60 * 1000; // pipeline běží týdně, tolerujeme pár vynechaných běhů
+
+function tradeContactHtml(person, categoryLabel){
+  if (person.phone){
+    const telHref = 'tel:' + person.phone.replace(/[^\d+]/g, '');
+    return `<a class="trade-phone" href="${telHref}">📞 ${escapeHtml(person.phone)}</a>`;
+  }
+  const q = encodeURIComponent(`${person.name} ${person.village || 'Zlonice'} ${categoryLabel}`.trim());
+  return `<a class="trade-find" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Najít kontakt ↗</a>`;
+}
+
+function renderTradeGrid(people, categories, activeId){
+  const grid = document.getElementById('tradeGrid');
+  const filtered = activeId === 'all' ? people : people.filter(p => p.categories.includes(activeId));
+  if (filtered.length === 0){
+    grid.innerHTML = '<div class="soon-card trade-empty">V téhle kategorii appka zatím nikoho nenašla.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(p => {
+    const catLabels = p.categories.map(id => categories[id]?.label).filter(Boolean);
+    const icon = categories[p.categories[0]]?.icon || '🛠️';
+    const meta = [p.village, p.since ? `podniká od ${p.since}` : null].filter(Boolean).join(' · ');
+    return `
+      <div class="trade-card">
+        <div class="trade-card-head">
+          <span class="icon">${icon}</span>
+          <div>
+            <strong>${escapeHtml(p.name)}</strong>
+            <div class="trade-cats">${escapeHtml(catLabels.join(' · '))}</div>
+          </div>
+        </div>
+        ${meta ? `<div class="trade-meta">${escapeHtml(meta)}</div>` : ''}
+        <div class="trade-contact">${tradeContactHtml(p, catLabels[0] || '')}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderTradeFilters(people, categories){
+  const counts = {};
+  people.forEach(p => p.categories.forEach(id => { counts[id] = (counts[id] || 0) + 1; }));
+  const sortedIds = Object.keys(categories).sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+
+  const chip = (id, label, icon, n, active) =>
+    `<button type="button" class="trade-chip${active ? ' active' : ''}" data-cat="${id}">${icon ? icon + ' ' : ''}${escapeHtml(label)} <span class="n">${n}</span></button>`;
+
+  const html = [chip('all', 'Vše', '', people.length, true)]
+    .concat(sortedIds.map(id => chip(id, categories[id].label, categories[id].icon, counts[id] || 0, false)))
+    .join('');
+  const filters = document.getElementById('tradeFilters');
+  filters.innerHTML = html;
+
+  filters.addEventListener('click', (e) => {
+    const btn = e.target.closest('.trade-chip');
+    if (!btn) return;
+    filters.querySelectorAll('.trade-chip').forEach(c => c.classList.toggle('active', c === btn));
+    renderTradeGrid(people, categories, btn.dataset.cat);
+  });
+}
+
+async function loadTradespeople(){
+  const tag = document.getElementById('tradeTag');
+  try{
+    const res = await fetch('./data/tradespeople.json', {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    const ageMs = Date.now() - new Date(data.updated).getTime();
+    if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > TRADE_STALE_MS){
+      throw new Error('data jsou zastaralá nebo se poslední aktualizace nepovedla');
+    }
+
+    tag.className = 'tag snapshot';
+    tag.innerHTML = '<span class="dot"></span>aktualizace týdně · ARES';
+    renderTradeFilters(data.people, data.categories);
+    renderTradeGrid(data.people, data.categories, 'all');
+  }catch(e){
+    tag.className = 'tag warn';
+    tag.innerHTML = '<span class="dot"></span>nelze ověřit';
+    document.getElementById('tradeFilters').innerHTML = '';
+    document.getElementById('tradeGrid').innerHTML =
+      `<div class="soon-card trade-empty">Seznam řemeslníků se nepodařilo načíst (${escapeHtml(e.message)}). Zkuste to prosím později.</div>`;
+  }
+}
+
 loadAlerts();
 loadWater();
 loadWeather();
@@ -1469,6 +1592,7 @@ loadAirQuality();
 loadAres();
 loadDepartures();
 loadTraffic();
+loadTradespeople();
 </script>
 </body>
 </html>
