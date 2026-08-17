@@ -1,16 +1,16 @@
 {
   "status": "ok",
-  "updated": "2026-08-17T12:49:49.224Z",
-  "sourceFile": "alert_cap_50_170852.xml",
+  "updated": "2026-08-17T13:31:17.875Z",
+  "sourceFile": "alert_cap_50_171330.xml",
   "hasActive": true,
   "alerts": [
     {
       "event": "Silné bouřky",
       "severity": "Moderate",
-      "urgency": "Expected",
+      "urgency": "Immediate",
       "certainty": "Likely",
       "headline": null,
-      "onset": "2026-08-17T11:30:00+02:00",
+      "onset": "2026-08-17T15:28:49+02:00",
       "expires": "2026-08-17T18:00:00+02:00",
       "web": "https://vystrahy-cr.chmi.cz/"
     },
@@ -20,7 +20,7 @@
       "urgency": "Immediate",
       "certainty": "Likely",
       "headline": null,
-      "onset": "2026-08-17T10:42:57+02:00",
+      "onset": "2026-08-17T15:28:49+02:00",
       "expires": null,
       "web": "https://www.firerisk.cz/"
     }
