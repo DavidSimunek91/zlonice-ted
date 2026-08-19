@@ -1,1 +1,1 @@
-{"status":"ok","updated":"2026-08-19T19:53:35.171Z","byTrip":{"590_174_260525":{"isCanceled":false,"isAtStop":false,"delayAvailable":true,"delayMinutes":0,"delaySeconds":34,"scheduled":"2026-08-19T22:45:00+02:00","predicted":"2026-08-19T22:45:34+02:00"}}}
+{"status":"ok","updated":"2026-08-19T20:13:05.358Z","byTrip":{"590_174_260525":{"isCanceled":false,"isAtStop":false,"delayAvailable":true,"delayMinutes":1,"delaySeconds":63,"scheduled":"2026-08-19T22:45:00+02:00","predicted":"2026-08-19T22:46:03+02:00"}}}
