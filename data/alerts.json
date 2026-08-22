@@ -1,18 +1,7 @@
 {
   "status": "ok",
-  "updated": "2026-08-21T23:57:23.054Z",
+  "updated": "2026-08-22T01:43:13.775Z",
   "sourceFile": "alert_cap_50_211917.xml",
-  "hasActive": true,
-  "alerts": [
-    {
-      "event": "Silné bouřky",
-      "severity": "Moderate",
-      "urgency": "Immediate",
-      "certainty": "Likely",
-      "headline": null,
-      "onset": "2026-08-21T21:15:01+02:00",
-      "expires": "2026-08-22T02:00:00+02:00",
-      "web": "https://vystrahy-cr.chmi.cz/"
-    }
-  ]
+  "hasActive": false,
+  "alerts": []
 }
