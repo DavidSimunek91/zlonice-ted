@@ -1,7 +1,18 @@
 {
   "status": "ok",
-  "updated": "2026-09-08T11:37:43.564Z",
-  "sourceFile": "alert_cap_50_080754.xml",
-  "hasActive": false,
-  "alerts": []
+  "updated": "2026-09-08T15:18:48.098Z",
+  "sourceFile": "alert_cap_70_081200.xml",
+  "hasActive": true,
+  "alerts": [
+    {
+      "event": "Stav sucha",
+      "severity": "Moderate",
+      "urgency": "Immediate",
+      "certainty": "Observed",
+      "headline": null,
+      "onset": "2026-09-08T14:00:00+02:00",
+      "expires": null,
+      "web": "https://hamr.chmi.cz/"
+    }
+  ]
 }
