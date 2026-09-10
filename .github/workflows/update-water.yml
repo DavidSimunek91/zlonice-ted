@@ -6,7 +6,14 @@ name: Update water data
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # Schválně mimo kulaté minuty (ne */15) — GitHub Actions dokumentuje, že
+    # scheduled běhy naražené přesně na :00/:15/:30/:45 (kdy je spouští
+    # obrovské množství repozitářů najednou) mívají mnohem větší šanci na
+    # zpoždění nebo úplné vynechání. V historii běhů tohohle pipeline byly
+    # reálné rozestupy hodiny místo 15 minut — proto appka dlouho ukazovala
+    # "nelze ověřit" u vody. Offset odlišný od update-traffic.yml, aby si oba
+    # 15minutové pipeline nešlapaly na paty ve stejnou vteřinu.
+    - cron: '9,24,39,54 * * * *'
   workflow_dispatch: {}
 
 jobs:

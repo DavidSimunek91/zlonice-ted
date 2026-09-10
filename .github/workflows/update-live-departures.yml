@@ -7,7 +7,11 @@ name: Update live bus delays
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    # Schválně mimo kulaté minuty (ne */5) — viz update-alerts.yml pro
+    # vysvětlení, proč se scheduled běh na kulaté minutě mnohem hůř dočká
+    # spuštění. Tenhle pipeline to postihuje nejvíc (nejčastější interval),
+    # takže "žádná data o zpoždění" bylo v appce vidět skoro pořád.
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
   workflow_dispatch: {}
 
 jobs:
