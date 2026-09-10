@@ -17,7 +17,10 @@ name: Update traffic data
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # Schválně mimo kulaté minuty (ne */15) — viz update-alerts.yml pro
+    # vysvětlení. Offset odlišný od update-water.yml, aby si oba 15minutové
+    # pipeline nešlapaly na paty ve stejnou vteřinu.
+    - cron: '6,21,36,51 * * * *'
   workflow_dispatch: {}
 
 jobs:

@@ -469,7 +469,7 @@ footer a{text-decoration:underline;}
         <select id="depStopSelect" class="stop-select"></select>
       </div>
       <div class="dep-list" id="depList"><div class="sub">načítám…</div></div>
-      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "živě nedostupné" znamená, že live zpoždění teď appce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
+      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "žádná data o zpoždění" znamená, že live zpoždění teď appce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
     </div>
   </section>
 
@@ -1323,7 +1323,9 @@ function delayBadgeFor(tripId){
   // vůbec neuměla, ne že zrovna dočasně nefunguje. Teď se to řekne
   // explicitně, stejný princip jako u konkrétního spoje bez dat níž:
   // "nevíme" musí být vždycky vidět jako "nevíme", nikdy jako ticho.
-  if (!liveDelaysByTrip) return `<span class="dep-delay muted">živě nedostupné</span>`;
+  // Text schválně neříká "porucha"/"nedostupné" — to zní jako bug. Jde
+  // často o naprosto normální stav (pipeline zrovna neběžela), ne o chybu.
+  if (!liveDelaysByTrip) return `<span class="dep-delay muted">žádná data o zpoždění</span>`;
   // Když je funkce zapnutá, ale konkrétní spoj ještě live data nemá
   // (Golemio ho ještě nezačala sledovat, typicky dokud nevyjel), appka to
   // musí říct explicitně — jinak nejde rozeznat "ověřeno na čas" od

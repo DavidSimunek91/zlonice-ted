@@ -7,7 +7,12 @@ name: Update ČHMÚ alerts
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    # Schválně mimo kulaté minuty (ne */10) — GitHub Actions dokumentuje, že
+    # scheduled běhy naražené přesně na :00/:10/:20... (kdy je spouští
+    # obrovské množství repozitářů najednou) mívají mnohem větší šanci na
+    # zpoždění nebo úplné vynechání. Zjištěno v praxi: reálné rozestupy
+    # mezi běhy byly hodiny místo 10 minut, viz data/README.md.
+    - cron: '4,14,24,34,44,54 * * * *'
   workflow_dispatch: {}
 
 jobs:
