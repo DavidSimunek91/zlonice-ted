@@ -1,0 +1,32 @@
+# Crontab pro spouštění datových pipeline přímo na droplu — viz README.md
+# v tomhle adresáři pro vysvětlení proč a jak to nainstalovat.
+#
+# Uprav <CESTA_K_REPU> a <CESTA_K_ENV_SOUBORU> podle skutečných cest na
+# serveru (README.md ukazuje doporučené umístění), pak:
+#   crontab crontab.example
+# (nebo si obsah zkopíruj do `crontab -e`, ať máš pod kontrolou, jestli
+# tam už něco jiného nemáš)
+#
+# Skutečný cron nemá problém s "kulatými" minutami jako GitHub Actions
+# schedule trigger (to je problém specifický pro GitHubův sdílený
+# scheduler, ne pro obyčejný cron na vlastním stroji) — proto tu jsou
+# obyčejné, čitelné intervaly.
+
+# Voda (ČHMÚ, Velvary) — každých 15 minut
+*/15 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-water.mjs data/water.json "Update water data" >> $HOME/zlonice-ted-cron.log 2>&1
+
+# ČHMÚ výstrahy — každých 10 minut
+*/10 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-alerts.mjs data/alerts.json "Update ČHMÚ alerts" >> $HOME/zlonice-ted-cron.log 2>&1
+
+# Doprava (ŘSD/NDIC) — každých 15 minut. Bez RSD_PROXY_URL v env souboru
+# skript volá ŘSD přímo (viz komentář ve scripts/update-traffic.mjs) —
+# funguje to jen pokud ŘSD neblokuje i IP tohohle droplu (ověř nejdřív
+# krokem 1 v README.md).
+*/15 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-traffic.mjs data/traffic.json "Update traffic data" >> $HOME/zlonice-ted-cron.log 2>&1
+
+# Autobusy — jízdní řád jednou denně v 6:00 UTC
+0 6 * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-departures.mjs data/departures.json "Update bus departures" >> $HOME/zlonice-ted-cron.log 2>&1
+
+# Autobusy — živé zpoždění každých 5 minut (jen když je GOLEMIO_API_KEY
+# nastavený v env souboru; jinak skript sám nic nedělá)
+*/5 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-live-departures.mjs data/live-departures.json "Update live bus delays" >> $HOME/zlonice-ted-cron.log 2>&1
