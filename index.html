@@ -173,6 +173,18 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .hour-tile.night .bar{opacity:.55;}
 .hour-tile .t{font-family:ui-monospace,monospace;font-size:.74rem;font-weight:600;}
 
+/* Na užší obrazovce (mobil) zůstávají oba pruhy vodorovně scrollovatelné
+   s pevnou šířkou dlaždic — u 16 hodin/7 dnů najednou by se jinak
+   nepřiměřeně zmenšily. Od téhle šířky nahoru je ale místa vždycky dost,
+   takže dlaždice rovnoměrně roztáhneme přes celou šířku karty místo
+   necháváme prázdné místo vpravo. */
+@media (min-width:640px){
+  .forecast{overflow-x:visible;}
+  .fday{flex:1 1 0;width:auto;min-width:0;}
+  .hourly-strip{overflow-x:visible;}
+  .hour-tile{flex:1 1 0;width:auto;min-width:0;}
+}
+
 .today-tips{display:flex;flex-wrap:wrap;gap:.5rem 1.3rem;margin-top:1rem;padding-top:.9rem;border-top:1px dashed var(--line);}
 .today-tip{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--ink-soft);}
 .today-tip svg{width:1rem;height:1rem;flex:0 0 auto;}
@@ -216,7 +228,7 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .water-top{margin-bottom:1.3rem;}
 .water-top .stage{font-weight:700;font-size:1.1rem;display:flex;align-items:baseline;gap:.5rem;}
 .water-top .stage .val{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:.85rem;font-weight:500;color:var(--ink-soft);}
-.water-top .desc{margin-top:.15rem;font-size:.85rem;color:var(--ink-soft);max-width:50ch;}
+.water-top .desc{margin-top:.15rem;font-size:.85rem;color:var(--ink-soft);}
 .water-scale{position:relative;height:14px;border-radius:7px;margin:1.6rem 0 .35rem;
   background:linear-gradient(90deg,#B5791C 0%,#B5791C 20%,#3E5A70 20%,#3E5A70 40%,#E8C33D 40%,#E8C33D 60%,#E8892F 60%,#E8892F 80%,#D14E3B 80%,#D14E3B 100%);}
 .water-marker{position:absolute;top:-5px;width:2px;height:24px;background:var(--ink);}
@@ -309,6 +321,8 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .trade-phone{display:inline-flex;align-items:center;gap:.3rem;font-size:.84rem;font-weight:600;color:var(--good);text-decoration:none;}
 .trade-find{font-size:.8rem;color:var(--sky);text-decoration:underline;}
 .trade-empty{grid-column:1/-1;}
+.trade-more{grid-column:1/-1;padding:.7rem;border-radius:8px;background:var(--surface);border:1px dashed var(--line);color:var(--spruce);font-weight:600;font-size:.85rem;cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
+.trade-more:hover{border-color:var(--spruce);background:var(--spruce-soft);}
 
 footer{max-width:1080px;margin:2.6rem auto 0;padding:1.6rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.78rem;}
 footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--spruce);margin-bottom:.9rem;}
@@ -720,7 +734,7 @@ function renderTodayTips(c, hourly, startIdx){
 async function loadWeather(){
   let data;
   try{
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure,soil_moisture_0_to_1cm&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=5`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure,soil_moisture_0_to_1cm&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=7`;
     const res = await fetch(url);
     data = await res.json();
   }catch(e){
@@ -1504,6 +1518,12 @@ async function loadWater(){
 // serveru — filtr podle oboru je čistě klientský přepínač viditelnosti
 // karet, ať je to instantní bez dalšího fetch.
 const TRADE_STALE_MS = 24 * 24 * 60 * 60 * 1000; // pipeline běží týdně, tolerujeme pár vynechaných běhů
+const TRADE_DEFAULT_CAP = 18; // "Vše" se stovkou+ karet najednou je needitovatelný scroll, ne užitečný přehled
+
+// Jestli je "Vše" zrovna rozbalené na celý seznam — resetuje se na
+// oříznutý pohled při každém přepnutí kategorie (viz posluchač níž), aby
+// návrat na "Vše" zase začínal úsporně, ne tam, kde uživatel skončil.
+let tradeShowAll = false;
 
 function tradeContactHtml(person, categoryLabel){
   if (person.phone){
@@ -1514,6 +1534,24 @@ function tradeContactHtml(person, categoryLabel){
   return `<a class="trade-find" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Najít kontakt ↗</a>`;
 }
 
+function tradeCardHtml(p, categories){
+  const catLabels = p.categories.map(id => categories[id]?.label).filter(Boolean);
+  const icon = categories[p.categories[0]]?.icon || '🛠️';
+  const meta = [p.village, p.since ? `podniká od ${p.since}` : null].filter(Boolean).join(' · ');
+  return `
+    <div class="trade-card">
+      <div class="trade-card-head">
+        <span class="icon">${icon}</span>
+        <div>
+          <strong>${escapeHtml(p.name)}</strong>
+          <div class="trade-cats">${escapeHtml(catLabels.join(' · '))}</div>
+        </div>
+      </div>
+      ${meta ? `<div class="trade-meta">${escapeHtml(meta)}</div>` : ''}
+      <div class="trade-contact">${tradeContactHtml(p, catLabels[0] || '')}</div>
+    </div>`;
+}
+
 function renderTradeGrid(people, categories, activeId){
   const grid = document.getElementById('tradeGrid');
   const filtered = activeId === 'all' ? people : people.filter(p => p.categories.includes(activeId));
@@ -1521,23 +1559,24 @@ function renderTradeGrid(people, categories, activeId){
     grid.innerHTML = '<div class="soon-card trade-empty">V téhle kategorii appka zatím nikoho nenašla.</div>';
     return;
   }
-  grid.innerHTML = filtered.map(p => {
-    const catLabels = p.categories.map(id => categories[id]?.label).filter(Boolean);
-    const icon = categories[p.categories[0]]?.icon || '🛠️';
-    const meta = [p.village, p.since ? `podniká od ${p.since}` : null].filter(Boolean).join(' · ');
-    return `
-      <div class="trade-card">
-        <div class="trade-card-head">
-          <span class="icon">${icon}</span>
-          <div>
-            <strong>${escapeHtml(p.name)}</strong>
-            <div class="trade-cats">${escapeHtml(catLabels.join(' · '))}</div>
-          </div>
-        </div>
-        ${meta ? `<div class="trade-meta">${escapeHtml(meta)}</div>` : ''}
-        <div class="trade-contact">${tradeContactHtml(p, catLabels[0] || '')}</div>
-      </div>`;
-  }).join('');
+  // Jen "Vše" se ořezává — konkrétní obor si uživatel vybral schválně,
+  // tam má vidět všechny, i kdyby jich bylo pár desítek. "Vše" bez
+  // omezení ale znamená stovky karet hned po načtení stránky, což není
+  // přehled, jen dlouhý scroll — proto defaultně jen prvních pár desítek
+  // + tlačítko na rozbalení.
+  const capped = activeId === 'all' && !tradeShowAll && filtered.length > TRADE_DEFAULT_CAP;
+  const shown = capped ? filtered.slice(0, TRADE_DEFAULT_CAP) : filtered;
+  const cards = shown.map(p => tradeCardHtml(p, categories)).join('');
+  const moreBtn = capped
+    ? `<button type="button" class="trade-more" id="tradeShowAllBtn">Zobrazit všech ${filtered.length} →</button>`
+    : '';
+  grid.innerHTML = cards + moreBtn;
+  if (capped){
+    document.getElementById('tradeShowAllBtn').addEventListener('click', () => {
+      tradeShowAll = true;
+      renderTradeGrid(people, categories, activeId);
+    });
+  }
 }
 
 function renderTradeFilters(people, categories){
@@ -1557,6 +1596,7 @@ function renderTradeFilters(people, categories){
   filters.addEventListener('click', (e) => {
     const btn = e.target.closest('.trade-chip');
     if (!btn) return;
+    tradeShowAll = false;
     filters.querySelectorAll('.trade-chip').forEach(c => c.classList.toggle('active', c === btn));
     renderTradeGrid(people, categories, btn.dataset.cat);
   });
