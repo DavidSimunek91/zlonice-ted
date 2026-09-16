@@ -151,6 +151,7 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .card .sub-row{margin-top:.65rem;padding-top:.55rem;border-top:1px dashed var(--line);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;font-size:.8rem;color:var(--ink-soft);cursor:help;}
 .card .sub-row b{font-family:ui-monospace,monospace;color:var(--ink);font-weight:600;}
 .card .sub-row .takeaway{margin-top:0;margin-left:auto;}
+.card .sub-note{margin-top:.3rem;font-size:.72rem;color:var(--ink-soft);opacity:.8;}
 
 .forecast{display:flex;gap:.7rem;overflow-x:auto;padding-bottom:.3rem;}
 .fday{flex:0 0 auto;width:104px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.85rem .7rem;text-align:center;}
@@ -769,7 +770,7 @@ async function loadWeather(){
       <div class="card">
         <div class="k">Vlhkost vzduchu</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div>
         <div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div>
-        ${soilBand ? `<div class="sub-row" title="Modelovaný odhad vlhkosti povrchu půdy (0–1 cm), ne měření senzorem na místě. ${soilBand.desc}">Půda (0–1 cm) <b>${soilPct} %</b><span class="takeaway ${soilBand.level}">${soilBand.name}</span></div>` : ''}
+        ${soilBand ? `<div class="sub-row" title="Modelovaný odhad vlhkosti povrchu půdy (0–1 cm), ne měření senzorem na místě. ${soilBand.desc}">Půda (0–1 cm) <b>${soilPct} %</b><span class="takeaway ${soilBand.level}">${soilBand.name}</span></div><div class="sub-note">Objemový podíl vody v půdě, ne škála 0–100 %. Orientačně pro hlinitou půdu (černozem kolem Zlonic): vadnutí ~10–15 %, plná kapacita ~30–35 %.</div>` : ''}
       </div>
       <div class="card"><div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div><div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h</div><div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force}° Bft · ${wBand.name}</div></div>
       <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div></div>
