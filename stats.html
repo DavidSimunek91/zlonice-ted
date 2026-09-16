@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Návštěvnost — Ve Zlonicích</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌾</text></svg>">
+<style>
+:root{
+  --stone:#EDEAE0; --ink:#262019; --ink-soft:#5B5346;
+  --spruce:#3C5C42; --spruce-soft:#E1E7DA;
+  --line:#D7D0BE; --surface:#F7F5EE;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --stone:#171B15; --ink:#ECE7DA; --ink-soft:#AFA894; --spruce:#8FB37E; --spruce-soft:#212A1C; --line:#333A2B; --surface:#1D2118; }
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--stone);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.5;padding:1.5rem;max-width:640px;margin:0 auto;}
+h1{font-size:1.3rem;margin:0 0 .3rem;}
+p.lede{color:var(--ink-soft);font-size:.9rem;margin:0 0 1.5rem;}
+.stat-row{display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.stat-tile{flex:1 1 140px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.9rem 1rem;}
+.stat-tile .k{font-size:.72rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+.stat-tile .v{font-family:ui-monospace,monospace;font-size:1.5rem;font-weight:700;margin-top:.2rem;}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:.88rem;}
+th,td{padding:.5rem .7rem;text-align:right;border-bottom:1px solid var(--line);}
+th:first-child,td:first-child{text-align:left;}
+th{font-size:.72rem;color:var(--ink-soft);text-transform:uppercase;font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.note{margin-top:1.2rem;font-size:.78rem;color:var(--ink-soft);}
+a{color:var(--spruce);}
+</style>
+</head>
+<body>
+<h1>📈 Návštěvnost vezlonicich.cz</h1>
+<p class="lede" id="lede">Načítám…</p>
+
+<div class="stat-row" id="tiles"></div>
+<table>
+  <thead><tr><th>Den</th><th>Návštěvy</th><th>Unikátní</th></tr></thead>
+  <tbody id="dailyBody"></tbody>
+</table>
+
+<p class="note" id="note"></p>
+<p><a href="/">← zpět na Ve Zlonicích</a></p>
+
+<script>
+async function load(){
+  const lede = document.getElementById('lede');
+  try{
+    const res = await fetch('./data/stats.json', {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || 'neznámý stav');
+
+    const ageMin = Math.round((Date.now() - new Date(data.updated).getTime()) / 60000);
+    lede.textContent = `Posledních ${data.windowDays} dní, aktualizováno před ${ageMin} min.`;
+
+    document.getElementById('tiles').innerHTML = `
+      <div class="stat-tile"><div class="k">Návštěvy celkem</div><div class="v">${data.totalHits}</div></div>
+      <div class="stat-tile"><div class="k">Unikátní</div><div class="v">${data.uniqueVisitors}</div></div>
+      <div class="stat-tile"><div class="k">Opakované</div><div class="v">${data.repeatVisitors}</div></div>
+    `;
+
+    const fmt = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'});
+    document.getElementById('dailyBody').innerHTML = data.daily.map(d =>
+      `<tr><td>${fmt(d.date)}</td><td>${d.hits}</td><td>${d.unique}</td></tr>`
+    ).join('');
+
+    document.getElementById('note').textContent =
+      'Počítáno podle IP adresy návštěvníka, bez cookies a bez trackování mezi weby. IP adresy se ukládají jen ' + data.windowDays + ' dní, pak se automaticky mažou — proto jen tenhle krátký přehled, ne dlouhodobá historie.';
+  }catch(e){
+    lede.textContent = 'Statistiky se nepodařilo načíst (' + e.message + ').';
+  }
+}
+load();
+</script>
+</body>
+</html>

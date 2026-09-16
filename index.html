@@ -1681,6 +1681,15 @@ loadAres();
 loadDepartures();
 loadTraffic();
 loadTradespeople();
+
+// Anonymní počítadlo návštěv — jen IP adresa a čas návštěvy, žádné
+// cookies, žádné trackování mezi weby, žádný vliv na běh appky (tichý
+// fetch, chyba se nikam nezobrazí). Vlastní server (infra/visit-log/),
+// ne GitHub Pages logy — ty appce nejsou k dispozici. Přehled na
+// /stats.html, data se ukládají jen 7 dní (viz scripts/aggregate-visits.mjs).
+try {
+  fetch('https://beacon.vezlonicich.cz/hit', {mode:'no-cors', keepalive:true, cache:'no-store'}).catch(()=>{});
+} catch {}
 </script>
 </body>
 </html>
