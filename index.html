@@ -961,7 +961,11 @@ function renderPollen(c){
     .map(([key, meta]) => ({...meta, value: c[key]}))
     .filter(p => typeof p.value === 'number' && p.value >= POLLEN_NOTICEABLE)
     .sort((a, b) => b.value - a.value);
-  if (items.length === 0){ el.innerHTML = ''; return; }
+  // .aqi-pollen má barvu pozadí a padding natvrdo v CSS — jen vyprázdnit
+  // innerHTML nechávalo viditelný prázdný barevný "balónek" bez obsahu.
+  // Mimo sezónu/bez zjistitelného pylu se musí schovat celý kontejner.
+  if (items.length === 0){ el.innerHTML = ''; el.hidden = true; return; }
+  el.hidden = false;
   const chips = items.map(p => {
     const lvl = pollenLevel(p.value, p.season, p.peak);
     const val = p.value.toFixed(1).replace('.', ',');
