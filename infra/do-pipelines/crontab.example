@@ -30,3 +30,8 @@
 # Autobusy — živé zpoždění každých 5 minut (jen když je GOLEMIO_API_KEY
 # nastavený v env souboru; jinak skript sám nic nedělá)
 */5 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-live-departures.mjs data/live-departures.json "Update live bus delays" >> $HOME/zlonice-ted-cron.log 2>&1
+
+# Návštěvnost webu — každých 15 minut. Nepotřebuje žádné tajné hodnoty v
+# env souboru (VISIT_LOG_PATH má rozumný default), ale vyžaduje běžící
+# infra/visit-log/beacon-server.mjs — viz infra/visit-log/README.md.
+*/15 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/aggregate-visits.mjs data/stats.json "Update visit stats" >> $HOME/zlonice-ted-cron.log 2>&1

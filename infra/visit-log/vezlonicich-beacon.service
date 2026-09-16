@@ -1,0 +1,14 @@
+[Unit]
+Description=Vezlonicich.cz visit beacon
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Environment=VISIT_LOG_PATH=/root/vezlonicich-visits.ndjson
+ExecStart=/root/.nvm/versions/node/v22.23.2/bin/node /root/zlonice-ted/infra/visit-log/beacon-server.mjs
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

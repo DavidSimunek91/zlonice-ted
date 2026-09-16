@@ -179,3 +179,24 @@ stejně snadno jako Open-Meteo.
 - **Stejná bezpečnostní zásada jako u výstrah:** appka kontroluje stáří
   pole `updated` a při zastaralosti ukáže "nelze ověřit", ne poslední
   známou (možná zastaralou) hodnotu
+
+## Návštěvnost (`stats.json`)
+
+- **Zdroj:** vlastní "maják" na droplu (`infra/visit-log/beacon-server.mjs`)
+  — appka při každém načtení stránky pošle tichý požadavek s IP adresou
+  a časem, žádné cookies ani trackování mezi weby. GitHub Pages appce
+  žádné přístupové logy neposkytuje, proto vlastní řešení.
+- **Aktualizace:** `scripts/aggregate-visits.mjs`, běží z cronu na droplu
+  (`infra/do-pipelines`), ne z GitHub Actions — čte log ze souboru na
+  disku droplu, GitHub Actions runner by na něj neviděl.
+- **Retence 7 dní:** IP adresy se ukládají syrové (bez hashování), ale
+  `aggregate-visits.mjs` při každém běhu ze zdrojového logu zahodí
+  všechno starší než 7 dní — vědomý kompromis mezi jednoduchostí kódu a
+  soukromím, ne přehlédnutí. Appka proto na `/stats.html` ukazuje jen
+  krátký přehled, ne dlouhodobou historii.
+- **Unikátní vs. opakované:** unikátní = počet různých IP adres v okně;
+  opakované = kolik z nich se objevilo aspoň ve 2 různých dnech okna
+  (jeden člověk, co obnoví stránku 5x za minutu, tak nevypadá jako
+  "opakovaný návštěvník").
+- Podrobný postup nasazení (DNS, Caddy, systemd, cron) je v
+  `infra/visit-log/README.md`.
