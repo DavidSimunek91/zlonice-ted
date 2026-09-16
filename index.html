@@ -216,6 +216,7 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .aqi-pollen-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:.15rem .5rem;margin-bottom:.7rem;}
 .aqi-pollen-head b{font-size:.85rem;color:var(--gold);font-weight:700;}
 .aqi-pollen-head span{font-size:.68rem;color:var(--ink-soft);}
+.pollen-ok{font-size:.85rem;color:var(--good);font-weight:600;}
 .pollen-grid{display:flex;flex-wrap:wrap;gap:.7rem 1.2rem;}
 .pollen-chip{min-width:4.8rem;flex:1 0 auto;}
 .pollen-chip-row{display:flex;align-items:baseline;gap:.3rem;margin-bottom:.3rem;white-space:nowrap;}
@@ -961,7 +962,17 @@ function renderPollen(c){
     .map(([key, meta]) => ({...meta, value: c[key]}))
     .filter(p => typeof p.value === 'number' && p.value >= POLLEN_NOTICEABLE)
     .sort((a, b) => b.value - a.value);
-  if (items.length === 0){ el.innerHTML = ''; return; }
+  el.hidden = false;
+  // Mimo sezónu/bez zjistitelného pylu je "žádný pyl" pozitivní zpráva
+  // (relevantní hlavně pro alergiky), ne nic k zobrazení — appka to
+  // dřív jen vyprázdnila (.aqi-pollen má barvu pozadí a padding natvrdo
+  // v CSS, takže zůstal viditelný prázdný "balónek"), teď to řekne
+  // nahlas, stejný princip jako "✅ Klidno" u dopravy.
+  if (items.length === 0){
+    const names = Object.values(POLLEN_META).map(m => m.label).join(', ');
+    el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 Pyl dnes</b><span>CAMS/Copernicus</span></div><div class="pollen-ok">✅ Žádný pyl nad rozlišovací mez appky (&lt; ${POLLEN_NOTICEABLE} zrn/m³) — sledované druhy: ${escapeHtml(names)}.</div>`;
+    return;
+  }
   const chips = items.map(p => {
     const lvl = pollenLevel(p.value, p.season, p.peak);
     const val = p.value.toFixed(1).replace('.', ',');
