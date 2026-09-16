@@ -1,5 +1,5 @@
 {
   "status": "error",
-  "updated": "2026-09-16T07:20:02.792Z",
+  "updated": "2026-09-16T07:25:02.216Z",
   "message": "data/departures.json ještě neobsahuje stopIds — počkej na příští běh denní GTFS pipeline."
 }
