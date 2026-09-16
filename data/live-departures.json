@@ -1,5 +1,5 @@
 {
   "status": "error",
-  "updated": "2026-09-16T09:05:02.280Z",
-  "message": "data/departures.json ještě neobsahuje stopIds — počkej na příští běh denní GTFS pipeline."
+  "updated": "2026-09-16T09:10:03.823Z",
+  "message": "Golemio API vrátilo HTTP 401"
 }
