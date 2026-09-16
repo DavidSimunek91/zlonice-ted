@@ -629,17 +629,24 @@ const HUMIDITY_BANDS = [
 ];
 function humidityBand(pct){ return HUMIDITY_BANDS.find(b => pct <= b.max); }
 
-// Orientační pásma vlhkosti povrchu půdy (0-1 cm, objemový obsah vody v %).
-// POZOR: skutečný bod vadnutí i polní kapacita se výrazně liší podle typu
-// půdy (písčitá/hlinitá/jílovitá) — appka pro Zlonice žádný ověřený rozbor
-// půdy nemá, takže tohle jsou obecné orientační hranice, ne přesná
-// agronomická diagnóza. Stejná opatrnost jako u pylu: raději hrubý, ale
-// popsaný odhad než tvářit se na přesnost, kterou appka nemá.
+// Orientační pásma vlhkosti povrchu půdy (0-1 cm, objemový obsah vody v %
+// objemu půdy — tzv. volumetric water content, NE škála 0-100 % od "úplně
+// sucho" po "úplně nasyceno"). Proto i "jen" 20 % může reálně znamenat
+// sucho: u hlinité půdy bývá bod vadnutí (kdy rostliny vadnou) kolem
+// 10-15 % a plná polní kapacita (maximum, co půda udrží po odkapání) kolem
+// 30-35 % — 20 % je tedy citelně pod tím stropem, i když se to jako číslo
+// nezdá málo. Podle půdní mapy je půda v okolí Zlonic převážně černozem
+// (výjimka pás podél Zlonického potoka, tam fluvizem) — hlinitá, humusem
+// bohatá půda, na kterou tyhle obecné hlinité hodnoty docela sedí. Přesný
+// bod vadnutí/kapacita se ale i tak liší parcelu od parcely (zrnitost,
+// obsah humusu), appka pro Zlonice žádný konkrétní rozbor půdy nemá —
+// tohle jsou obecné orientační hranice pro hlinitou půdu, ne přesná
+// agronomická diagnóza jednoho konkrétního pozemku.
 const SOIL_MOISTURE_BANDS = [
-  {max:10, name:'Velmi sucho', level:'danger', desc:'Svrchní vrstva půdy je hodně vysušená — orientačně, přesný práh závisí na typu půdy. Bez zálivky hrozí rostlinám stres suchem.'},
-  {max:20, name:'Sucho', level:'warn', desc:'Svrchní vrstva půdy je suchá — orientačně, přesný práh závisí na typu půdy. Zvaž zálivku, hlavně u mladých rostlin.'},
-  {max:35, name:'Vlhko', level:'good', desc:'Přiměřená vlhkost povrchu půdy — orientačně, přesný práh závisí na typu půdy.'},
-  {max:Infinity, name:'Nasyceno', level:'warn', desc:'Svrchní vrstva půdy je hodně vlhká až nasycená — orientačně, přesný práh závisí na typu půdy. Další zálivka teď není potřeba.'},
+  {max:10, name:'Velmi sucho', level:'danger', desc:'Blízko bodu vadnutí typického pro hlinitou půdu (jako je černozem kolem Zlonic) — bez zálivky hrozí rostlinám stres suchem.'},
+  {max:20, name:'Sucho', level:'warn', desc:'Citelně pod polní kapacitou hlinité půdy — číslo nevypadá nízko, ale pro tenhle typ půdy to už sucho je. Zvaž zálivku, hlavně u mladých rostlin.'},
+  {max:35, name:'Vlhko', level:'good', desc:'Blízko polní kapacity hlinité půdy — přiměřená vlhkost, další zálivka většinou není akutní.'},
+  {max:Infinity, name:'Nasyceno', level:'warn', desc:'Nad polní kapacitou hlinité půdy — svrchní vrstva je hodně vlhká až nasycená. Další zálivka teď není potřeba.'},
 ];
 function soilMoistureBand(pct){ return SOIL_MOISTURE_BANDS.find(b => pct <= b.max); }
 
