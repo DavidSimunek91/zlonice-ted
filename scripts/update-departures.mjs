@@ -14,7 +14,7 @@
 // jen jednou denně u PID), počítání "za kolik minut" dělá klient napořád
 // z aktuálního jízdního řádu, ne z předpočítaného zastaralého seznamu.
 
-import { writeFileSync, mkdtempSync, createReadStream, rmSync } from 'node:fs';
+import { writeFileSync, readFileSync, existsSync, mkdtempSync, createReadStream, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -184,6 +184,28 @@ async function readFile(path){
 
 main().catch(err => {
   console.error('Aktualizace jízdních řádů selhala:', err);
+
+  // Jeden neúspěšný běh (stažení, chybějící "unzip" na stroji, kde
+  // pipeline zrovna běží, apod.) by dřív hned přepsal poslední DOBRÝ
+  // jízdní řád chybovým stavem — a protože z tohohle souboru čte i
+  // scripts/update-live-departures.mjs (potřebuje stopIds), jeden
+  // zádrhel tady shodil i živé zpoždění, i když s tím nemělo nic
+  // společného. Když poslední zapsaná data mají status "ok", necháváme
+  // je beze změny — stejné pravidlo jako u dopravy (update-traffic.mjs).
+  let previousWasOk = false;
+  try {
+    if (existsSync(OUT_PATH)) {
+      previousWasOk = JSON.parse(readFileSync(OUT_PATH, 'utf-8'))?.status === 'ok';
+    }
+  } catch {
+    // Poškozený/nečitelný předchozí soubor — nemáme co zachovat.
+  }
+
+  if (previousWasOk) {
+    console.log('Poslední jízdní řád byl v pořádku, ponechávám ho beze změny místo přepsání chybou.');
+    return;
+  }
+
   const output = { status: 'error', updated: new Date().toISOString(), message: String(err.message || err) };
   writeFileSync(OUT_PATH, JSON.stringify(output, null, 2) + '\n');
 });
