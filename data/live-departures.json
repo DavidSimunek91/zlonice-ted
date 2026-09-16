@@ -1,5 +1,1 @@
-{
-  "status": "error",
-  "updated": "2026-09-16T22:10:02.254Z",
-  "message": "Golemio API vrátilo HTTP 401"
-}
+{"status":"ok","updated":"2026-09-16T22:13:10.087Z","byTrip":{"590_164_260901":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-09-17T04:47:00+02:00","predicted":"2026-09-17T04:47:00+02:00"},"590_390_260901":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-09-17T05:35:00+02:00","predicted":"2026-09-17T05:35:00+02:00"},"590_160_260901":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-09-17T05:52:00+02:00","predicted":"2026-09-17T05:52:00+02:00"}}}
