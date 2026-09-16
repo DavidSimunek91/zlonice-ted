@@ -221,8 +221,15 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .pollen-chip .pollen-icon{font-size:.85rem;}
 .pollen-chip .pollen-label{font-size:.72rem;color:var(--ink-soft);}
 .pollen-chip .pollen-value{font-family:ui-monospace,monospace;font-weight:700;font-size:.85rem;color:var(--ink);margin-left:auto;}
-.pollen-bar{width:100%;height:5px;border-radius:3px;background:var(--line);overflow:hidden;}
-.pollen-bar-fill{height:100%;border-radius:3px;background:var(--gold);}
+.pollen-bar{width:100%;height:6px;border-radius:3px;background:var(--line);overflow:hidden;cursor:help;}
+.pollen-bar-fill{height:100%;border-radius:3px;}
+.pollen-bar-fill.good{background:var(--good);}
+.pollen-bar-fill.warn{background:var(--warn);}
+.pollen-bar-fill.danger{background:var(--danger);}
+.pollen-level{margin-top:.3rem;font-size:.68rem;font-family:ui-monospace,monospace;font-weight:600;}
+.pollen-level.good{color:var(--good);}
+.pollen-level.warn{color:var(--warn);}
+.pollen-level.danger{color:var(--danger);}
 
 /* water */
 .water-card{padding:1.3rem 1.4rem;}
@@ -902,29 +909,37 @@ function bandForNO2(v){ return NO2_BANDS.find(b => v <= b.max); }
 // stejným přímým voláním na Open-Meteo jako zbytek kvality ovzduší (žádná
 // nová pipeline). Mimo pylovou sezónu appka pole buď nedostane, nebo budou
 // nulová — v obou případech radši řádek úplně schovat, než ukazovat
-// "0 zrn/m³" u šesti druhů, který nikoho nezajímá. Záměrně bez barevného
-// pásma dobrá/zvýšená/atd. jako u PM/O₃/NO₂ — autoritativní zdravotní
-// prahy pro jednotlivé druhy pylu se mezi zdroji liší a appka by je jen
-// hádala. Zlatá (--gold) tady není zdravotní signál, jen barva pylu jako
-// takového.
+// "0 zrn/m³" u šesti druhů, který nikoho nezajímá.
 //
-// Lišta NENÍ relativní vůči nejsilnějšímu druhu dneška — to dřív dělalo
-// z jakéhokoliv "nejsilnějšího" druhu plnou lištu, i když šlo o pár
-// zanedbatelných zrn/m³ (tráva 3,6 vypadala stejně "naplno" jako bříza 87).
-// Místo toho je to odmocninová škála se společným stropem pro všechny
-// druhy (POLLEN_BAR_CAP) — čistě vizuální kotva na absolutní hodnotě, ne
-// tvrzení o závažnosti (ta se mezi druhy i zdroji liší, viz výš).
-// Odmocnina dělá rozdíly v nižších hodnotách čitelnější než lineární škála.
+// Škála: dřív appka schválně žádnou neměla ("prahy se mezi zdroji liší,
+// appka by jen hádala") — ale bez škály samotné číslo nic neřekne (viz
+// dotaz uživatele: "20 zrn/m³, je to hodně, málo?"). Různé pylové služby
+// se sice různí ve 4stupňových škálách (low/moderate/high/very high), ale
+// shodují se aspoň na dvou konkrétních prahových hodnotách na druh pylu,
+// citovaných napříč odbornou literaturou (EAACI — European Academy of
+// Allergy and Clinical Immunology, např. Pfaar a kol. 2024 Task Force
+// report): "začátek sezóny" a "špička sezóny". Appka proto staví jen na
+// těch dvou ověřených bodech, ne na nejisté jemnější škále:
+//   pod "sezóna"          → Zanedbatelné (dobrá)
+//   mezi "sezóna"–"špička" → Zvýšené (mírné varování)
+//   nad "špička"           → Vysoké (výrazné)
+// Bříza/olše/oliva/pelyněk: sezóna ≥10 zrn/m³, špička ≥100 zrn/m³.
+// Tráva/ambrózie: sezóna ≥3 zrn/m³, špička ≥50 zrn/m³ (mají nižší práh —
+// vyvolávají příznaky už při menším množství).
 const POLLEN_META = {
-  birch_pollen: {label:'Bříza', icon:'🌳'}, alder_pollen: {label:'Olše', icon:'🌲'},
-  grass_pollen: {label:'Tráva', icon:'🌾'}, mugwort_pollen: {label:'Pelyněk', icon:'🌿'},
-  ragweed_pollen: {label:'Ambrózie', icon:'🌱'}, olive_pollen: {label:'Oliva', icon:'🫒'},
+  birch_pollen:   {label:'Bříza',    icon:'🌳', season:10, peak:100},
+  alder_pollen:   {label:'Olše',     icon:'🌲', season:10, peak:100},
+  olive_pollen:   {label:'Oliva',    icon:'🫒', season:10, peak:100},
+  mugwort_pollen: {label:'Pelyněk',  icon:'🌿', season:10, peak:100},
+  grass_pollen:   {label:'Tráva',    icon:'🌾', season:3,  peak:50},
+  ragweed_pollen: {label:'Ambrózie', icon:'🌱', season:3,  peak:50},
 };
 const POLLEN_NOTICEABLE = 1; // grains/m³ — pod tím appka druh vůbec nezmiňuje
-const POLLEN_BAR_CAP = 50; // grn/m³ — nad touhle hodnotou je lišta prostě plná
 
-function pollenBarPct(value){
-  return Math.max(8, Math.min(100, Math.round((Math.sqrt(value) / Math.sqrt(POLLEN_BAR_CAP)) * 100)));
+function pollenLevel(value, season, peak){
+  if (value < season) return {name:'Zanedbatelné', level:'good'};
+  if (value < peak) return {name:'Zvýšené', level:'warn'};
+  return {name:'Vysoké', level:'danger'};
 }
 
 function renderPollen(c){
@@ -935,14 +950,24 @@ function renderPollen(c){
     .sort((a, b) => b.value - a.value);
   if (items.length === 0){ el.innerHTML = ''; return; }
   const chips = items.map(p => {
-    const pct = pollenBarPct(p.value);
+    const lvl = pollenLevel(p.value, p.season, p.peak);
     const val = p.value.toFixed(1).replace('.', ',');
+    // Vizuální strop lišty o 50 % nad "špičkou" — i vysoké hodnoty tak
+    // vidí, KDE přesně nad špičkou leží, ne jen "lišta je plná".
+    const cap = p.peak * 1.5;
+    const pct = v => Math.max(0, Math.min(100, (v / cap) * 100));
+    const seasonPct = pct(p.season), peakPct = pct(p.peak), valuePct = Math.max(4, pct(p.value));
+    // Podklad lišty jsou 3 pásma (šedá/jantarová/červená) podle sezóna/
+    // špička prahů — vyplněná část navrch pak ukazuje, kde přesně dnešní
+    // hodnota v těch pásmech leží.
+    const track = `linear-gradient(to right, var(--line) 0%, var(--line) ${seasonPct}%, var(--warn-soft) ${seasonPct}%, var(--warn-soft) ${peakPct}%, var(--danger-soft) ${peakPct}%, var(--danger-soft) 100%)`;
     return `<div class="pollen-chip">
       <div class="pollen-chip-row"><span class="pollen-icon">${p.icon}</span><span class="pollen-label">${p.label}</span><span class="pollen-value">${val}</span></div>
-      <div class="pollen-bar"><div class="pollen-bar-fill" style="width:${pct}%"></div></div>
+      <div class="pollen-bar" style="background:${track}" title="Sezóna od ${p.season} zrn/m³, špička od ${p.peak} zrn/m³ (EAACI)."><div class="pollen-bar-fill ${lvl.level}" style="width:${valuePct}%"></div></div>
+      <div class="pollen-level ${lvl.level}">${lvl.name}</div>
     </div>`;
   }).join('');
-  el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 Pyl dnes</b><span>zrn/m³ · CAMS/Copernicus, síla řazená sestupně</span></div><div class="pollen-grid">${chips}</div>`;
+  el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 Pyl dnes</b><span>zrn/m³ · CAMS/Copernicus · prahy sezóna/špička podle EAACI</span></div><div class="pollen-grid">${chips}</div>`;
 }
 
 async function loadAirQuality(){
