@@ -21,7 +21,13 @@ import { readFileSync, writeFileSync } from 'node:fs';
 
 const OUT_PATH = 'data/live-departures.json';
 const DEPARTURES_PATH = 'data/departures.json';
-const API_KEY = process.env.GOLEMIO_API_KEY;
+const RAW_API_KEY = process.env.GOLEMIO_API_KEY;
+// "DOPLNIT" je placeholder z infra/do-pipelines/env.example — necháváme
+// ho tam schválně nevyplněný, dokud si uživatel nezaloží skutečný klíč
+// (viz README tam). Bez týhle kontroly by se poslal jako skutečný, ale
+// neplatný token, a Golemio by ho pokaždé odmítl s HTTP 401 — potichu
+// nefunkční místo jasného "klíč chybí".
+const API_KEY = (RAW_API_KEY && RAW_API_KEY !== 'DOPLNIT') ? RAW_API_KEY : null;
 const ROUTE_SHORT_NAMES = ['590', '591', '594'];
 
 async function main(){
@@ -29,10 +35,10 @@ async function main(){
     const output = {
       status: 'pending_access',
       updated: new Date().toISOString(),
-      message: 'GOLEMIO_API_KEY není nastavený — registrace na api.golemio.cz/api-keys, pak repo secret.',
+      message: 'GOLEMIO_API_KEY není nastavený (nebo je jen placeholder "DOPLNIT") — registrace na api.golemio.cz/api-keys, pak doplnit do env souboru na droplu.',
     };
     writeFileSync(OUT_PATH, JSON.stringify(output, null, 2) + '\n');
-    console.log('GOLEMIO_API_KEY chybí, nic nevolám.');
+    console.log('GOLEMIO_API_KEY chybí nebo je placeholder, nic nevolám.');
     return;
   }
 
