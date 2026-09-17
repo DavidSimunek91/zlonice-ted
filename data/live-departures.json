@@ -1,5 +1,1 @@
-{
-  "status": "error",
-  "updated": "2026-09-17T22:05:02.992Z",
-  "message": "Cannot convert argument to a ByteString because the character at index 8 has a value of 8226 which is greater than 255."
-}
+{"status":"ok","updated":"2026-09-17T22:06:33.872Z","byTrip":{"590_164_260901":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-09-18T04:47:00+02:00","predicted":"2026-09-18T04:47:00+02:00"},"590_390_260901":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-09-18T05:35:00+02:00","predicted":"2026-09-18T05:35:00+02:00"},"590_160_260901":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-09-18T05:52:00+02:00","predicted":"2026-09-18T05:52:00+02:00"}}}
