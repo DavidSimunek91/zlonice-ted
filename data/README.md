@@ -200,3 +200,36 @@ stejně snadno jako Open-Meteo.
   "opakovaný návštěvník").
 - Podrobný postup nasazení (DNS, Caddy, systemd, cron) je v
   `infra/visit-log/README.md`.
+
+## Úřední deska (`uredni-deska.json`)
+
+- **Zdroj:** RSS feed obecního webu, `zlonice.cz/uredni-deska?action=atom`
+  — nescrapuje se HTML, feed dává rovnou title/link/popis/datum/přílohy
+  na položku.
+- **Aktualizace:** `scripts/update-uredni-deska.mjs`, běží z cronu na
+  droplu (ne GitHub Actions) — potřebuje systémové `pdftoppm` a
+  `tesseract` (viz níž), které GitHub Actions runner nemá bez extra
+  instalace.
+- **Proč OCR:** PDF přílohy na úřední desce jsou "Print to PDF" z KEO4 bez
+  textové vrstvy (`pdftotext` z nich nedostane nic), ale vizuálně jde
+  o ostrý, ne skenovaný text — OCR (`pdftoppm` 200 dpi → `tesseract -l ces`)
+  z nich dostane prakticky přesný text.
+  Vyžaduje jednorázově na droplu:
+  `sudo apt-get install -y poppler-utils tesseract-ocr tesseract-ocr-ces`
+- **Souhrn u rozpočtových opatření je deterministický, ne LLM:** skript
+  najde v OCR textu první řádky "Příjmy celkem" a "Výdaje celkem" (součet
+  za dané opatření, ne pozdější celoobecní součty v sekci "Změna závazných
+  ukazatelů" ve stejném dokumentu) a spočítá rozdíl před/po. Vědomé
+  rozhodnutí NEpoužívat LLM shrnutí: u veřejných peněz je riziko
+  halucinace nepřijatelné, deterministický parser buď najde přesná čísla,
+  nebo nenajde nic (viz níž).
+- **Ostatní typy dokumentů** (vyhlášky, svolání zastupitelstva, uzavírky…)
+  appka jen upozorní na novou položku s krátkým úryvkem z RSS popisu, bez
+  vlastního shrnutí.
+- **Když parser řádky "Příjmy/Výdaje celkem" nenajde** (jiný formát
+  dokumentu, budoucí verze KEO4 apod.), položka se zobrazí jen jako obecná
+  novinka bez čísel — appka si nikdy nevymýšlí souhrn, který nedokázala
+  spolehlivě přečíst.
+- **Zpracovává se jen jednou:** jakmile je položka (`id`) jednou úspěšně
+  v `uredni-deska.json`, příští běhy ji jen převezmou beze změny — ať se
+  pořád dokola nestahuje a neOCRuje totéž.
