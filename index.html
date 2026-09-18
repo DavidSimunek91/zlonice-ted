@@ -87,8 +87,9 @@ a{color:inherit;}
 .eyebrow .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--spruce);}
 .eyebrow-rule{display:block;width:2.6rem;height:2px;border-radius:2px;background:var(--gold);margin:0 0 1.2rem;}
 h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap:balance;letter-spacing:-.015em;}
-.hero-sub{color:var(--ink-soft);font-size:1.02rem;max-width:56ch;margin:0 0 1.4rem;}
-.hero-facts{display:flex;flex-wrap:wrap;gap:1.6rem;}
+.hero-columns{display:flex;flex-wrap:wrap;gap:2rem;align-items:flex-start;}
+.hero-sub{color:var(--ink-soft);font-size:1.02rem;margin:0;flex:1 1 320px;}
+.hero-facts{display:flex;flex-wrap:wrap;gap:1.6rem;flex:1 1 340px;}
 .fact{display:flex;flex-direction:column;max-width:15.5rem;}
 .fact .k{font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);}
 .fact .v{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.15rem;font-weight:600;}
@@ -281,12 +282,15 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .board-featured-tag{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);background:var(--surface);border-radius:999px;padding:.15rem .55rem;margin-bottom:.3rem;}
 .board-date{font-size:.76rem;color:var(--ink-soft);white-space:nowrap;padding-top:.15rem;}
 .board-note{margin-top:.45rem;font-size:.87rem;color:var(--ink-soft);line-height:1.5;padding-left:.7rem;border-left:2px solid var(--line);}
-.board-chips{margin-top:.6rem;display:flex;flex-direction:column;gap:.4rem;}
-.board-chip{display:flex;align-items:center;gap:.5rem;font-size:.85rem;background:var(--surface);border-radius:8px;padding:.4rem .6rem;flex-wrap:wrap;}
-.board-chip-label{font-weight:700;flex:0 0 auto;}
+.board-chips{margin-top:.5rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.board-chip{font-size:.82rem;background:var(--surface);border-radius:8px;padding:.35rem .55rem;min-width:0;}
+.board-chip-top{display:flex;align-items:center;justify-content:space-between;gap:.4rem;}
+.board-chip-label{font-weight:700;}
+.board-chip-values{margin-top:.1rem;color:var(--ink-soft);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .board-chip-arrow{color:var(--ink-soft);}
-.board-chip-change{font-weight:700;font-family:ui-monospace,monospace;font-size:.8rem;padding:.1rem .45rem;border-radius:6px;background:var(--good-soft);color:var(--good);margin-left:auto;}
+.board-chip-change{font-weight:700;font-family:ui-monospace,monospace;font-size:.76rem;padding:.05rem .4rem;border-radius:6px;background:var(--good-soft);color:var(--good);white-space:nowrap;}
 .board-chip-change.down{background:var(--warn-soft);color:var(--warn);}
+@media (max-width:480px){.board-chips{grid-template-columns:1fr;}}
 .board-empty{color:var(--ink-soft);font-size:.9rem;padding:.4rem 0;}
 
 /* autobus */
@@ -390,17 +394,19 @@ footer a{text-decoration:underline;}
     <span class="eyebrow"><span class="dot"></span>obecní přehled — neoficiální, komunitní projekt</span>
     <span class="eyebrow-rule"></span>
     <h1 class="display">Ve Zlonicích</h1>
-    <p class="hero-sub">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
-    <div class="hero-facts">
-      <div class="fact">
-        <span class="k">obyvatel</span><span class="v">2 294</span>
-        <span class="ctx">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
+    <div class="hero-columns">
+      <p class="hero-sub">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
+      <div class="hero-facts">
+        <div class="fact">
+          <span class="k">obyvatel</span><span class="v">2 294</span>
+          <span class="ctx">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
+        </div>
+        <div class="fact">
+          <span class="k">nadmořská výška</span><span class="v">223 m</span>
+          <span class="ctx">nížina — skoro o polovinu níž než český průměr (~450 m)</span>
+        </div>
+        <div class="fact"><span class="k">aktualizováno</span><span class="v" id="clock" style="font-size:1rem;">—</span></div>
       </div>
-      <div class="fact">
-        <span class="k">nadmořská výška</span><span class="v">223 m</span>
-        <span class="ctx">nížina — skoro o polovinu níž než český průměr (~450 m)</span>
-      </div>
-      <div class="fact"><span class="k">aktualizováno</span><span class="v" id="clock" style="font-size:1rem;">—</span></div>
     </div>
   </div>
 </header>
@@ -420,15 +426,6 @@ footer a{text-decoration:underline;}
 
 <main class="page">
 
-  <div class="banner" id="alertBanner">
-    <div class="stripe"></div>
-    <div>
-      <strong id="alertHeadline">Kontroluji výstrahy…</strong>
-      <span id="alertDetail">Načítám aktuální stav z ČHMÚ.</span>
-    </div>
-    <span class="tag soon" id="alertTag" style="margin-left:auto;"><span class="dot"></span>načítám</span>
-  </div>
-
   <section class="section board-section" id="board">
     <div class="section-head">
       <div class="section-title">
@@ -439,7 +436,7 @@ footer a{text-decoration:underline;}
     </div>
     <div class="card" id="boardCard">
       <div id="boardList"><div class="sub">načítám…</div></div>
-      <p class="dep-note">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS), poslední měsíc. U rozpočtových opatření appka automaticky přečte přiloženou PDF přílohu a spočítá rozdíl v příjmech/výdajích — u ostatních dokumentů ukazuje první smysluplný úryvek textu (RSS popis, nebo náhled přílohy). Appka si nic nevymýšlí — jen ukazuje, co skutečně stojí ve zdroji.</p>
+      <p class="dep-note">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS), poslední 3 zprávy. U rozpočtových opatření appka automaticky přečte přiloženou PDF přílohu a spočítá rozdíl v příjmech/výdajích — u ostatních dokumentů ukazuje krátký úryvek textu (RSS popis, nebo náhled přílohy). Appka si nic nevymýšlí — jen ukazuje, co skutečně stojí ve zdroji.</p>
     </div>
   </section>
 
@@ -450,6 +447,14 @@ footer a{text-decoration:underline;}
         <h2>Počasí</h2>
       </div>
       <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
+    </div>
+    <div class="banner" id="alertBanner" style="margin-top:0;margin-bottom:1.2rem;">
+      <div class="stripe"></div>
+      <div>
+        <strong id="alertHeadline">Kontroluji výstrahy…</strong>
+        <span id="alertDetail">Načítám aktuální stav z ČHMÚ.</span>
+      </div>
+      <span class="tag soon" id="alertTag" style="margin-left:auto;"><span class="dot"></span>načítám</span>
     </div>
     <div class="grid" id="weatherCards">
       <div class="card skel"><div class="k">Teplota</div><div class="v">—</div><div class="sub">načítám…</div></div>
@@ -1727,7 +1732,7 @@ async function loadTradespeople(){
 // — u ostatních typů dokumentů skutečný úryvek textu (RSS popis nebo
 // náhled přílohy), ne jen metadata typu "ke stažení N příloh".
 const BOARD_STALE_MS = 30 * 60 * 60 * 1000; // pipeline běží jednou denně, klidná rezerva
-const BOARD_WINDOW_DAYS = 30; // appka schválně ukazuje jen poslední měsíc, ne celou historii
+const BOARD_ITEM_COUNT = 3; // schválně jen pár posledních zpráv, ne celá historie — sekce má zůstat kompaktní
 
 // Ikonka podle klíčových slov v názvu — čistě kosmetické (nic to netvrdí
 // o obsahu dokumentu), jen pomáhá oko při skenování seznamu.
@@ -1747,11 +1752,11 @@ function boardCategoryIcon(title){
 function boardChip(label, chip){
   if (!chip) return '';
   return `<div class="board-chip">
-    <span class="board-chip-label">${escapeHtml(label)}</span>
-    <span>${escapeHtml(chip.before)}</span>
-    <span class="board-chip-arrow">→</span>
-    <span>${escapeHtml(chip.after)}</span>
-    <span class="board-chip-change ${chip.direction === 'down' ? 'down' : ''}">${escapeHtml(chip.change)}</span>
+    <div class="board-chip-top">
+      <span class="board-chip-label">${escapeHtml(label)}</span>
+      <span class="board-chip-change ${chip.direction === 'down' ? 'down' : ''}">${escapeHtml(chip.change)}</span>
+    </div>
+    <div class="board-chip-values">${escapeHtml(chip.before)} <span class="board-chip-arrow">→</span> ${escapeHtml(chip.after)}</div>
   </div>`;
 }
 
@@ -1771,11 +1776,10 @@ async function loadUredniDeska(){
     tag.className = 'tag live';
     tag.innerHTML = '<span class="dot"></span>živě · zlonice.cz';
 
-    const cutoff = Date.now() - BOARD_WINDOW_DAYS * 24 * 60 * 60 * 1000;
-    const recent = data.items.filter(item => !item.pubDate || new Date(item.pubDate).getTime() >= cutoff);
+    const recent = data.items.slice(0, BOARD_ITEM_COUNT);
 
     if (recent.length === 0){
-      list.innerHTML = `<div class="board-empty">Za posledních ${BOARD_WINDOW_DAYS} dní žádné nové položky.</div>`;
+      list.innerHTML = '<div class="board-empty">Zatím žádné položky.</div>';
       return;
     }
 

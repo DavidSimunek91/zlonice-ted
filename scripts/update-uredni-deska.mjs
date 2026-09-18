@@ -94,8 +94,15 @@ function extractId(value) {
   return m ? Number(m[1]) : null;
 }
 
-function truncate(text, max) {
-  return text.length > max ? text.slice(0, max - 3) + '…' : text;
+// Appka má na úřední desce zůstat kompaktní (max pár řádků na položku),
+// takže se ořezává na počet slov, ne znaků — krátká "core message", ne
+// odstavec.
+const NOTE_MAX_WORDS = 15;
+
+function truncateWords(text, maxWords) {
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length <= maxWords) return words.join(' ');
+  return words.slice(0, maxWords).join(' ') + '…';
 }
 
 // Když se nepodaří najít žádný skutečný text (ani v RSS popisu, ani
@@ -293,7 +300,8 @@ async function main() {
           entry.summary = summary;
         } else {
           console.warn(`Položka ${id}: OCR proběhlo, ale nenašel jsem řádky "Příjmy/Výdaje celkem" — beru jako obecnou položku.`);
-          entry.note = descriptionPreview(rawDescription) || fallbackNote(fileUrls.length);
+          const fallbackDescription = descriptionPreview(rawDescription);
+          entry.note = fallbackDescription ? truncateWords(fallbackDescription, NOTE_MAX_WORDS) : fallbackNote(fileUrls.length);
         }
       } catch (err) {
         console.warn(`Položka ${id}: OCR přílohy selhalo (${err.message}), zkusím znovu příští běh.`);
@@ -302,11 +310,11 @@ async function main() {
     } else {
       const fromDescription = descriptionPreview(rawDescription);
       if (fromDescription) {
-        entry.note = truncate(fromDescription, 300);
+        entry.note = truncateWords(fromDescription, NOTE_MAX_WORDS);
       } else if (fileUrls[0]) {
         try {
           const preview = await extractDocPreview(fileUrls[0]);
-          entry.note = preview ? truncate(preview, 300) : fallbackNote(fileUrls.length);
+          entry.note = preview ? truncateWords(preview, NOTE_MAX_WORDS) : fallbackNote(fileUrls.length);
         } catch (err) {
           console.warn(`Položka ${id}: náhled přílohy selhal (${err.message}), zobrazí se jen obecná hláška.`);
           entry.note = fallbackNote(fileUrls.length);
