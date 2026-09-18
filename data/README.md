@@ -223,13 +223,25 @@ stejně snadno jako Open-Meteo.
   rozhodnutí NEpoužívat LLM shrnutí: u veřejných peněz je riziko
   halucinace nepřijatelné, deterministický parser buď najde přesná čísla,
   nebo nenajde nic (viz níž).
-- **Ostatní typy dokumentů** (vyhlášky, svolání zastupitelstva, uzavírky…)
-  appka jen upozorní na novou položku s krátkým úryvkem z RSS popisu, bez
-  vlastního shrnutí.
+- **Ostatní typy dokumentů** (vyhlášky, svolání zastupitelstva, uzavírky…):
+  appka ukazuje skutečný úryvek textu, ne metadata o příloze. Zdroj (v
+  pořadí, jak se zkouší): text přímo z RSS popisu (když ho úřad napsal
+  rovnou tam) → náhled první strany přílohy (`pdftotext`, a když PDF nemá
+  textovou vrstvu, OCR jen té jedné stránky, ne celého dokumentu) →
+  teprve když ani jedno nevyjde, obecná hláška "ke stažení N příloh".
+  Nikdy se nic nevymýšlí, jen se hledá skutečný text v dokumentu.
 - **Když parser řádky "Příjmy/Výdaje celkem" nenajde** (jiný formát
-  dokumentu, budoucí verze KEO4 apod.), položka se zobrazí jen jako obecná
-  novinka bez čísel — appka si nikdy nevymýšlí souhrn, který nedokázala
-  spolehlivě přečíst.
+  dokumentu, budoucí verze KEO4 apod.), položka se zobrazí jako obecná
+  položka (viz výš) bez čísel — appka si nikdy nevymýšlí souhrn, který
+  nedokázala spolehlivě přečíst.
+- **`summary` je strukturovaný objekt**, ne hotová věta —
+  `{ prijmy: {before, after, change, direction}, vydaje: {...} }` — appka
+  si z něj sama poskládá barevné "chips" (`▲`/`▼` podle `direction`).
+  Formátování čísel na Kč je jen v `update-uredni-deska.mjs`, ne
+  duplikované v `index.html`.
+- **Appka zobrazuje jen poslední ~30 dní** (filtruje se na frontendu podle
+  `pubDate`, ne v pipeline — pipeline si `data/uredni-deska.json` drží víc
+  položek jako pojistku), sekce je hned nahoře, nad počasím.
 - **Zpracovává se jen jednou:** jakmile je položka (`id`) jednou úspěšně
   v `uredni-deska.json`, příští běhy ji jen převezmou beze změny — ať se
   pořád dokola nestahuje a neOCRuje totéž.

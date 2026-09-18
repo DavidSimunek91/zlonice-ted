@@ -269,15 +269,25 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .traffic-time{margin-top:.25rem;font-size:.76rem;color:var(--ink-soft);}
 
 /* úřední deska */
-.board-row{padding:.8rem 0;border-bottom:1px dashed var(--line);}
-.board-row:last-child{border-bottom:none;}
-.board-head{display:flex;align-items:baseline;justify-content:space-between;gap:.7rem;flex-wrap:wrap;}
-.board-title{font-weight:600;}
+.board-list{display:flex;flex-direction:column;gap:.7rem;}
+.board-card{display:flex;gap:.8rem;padding:.9rem 1rem;border-radius:10px;background:var(--stone);border:1px solid var(--line);position:relative;}
+.board-card.featured{background:var(--gold-soft);border-color:transparent;}
+.board-icon{flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.15rem;background:var(--surface);}
+.board-body{flex:1 1 auto;min-width:0;}
+.board-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;flex-wrap:wrap;}
+.board-title{font-weight:700;font-size:.98rem;line-height:1.3;}
 .board-title a{color:inherit;text-decoration:none;}
 .board-title a:hover{text-decoration:underline;}
-.board-date{font-size:.78rem;color:var(--ink-soft);white-space:nowrap;}
-.board-summary{margin-top:.4rem;font-size:.88rem;font-weight:600;color:var(--good);}
-.board-note{margin-top:.4rem;font-size:.88rem;color:var(--ink-soft);}
+.board-featured-tag{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);background:var(--surface);border-radius:999px;padding:.15rem .55rem;margin-bottom:.3rem;}
+.board-date{font-size:.76rem;color:var(--ink-soft);white-space:nowrap;padding-top:.15rem;}
+.board-note{margin-top:.45rem;font-size:.87rem;color:var(--ink-soft);line-height:1.5;padding-left:.7rem;border-left:2px solid var(--line);}
+.board-chips{margin-top:.6rem;display:flex;flex-direction:column;gap:.4rem;}
+.board-chip{display:flex;align-items:center;gap:.5rem;font-size:.85rem;background:var(--surface);border-radius:8px;padding:.4rem .6rem;flex-wrap:wrap;}
+.board-chip-label{font-weight:700;flex:0 0 auto;}
+.board-chip-arrow{color:var(--ink-soft);}
+.board-chip-change{font-weight:700;font-family:ui-monospace,monospace;font-size:.8rem;padding:.1rem .45rem;border-radius:6px;background:var(--good-soft);color:var(--good);margin-left:auto;}
+.board-chip-change.down{background:var(--warn-soft);color:var(--warn);}
+.board-empty{color:var(--ink-soft);font-size:.9rem;padding:.4rem 0;}
 
 /* autobus */
 .dep-card{padding:1.2rem 1.4rem;}
@@ -397,6 +407,7 @@ footer a{text-decoration:underline;}
 
 <nav class="section-nav" id="sectionNav" aria-label="Rychlá navigace po sekcích">
   <div class="section-nav-inner">
+    <a href="#board" class="nav-pill" data-target="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span>Úřední deska</span></a>
     <a href="#weather" class="nav-pill" data-target="weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg><span>Počasí</span></a>
     <a href="#air" class="nav-pill" data-target="air"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg><span>Ovzduší</span></a>
     <a href="#water" class="nav-pill" data-target="water"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg><span>Voda</span></a>
@@ -417,6 +428,20 @@ footer a{text-decoration:underline;}
     </div>
     <span class="tag soon" id="alertTag" style="margin-left:auto;"><span class="dot"></span>načítám</span>
   </div>
+
+  <section class="section board-section" id="board">
+    <div class="section-head">
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>
+        <h2>Úřední deska</h2>
+      </div>
+      <span class="tag soon" id="boardTag"><span class="dot"></span>načítám…</span>
+    </div>
+    <div class="card" id="boardCard">
+      <div id="boardList"><div class="sub">načítám…</div></div>
+      <p class="dep-note">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS), poslední měsíc. U rozpočtových opatření appka automaticky přečte přiloženou PDF přílohu a spočítá rozdíl v příjmech/výdajích — u ostatních dokumentů ukazuje první smysluplný úryvek textu (RSS popis, nebo náhled přílohy). Appka si nic nevymýšlí — jen ukazuje, co skutečně stojí ve zdroji.</p>
+    </div>
+  </section>
 
   <section class="section" id="weather">
     <div class="section-head">
@@ -526,20 +551,6 @@ footer a{text-decoration:underline;}
       </div>
       <div id="trafficList"></div>
       <p class="dep-note">Zdroj: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Appka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení.</p>
-    </div>
-  </section>
-
-  <section class="section" id="board">
-    <div class="section-head">
-      <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>
-        <h2>Úřední deska</h2>
-      </div>
-      <span class="tag soon" id="boardTag"><span class="dot"></span>načítám…</span>
-    </div>
-    <div class="card" id="boardCard">
-      <div id="boardList"><div class="sub">načítám…</div></div>
-      <p class="dep-note">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS). U rozpočtových opatření appka automaticky přečte přiložené PDF (OCR) a spočítá rozdíl v příjmech/výdajích — u ostatních typů dokumentů appka jen upozorní, že je nový, bez vlastního shrnutí.</p>
     </div>
   </section>
 
@@ -1713,8 +1724,36 @@ async function loadTradespeople(){
 // scripts/update-uredni-deska.mjs (RSS + OCR rozpočtových opatření, běží
 // jen na droplu). U rozpočtových opatření appka ukazuje deterministicky
 // spočítaný rozdíl v příjmech/výdajích (žádné LLM, žádný vymyšlený souhrn)
-// — u ostatních typů dokumentů jen upozornění na novou položku.
+// — u ostatních typů dokumentů skutečný úryvek textu (RSS popis nebo
+// náhled přílohy), ne jen metadata typu "ke stažení N příloh".
 const BOARD_STALE_MS = 30 * 60 * 60 * 1000; // pipeline běží jednou denně, klidná rezerva
+const BOARD_WINDOW_DAYS = 30; // appka schválně ukazuje jen poslední měsíc, ne celou historii
+
+// Ikonka podle klíčových slov v názvu — čistě kosmetické (nic to netvrdí
+// o obsahu dokumentu), jen pomáhá oko při skenování seznamu.
+function boardCategoryIcon(title){
+  const t = title.toLowerCase();
+  if (/rozpočtov/.test(t)) return '💰';
+  if (/volb|volebn[íi]/.test(t)) return '🗳️';
+  if (/zastupitelstv/.test(t)) return '🏛️';
+  if (/uzavírk|komunikace|silnice/.test(t)) return '🚧';
+  if (/pozemk|prodej|záměr|aukč/.test(t)) return '🏞️';
+  if (/vyhlášk|opatření obecné povahy/.test(t)) return '📜';
+  if (/studie|územní/.test(t)) return '🗺️';
+  if (/katastráln/.test(t)) return '📐';
+  return '📄';
+}
+
+function boardChip(label, chip){
+  if (!chip) return '';
+  return `<div class="board-chip">
+    <span class="board-chip-label">${escapeHtml(label)}</span>
+    <span>${escapeHtml(chip.before)}</span>
+    <span class="board-chip-arrow">→</span>
+    <span>${escapeHtml(chip.after)}</span>
+    <span class="board-chip-change ${chip.direction === 'down' ? 'down' : ''}">${escapeHtml(chip.change)}</span>
+  </div>`;
+}
 
 async function loadUredniDeska(){
   const tag = document.getElementById('boardTag');
@@ -1732,22 +1771,31 @@ async function loadUredniDeska(){
     tag.className = 'tag live';
     tag.innerHTML = '<span class="dot"></span>živě · zlonice.cz';
 
-    if (data.items.length === 0){
-      list.innerHTML = '<div class="sub">Zatím žádné položky.</div>';
+    const cutoff = Date.now() - BOARD_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+    const recent = data.items.filter(item => !item.pubDate || new Date(item.pubDate).getTime() >= cutoff);
+
+    if (recent.length === 0){
+      list.innerHTML = `<div class="board-empty">Za posledních ${BOARD_WINDOW_DAYS} dní žádné nové položky.</div>`;
       return;
     }
 
-    list.innerHTML = data.items.map(item => {
+    list.className = 'board-list';
+    list.innerHTML = recent.map((item, i) => {
       const date = item.pubDate ? new Date(item.pubDate).toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric', year:'numeric'}) : '';
+      const featured = i === 0;
       const body = (item.type === 'rozpocet' && item.summary)
-        ? `<div class="board-summary">${escapeHtml(item.summary)}</div>`
+        ? `<div class="board-chips">${boardChip('Příjmy', item.summary.prijmy)}${boardChip('Výdaje', item.summary.vydaje)}</div>`
         : (item.note ? `<div class="board-note">${escapeHtml(item.note)}</div>` : '');
-      return `<div class="board-row">
-        <div class="board-head">
-          <span class="board-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></span>
-          <span class="board-date">${date}</span>
+      return `<div class="board-card${featured ? ' featured' : ''}">
+        <div class="board-icon">${boardCategoryIcon(item.title)}</div>
+        <div class="board-body">
+          ${featured ? '<span class="board-featured-tag">Nejnovější</span>' : ''}
+          <div class="board-head">
+            <span class="board-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></span>
+            <span class="board-date">${date}</span>
+          </div>
+          ${body}
         </div>
-        ${body}
       </div>`;
     }).join('');
   }catch(e){

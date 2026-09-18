@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "updated": "2026-09-18T12:20:44.045Z",
+  "updated": "2026-09-18T13:09:00.233Z",
   "items": [
     {
       "id": 1246,
@@ -8,7 +8,20 @@
       "link": "https://www.zlonice.cz/uredni-deska?id=1246&action=detail",
       "pubDate": "2026-09-16T22:00:00.000Z",
       "type": "rozpocet",
-      "summary": "Příjmy: 1 170 000 Kč → 1 761 950 Kč (+591 950 Kč) Výdaje: 15 884 000 Kč → 16 475 950 Kč (+591 950 Kč)",
+      "summary": {
+        "prijmy": {
+          "before": "1 170 000 Kč",
+          "after": "1 761 950 Kč",
+          "change": "+591 950 Kč",
+          "direction": "up"
+        },
+        "vydaje": {
+          "before": "15 884 000 Kč",
+          "after": "16 475 950 Kč",
+          "change": "+591 950 Kč",
+          "direction": "up"
+        }
+      },
       "note": null,
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13866883"
     },
@@ -19,7 +32,7 @@
       "pubDate": "2026-09-14T07:55:17.000Z",
       "type": "other",
       "summary": null,
-      "note": "Nová položka na úřední desce, ke stažení 6 příloh.",
+      "note": "Občanům městyse Ve Zlonicích dne 27. srpna 2026 SVOLÁNÍ ZASTUPITELSTA Tímto svolávám zastupitelstvo městyse Zlonice. Zasedání se bude konat v úterý 15. září 2026 od 17:00 v „budově úřadu městyse Zlonice, zasedací síň v přízemí“, náměstí Pod Lipami 29, Zlonice. Program zasedání bude zveřejněn v př…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13800047"
     },
     {
@@ -39,7 +52,7 @@
       "pubDate": "2026-08-27T08:01:58.000Z",
       "type": "other",
       "summary": null,
-      "note": "Nová položka na úřední desce, ke stažení 1 přílohu.",
+      "note": "Záměr prodeje – část pozemku 498/1 a 499/1 parcely o výměře cca 190m2, na plánku vyznačená červeně, neudržovaný cíp pozemku za areálem dětského hřiště ve Tmáni. Záměr bude projednán na zasedání Zastupitelstva městyse Zlonice.",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13800615"
     },
     {
@@ -49,7 +62,7 @@
       "pubDate": "2026-08-25T06:50:58.000Z",
       "type": "other",
       "summary": null,
-      "note": "Nová položka na úřední desce, ke stažení 1 přílohu.",
+      "note": "Ve Zlonicích dne 25. srpna 2026 Informace o počtu a sídlech volebních okrsků V souladu s ustanovením § 15 odst. 1 písm. g) zákona č. 491/2001 Sb. o volbách zastupitelstev obcí, ve znění pozdějších předpisů, informuji volební strany, účastnících se voleb v městysi, které se budou konat ve dnech 9.…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13795617"
     },
     {
@@ -69,7 +82,7 @@
       "pubDate": "2026-08-10T04:47:31.000Z",
       "type": "other",
       "summary": null,
-      "note": "Nová položka na úřední desce, ke stažení 1 přílohu.",
+      "note": "OZNÁMENÍ o dokončení obnovy katastrálního operátu a jeho vyložení k veřejnému nahlédnutí Obecní úřad Zlonice podle ustanovení $ 45 odst. 2 zákona č. 256/2013 Sb. o katastru nemovitostí (katastrální zákon), a na základě oznámení Katastrálního úřadu pro Středočeský kraj, Katastrální pracoviště Slan…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13768444"
     },
     {
@@ -89,7 +102,7 @@
       "pubDate": "2026-08-04T06:42:30.000Z",
       "type": "other",
       "summary": null,
-      "note": "Nová položka na úřední desce, ke stažení 1 přílohu.",
+      "note": "Příloha č. 1 aukční vyhlášky – věci nemovité Čj.: UZSVM/A/309537/2026-SBEK AUKČNÍ VYHLÁŠKA Elektronická aukce se řídí platným Aukčním řádem, není-li stanoveno v této Aukční vyhlášce jinak. Aukční řád je v elektronické podobě uveřejněn na webových stránkách https://www.nabidkamajetku.gov.cz. Elekt…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13760584"
     },
     {

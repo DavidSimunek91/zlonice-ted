@@ -18,6 +18,17 @@
 // rozpočet obce) a spočítá rozdíl před/po. Když se to nepovede rozpoznat
 // (jiný formát dokumentu), NEPÍŠEME žádný vymyšlený souhrn — položka se
 // zobrazí jen jako "nový dokument ke stažení", ať jde o veřejné peníze.
+// `summary` je strukturovaný objekt (čísla + text, ne hotová věta) — appka
+// si z něj sama poskládá barevné "chips", formátování zůstává tady na
+// jednom místě.
+//
+// U ostatních typů dokumentů appka dřív ukazovala jen "ke stažení N
+// příloh" — to je metadata o příloze, ne informace pro občana. Teď se
+// zkusí vzít první smysluplný text: buď z RSS popisu (když ho úřad napsal
+// rovnou tam), jinak náhled první strany přílohy (pdftotext, a když PDF
+// nemá textovou vrstvu, OCR jen té jedné stránky — ne celého dokumentu,
+// ať se to zbytečně neprotahuje). Nikdy nic nevymýšlíme, jen buď najdeme
+// skutečný text v dokumentu, nebo se vrátíme k obecné hlášce.
 //
 // Položky se zpracovávají (a OCR) jen jednou — jakmile je `id` jednou
 // úspěšně v data/uredni-deska.json, příští běhy ho jen převezmou beze
@@ -31,7 +42,9 @@ import { XMLParser } from 'fast-xml-parser';
 
 const OUT_PATH = 'data/uredni-deska.json';
 const FEED_URL = 'https://www.zlonice.cz/uredni-deska?action=atom';
-const MAX_ITEMS = 15;
+// appka na FE filtruje na posledních ~30 dní, tenhle strop je jen pojistka
+// pro případ, že by RSS feed najednou obsahoval mnohem víc položek
+const MAX_ITEMS = 30;
 const FETCH_TIMEOUT_MS = 15_000;
 const MAX_ATTEMPTS = 3;
 
@@ -81,15 +94,83 @@ function extractId(value) {
   return m ? Number(m[1]) : null;
 }
 
-function buildOtherNote(rawDescription, fileCount) {
-  const beforeAttachments = rawDescription.split(/Přílohy\s*:/i)[0];
-  const text = htmlToText(beforeAttachments);
-  if (text) return text.length > 300 ? text.slice(0, 297) + '…' : text;
+function truncate(text, max) {
+  return text.length > max ? text.slice(0, max - 3) + '…' : text;
+}
+
+// Když se nepodaří najít žádný skutečný text (ani v RSS popisu, ani
+// v příloze) — poslední záchrana, aspoň řekne kolik příloh tam je.
+function fallbackNote(fileCount) {
   if (fileCount > 0) {
     const word = fileCount === 1 ? 'přílohu' : fileCount < 5 ? 'přílohy' : 'příloh';
     return `Nová položka na úřední desce, ke stažení ${fileCount} ${word}.`;
   }
   return 'Nová položka na úřední desce.';
+}
+
+// Text přímo z RSS popisu (když ho úřad napsal rovnou tam, ne jen jako
+// seznam odkazů na přílohy) — nejlevnější a nejspolehlivější zdroj náhledu.
+function descriptionPreview(rawDescription) {
+  const beforeAttachments = rawDescription.split(/Přílohy\s*:/i)[0];
+  const text = htmlToText(beforeAttachments);
+  return text || null;
+}
+
+// Řádky, které se opakují na každé stránce/dokumentu ("hlavička" KEO4
+// i běžných obecních tiskopisů) — nenesou žádnou informaci o obsahu.
+const BOILERPLATE_LINE_RE = [
+  /^Městys Zlonice/i,
+  /^KEO4/i,
+  /^Zpracováno programem/i,
+  /^IČO[:\s]/i,
+  /^\d+\/\d+$/, // číslo strany typu "1/3"
+  /^Nám\.? Pod Lipami/i, // adresa v hlavičce tiskopisů úřadu
+  /^\d{3}\s?\d{2}\s+\S/, // PSČ + obec, pokračování adresy na dalším řádku
+];
+
+function cleanPreviewText(text) {
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const kept = lines.filter((l) => !BOILERPLATE_LINE_RE.some((re) => re.test(l)));
+  return kept.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+// Náhled první strany přílohy: nejdřív zkusí přímo textovou vrstvu
+// (rychlé, žádné OCR), a jen když je prázdná/skoro prázdná (PDF bez
+// textové vrstvy, viz hlavička souboru), spadne na OCR té jedné stránky.
+async function extractDocPreview(url) {
+  const res = await fetchWithRetry(url);
+  if (!res.ok) throw new Error(`Stažení přílohy selhalo (HTTP ${res.status})`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  const dir = mkdtempSync(join(tmpdir(), 'uredni-deska-'));
+  try {
+    const pdfPath = join(dir, 'doc.pdf');
+    writeFileSync(pdfPath, buf);
+
+    checkBinary('pdftotext', ['-v']);
+    let text = '';
+    try {
+      text = execFileSync('pdftotext', ['-f', '1', '-l', '1', pdfPath, '-'], {
+        maxBuffer: 5 * 1024 * 1024,
+      }).toString('utf-8');
+    } catch {
+      text = '';
+    }
+
+    if (cleanPreviewText(text).length < 40) {
+      checkBinary('pdftoppm', ['-v']);
+      checkBinary('tesseract', ['--version']);
+      execFileSync('pdftoppm', ['-r', '200', '-png', '-f', '1', '-l', '1', pdfPath, join(dir, 'page')]);
+      const pages = readdirSync(dir).filter((f) => f.startsWith('page') && f.endsWith('.png'));
+      if (pages.length > 0) {
+        text = execFileSync('tesseract', [join(dir, pages[0]), 'stdout', '-l', 'ces'], {
+          maxBuffer: 5 * 1024 * 1024,
+        }).toString('utf-8');
+      }
+    }
+    return cleanPreviewText(text);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 function formatKc(n) {
@@ -109,15 +190,24 @@ function extractTotalLine(text, label) {
   return { before: num(m[1]), change: num(m[2]), after: num(m[3]) };
 }
 
+function toChip(t) {
+  if (!t) return null;
+  return {
+    before: formatKc(t.before),
+    after: formatKc(t.after),
+    change: `${t.change >= 0 ? '+' : ''}${formatKc(t.change)}`,
+    direction: t.change > 0 ? 'up' : t.change < 0 ? 'down' : 'flat',
+  };
+}
+
+// Vrací strukturovaná data (čísla už naformátovaná na Kč), ne hotovou
+// větu — appka si z toho poskládá barevné chips. Formátování je schválně
+// tady na jednom místě, ne duplikované v index.html.
 function buildRozpocetSummary(text) {
   const prijmy = extractTotalLine(text, 'Příjmy celkem');
   const vydaje = extractTotalLine(text, 'Výdaje celkem');
   if (!prijmy && !vydaje) return null;
-  const fmtChange = (n) => `${n >= 0 ? '+' : ''}${formatKc(n)}`;
-  const parts = [];
-  if (prijmy) parts.push(`Příjmy: ${formatKc(prijmy.before)} → ${formatKc(prijmy.after)} (${fmtChange(prijmy.change)})`);
-  if (vydaje) parts.push(`Výdaje: ${formatKc(vydaje.before)} → ${formatKc(vydaje.after)} (${fmtChange(vydaje.change)})`);
-  return parts.join(' ');
+  return { prijmy: toChip(prijmy), vydaje: toChip(vydaje) };
 }
 
 async function ocrPdf(url) {
@@ -203,14 +293,27 @@ async function main() {
           entry.summary = summary;
         } else {
           console.warn(`Položka ${id}: OCR proběhlo, ale nenašel jsem řádky "Příjmy/Výdaje celkem" — beru jako obecnou položku.`);
-          entry.note = buildOtherNote(rawDescription, fileUrls.length);
+          entry.note = descriptionPreview(rawDescription) || fallbackNote(fileUrls.length);
         }
       } catch (err) {
         console.warn(`Položka ${id}: OCR přílohy selhalo (${err.message}), zkusím znovu příští běh.`);
         continue; // nepřidávat teď — příští běh to zkusí znovu, ne natrvalo bez souhrnu
       }
     } else {
-      entry.note = buildOtherNote(rawDescription, fileUrls.length);
+      const fromDescription = descriptionPreview(rawDescription);
+      if (fromDescription) {
+        entry.note = truncate(fromDescription, 300);
+      } else if (fileUrls[0]) {
+        try {
+          const preview = await extractDocPreview(fileUrls[0]);
+          entry.note = preview ? truncate(preview, 300) : fallbackNote(fileUrls.length);
+        } catch (err) {
+          console.warn(`Položka ${id}: náhled přílohy selhal (${err.message}), zobrazí se jen obecná hláška.`);
+          entry.note = fallbackNote(fileUrls.length);
+        }
+      } else {
+        entry.note = fallbackNote(0);
+      }
     }
 
     result.push(entry);
