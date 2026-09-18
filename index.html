@@ -1714,7 +1714,7 @@ async function loadTradespeople(){
 // jen na droplu). U rozpočtových opatření appka ukazuje deterministicky
 // spočítaný rozdíl v příjmech/výdajích (žádné LLM, žádný vymyšlený souhrn)
 // — u ostatních typů dokumentů jen upozornění na novou položku.
-const BOARD_STALE_MS = 4 * 60 * 60 * 1000; // pipeline běží co hodinu, klidná rezerva
+const BOARD_STALE_MS = 30 * 60 * 60 * 1000; // pipeline běží jednou denně, klidná rezerva
 
 async function loadUredniDeska(){
   const tag = document.getElementById('boardTag');
