@@ -36,9 +36,9 @@
 # infra/visit-log/beacon-server.mjs — viz infra/visit-log/README.md.
 */15 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/aggregate-visits.mjs data/stats.json "Update visit stats" >> $HOME/zlonice-ted-cron.log 2>&1
 
-# Úřední deska (RSS ze zlonice.cz) — jednou za hodinu, deska se nemění
-# často. Nepotřebuje žádné tajné hodnoty v env souboru, ale vyžaduje na
-# droplu nainstalované poppler-utils a tesseract-ocr(-ces) — jednorázově:
+# Úřední deska (RSS ze zlonice.cz) — jednou denně, deska se mění málokdy.
+# Nepotřebuje žádné tajné hodnoty v env souboru, ale vyžaduje na droplu
+# nainstalované poppler-utils a tesseract-ocr(-ces) — jednorázově:
 #   sudo apt-get install -y poppler-utils tesseract-ocr tesseract-ocr-ces
 # (viz komentář v scripts/update-uredni-deska.mjs)
-7 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-uredni-deska.mjs data/uredni-deska.json "Update úřední deska" >> $HOME/zlonice-ted-cron.log 2>&1
+7 6 * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-uredni-deska.mjs data/uredni-deska.json "Update úřední deska" >> $HOME/zlonice-ted-cron.log 2>&1
