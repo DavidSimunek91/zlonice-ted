@@ -268,6 +268,17 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .traffic-comment{margin-top:.4rem;font-size:.88rem;}
 .traffic-time{margin-top:.25rem;font-size:.76rem;color:var(--ink-soft);}
 
+/* úřední deska */
+.board-row{padding:.8rem 0;border-bottom:1px dashed var(--line);}
+.board-row:last-child{border-bottom:none;}
+.board-head{display:flex;align-items:baseline;justify-content:space-between;gap:.7rem;flex-wrap:wrap;}
+.board-title{font-weight:600;}
+.board-title a{color:inherit;text-decoration:none;}
+.board-title a:hover{text-decoration:underline;}
+.board-date{font-size:.78rem;color:var(--ink-soft);white-space:nowrap;}
+.board-summary{margin-top:.4rem;font-size:.88rem;font-weight:600;color:var(--good);}
+.board-note{margin-top:.4rem;font-size:.88rem;color:var(--ink-soft);}
+
 /* autobus */
 .dep-card{padding:1.2rem 1.4rem;}
 .dep-top{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap;}
@@ -515,6 +526,20 @@ footer a{text-decoration:underline;}
       </div>
       <div id="trafficList"></div>
       <p class="dep-note">Zdroj: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Appka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení.</p>
+    </div>
+  </section>
+
+  <section class="section" id="board">
+    <div class="section-head">
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>
+        <h2>Úřední deska</h2>
+      </div>
+      <span class="tag soon" id="boardTag"><span class="dot"></span>načítám…</span>
+    </div>
+    <div class="card" id="boardCard">
+      <div id="boardList"><div class="sub">načítám…</div></div>
+      <p class="dep-note">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS). U rozpočtových opatření appka automaticky přečte přiložené PDF (OCR) a spočítá rozdíl v příjmech/výdajích — u ostatních typů dokumentů appka jen upozorní, že je nový, bez vlastního shrnutí.</p>
     </div>
   </section>
 
@@ -1684,6 +1709,54 @@ async function loadTradespeople(){
   }
 }
 
+// Úřední deska Městyse Zlonice — appka jen čte předzpracovaný přehled, viz
+// scripts/update-uredni-deska.mjs (RSS + OCR rozpočtových opatření, běží
+// jen na droplu). U rozpočtových opatření appka ukazuje deterministicky
+// spočítaný rozdíl v příjmech/výdajích (žádné LLM, žádný vymyšlený souhrn)
+// — u ostatních typů dokumentů jen upozornění na novou položku.
+const BOARD_STALE_MS = 4 * 60 * 60 * 1000; // pipeline běží co hodinu, klidná rezerva
+
+async function loadUredniDeska(){
+  const tag = document.getElementById('boardTag');
+  const list = document.getElementById('boardList');
+  try{
+    const res = await fetch('./data/uredni-deska.json', {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    const ageMs = Date.now() - new Date(data.updated).getTime();
+    if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > BOARD_STALE_MS){
+      throw new Error('data jsou zastaralá nebo se poslední aktualizace nepovedla');
+    }
+
+    tag.className = 'tag live';
+    tag.innerHTML = '<span class="dot"></span>živě · zlonice.cz';
+
+    if (data.items.length === 0){
+      list.innerHTML = '<div class="sub">Zatím žádné položky.</div>';
+      return;
+    }
+
+    list.innerHTML = data.items.map(item => {
+      const date = item.pubDate ? new Date(item.pubDate).toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric', year:'numeric'}) : '';
+      const body = (item.type === 'rozpocet' && item.summary)
+        ? `<div class="board-summary">${escapeHtml(item.summary)}</div>`
+        : (item.note ? `<div class="board-note">${escapeHtml(item.note)}</div>` : '');
+      return `<div class="board-row">
+        <div class="board-head">
+          <span class="board-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></span>
+          <span class="board-date">${date}</span>
+        </div>
+        ${body}
+      </div>`;
+    }).join('');
+  }catch(e){
+    tag.className = 'tag warn';
+    tag.innerHTML = '<span class="dot"></span>nelze ověřit';
+    list.innerHTML = `<div class="soon-card">Úřední deska se nepodařilo načíst (${escapeHtml(e.message)}).</div>`;
+  }
+}
+
 loadAlerts();
 loadWater();
 loadWeather();
@@ -1692,6 +1765,7 @@ loadAres();
 loadDepartures();
 loadTraffic();
 loadTradespeople();
+loadUredniDeska();
 
 // Anonymní počítadlo návštěv — jen IP adresa a čas návštěvy, žádné
 // cookies, žádné trackování mezi weby, žádný vliv na běh appky (tichý

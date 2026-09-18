@@ -1,0 +1,106 @@
+{
+  "status": "ok",
+  "updated": "2026-09-18T09:02:42.091Z",
+  "items": [
+    {
+      "id": 1246,
+      "title": "Rozpočtové opatření č. 3 / 2026",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1246&action=detail",
+      "pubDate": "2026-09-16T22:00:00.000Z",
+      "type": "rozpocet",
+      "summary": "Příjmy: 1 170 000 Kč → 1 761 950 Kč (+591 950 Kč) Výdaje: 15 884 000 Kč → 16 475 950 Kč (+591 950 Kč)",
+      "note": null,
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13866883"
+    },
+    {
+      "id": 1243,
+      "title": "Svolání zastupitelstva - 23/2026",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1243&action=detail",
+      "pubDate": "2026-09-14T07:55:17.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Nová položka na úřední desce, ke stažení 6 příloh.",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13800047"
+    },
+    {
+      "id": 1245,
+      "title": "Svolání volebních komisí pro volby do obecního zastupitelstva",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1245&action=detail",
+      "pubDate": "2026-09-13T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "První zasedání volebních komisí proběhne ve čtvrtek 17.9 v budově úřadu Městyse Zlonice od 17 hodin. Viz přiložený dokument.",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13846720"
+    },
+    {
+      "id": 1244,
+      "title": "Záměr prodeje části pozemku 498/1 a 499/1 v k.ú. Tmáň",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1244&action=detail",
+      "pubDate": "2026-08-27T08:01:58.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Nová položka na úřední desce, ke stažení 1 přílohu.",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13800615"
+    },
+    {
+      "id": 1242,
+      "title": "Informace o počtu a sídlech volebních okrsků - obecní volby 2026",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1242&action=detail",
+      "pubDate": "2026-08-25T06:50:58.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Nová položka na úřední desce, ke stažení 1 přílohu.",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13795617"
+    },
+    {
+      "id": 1241,
+      "title": "Rozhodnutí - uzavírka místní komunikace - Alešova ulice",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1241&action=detail",
+      "pubDate": "2026-08-24T04:58:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Uzavírka mezi domy čp. 104 - 105 pro výstavbu inženýrských síti.",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13789125"
+    },
+    {
+      "id": 1240,
+      "title": "Tmáň - Oznámení o dokončení obnovy katastrálního operátu a jeho vyložení k veřejnému nahlédnutí",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1240&action=detail",
+      "pubDate": "2026-08-10T04:47:31.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Nová položka na úřední desce, ke stažení 1 přílohu.",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13768444"
+    },
+    {
+      "id": 1239,
+      "title": "Opatření obecné povahy při nedostatku vody",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1239&action=detail",
+      "pubDate": "2026-08-07T04:51:46.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Vodoprávní úřad znovu připomíná platnost opatření z roku 2025 - viz zde.",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13766603"
+    },
+    {
+      "id": 1238,
+      "title": "Aukční vyhláška - Drnov, čp. 11",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1238&action=detail",
+      "pubDate": "2026-08-04T06:42:30.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Nová položka na úřední desce, ke stažení 1 přílohu.",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13760584"
+    },
+    {
+      "id": 1237,
+      "title": "Územní studie krajiny - ORP Slaný, týká se i Zlonic",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1237&action=detail",
+      "pubDate": "2026-07-28T05:59:37.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Pro území ORP Slaný se zpracovává Územní studie krajiny, která bude důležitým podkladem pro budoucí rozvoj území. Nyní máte možnost se seznámit s první etapou zpracování a do 24. srpna 2026 zaslat své připomínky a podněty. Své dotazy i názory budete moci osobně sdílet také na veřejném projednání,…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13752507"
+    }
+  ]
+}
