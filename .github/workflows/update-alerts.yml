@@ -1,18 +1,18 @@
 name: Update ČHMÚ alerts
 
 # Stahuje aktuální CAP výstrahy ČHMÚ a filtruje je na ORP Slaný (Zlonice).
-# Veřejná data, žádný secret není potřeba. Běží často (10 min), protože jde
-# o bezpečnostní informace — appka navíc sama kontroluje stáří dat, viz
-# scripts/update-alerts.mjs a data/README.md.
+# Veřejná data, žádný secret není potřeba.
+#
+# Bez automatického časovače: skutečný zdroj pravdy je teď droplet cron
+# (infra/do-pipelines/, běží stejný scripts/update-alerts.mjs mnohem
+# spolehlivěji než GitHub Actions scheduler — viz jeho README.md). Když
+# tenhle workflow běžel na schedule souběžně s droplem, občas si oba pushe
+# šláply na paty a skončilo to skutečným merge konfliktem v data/alerts.json
+# (dva nezávisle vypočtené výsledky, ne jen "fast-forward" kolize) — bez
+# opravitelný retry smyčkou, jen zbytečný failed e-mail. Workflow zůstává
+# pro ruční spuštění (workflow_dispatch), např. při ladění.
 
 on:
-  schedule:
-    # Schválně mimo kulaté minuty (ne */10) — GitHub Actions dokumentuje, že
-    # scheduled běhy naražené přesně na :00/:10/:20... (kdy je spouští
-    # obrovské množství repozitářů najednou) mívají mnohem větší šanci na
-    # zpoždění nebo úplné vynechání. Zjištěno v praxi: reálné rozestupy
-    # mezi běhy byly hodiny místo 10 minut, viz data/README.md.
-    - cron: '4,14,24,34,44,54 * * * *'
   workflow_dispatch: {}
 
 jobs:

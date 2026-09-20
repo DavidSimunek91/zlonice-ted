@@ -5,10 +5,18 @@ name: Update bus departures
 # není potřeba. PID GTFS se sám generuje jen jednou denně (~4:00-4:30),
 # takže častější běh nemá smysl — appka si "další odjezdy" počítá sama
 # z aktuálního data/dne, viz scripts/update-departures.mjs.
+#
+# Bez automatického časovače: skutečný zdroj pravdy je teď droplet cron
+# (infra/do-pipelines/, běží stejný scripts/update-departures.mjs mnohem
+# spolehlivěji než GitHub Actions scheduler — viz jeho README.md). Když
+# tenhle workflow běžel na schedule souběžně s droplem, občas si oba pushe
+# šláply na paty a skončilo to skutečným merge konfliktem v
+# data/departures.json (dva nezávisle vypočtené výsledky, ne jen
+# "fast-forward" kolize) — bez opravitelný retry smyčkou, jen zbytečný
+# failed e-mail. Workflow zůstává pro ruční spuštění (workflow_dispatch),
+# např. při ladění.
 
 on:
-  schedule:
-    - cron: '0 6 * * *'
   workflow_dispatch: {}
 
 jobs:

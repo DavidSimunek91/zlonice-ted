@@ -14,13 +14,18 @@ name: Update traffic data
 #   timeout, viz komentář ve scripts/update-traffic.mjs). Bez těchto dvou
 #   secretů skript volá ŘSD přímo.
 # Dokud RSD_USERNAME/RSD_PASSWORD nejsou nastavené, skript se sám ukončí bez chyby a nic nemění.
+#
+# Bez automatického časovače: skutečný zdroj pravdy je teď droplet cron
+# (infra/do-pipelines/, běží stejný scripts/update-traffic.mjs mnohem
+# spolehlivěji než GitHub Actions scheduler — viz jeho README.md, droplet
+# navíc volá ŘSD přímo ze své stálé IP bez potřeby proxy). Když tenhle
+# workflow běžel na schedule souběžně s droplem, občas si oba pushe šláply
+# na paty a skončilo to skutečným merge konfliktem v data/traffic.json (dva
+# nezávisle vypočtené výsledky, ne jen "fast-forward" kolize) — bez
+# opravitelný retry smyčkou, jen zbytečný failed e-mail. Workflow zůstává
+# pro ruční spuštění (workflow_dispatch), např. při ladění.
 
 on:
-  schedule:
-    # Schválně mimo kulaté minuty (ne */15) — viz update-alerts.yml pro
-    # vysvětlení. Offset odlišný od update-water.yml, aby si oba 15minutové
-    # pipeline nešlapaly na paty ve stejnou vteřinu.
-    - cron: '6,21,36,51 * * * *'
   workflow_dispatch: {}
 
 jobs:

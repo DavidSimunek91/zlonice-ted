@@ -4,14 +4,18 @@ name: Update live bus delays
 # denní jízdní řád (update-departures.yml) o to, co se mění v řádu minut,
 # ne jednou za den. Dokud repo secret GOLEMIO_API_KEY není nastavený,
 # skript nic nevolá a appka jen dál ukazuje jízdní řád beze zpoždění.
+#
+# Bez automatického časovače: skutečný zdroj pravdy je teď droplet cron
+# (infra/do-pipelines/, běží stejný scripts/update-live-departures.mjs
+# mnohem spolehlivěji než GitHub Actions scheduler — viz jeho README.md).
+# Tenhle workflow běžel co 5 minut, takže ze všech pipeline nejčastěji
+# kolidoval s droplem při pushi — a protože oba nezávisle stahují živé
+# zpoždění, kolize občas skončila skutečným merge konfliktem v
+# data/live-departures.json, ne jen "fast-forward" kolizí opravitelnou
+# retry smyčkou. Workflow zůstává pro ruční spuštění (workflow_dispatch),
+# např. při ladění.
 
 on:
-  schedule:
-    # Schválně mimo kulaté minuty (ne */5) — viz update-alerts.yml pro
-    # vysvětlení, proč se scheduled běh na kulaté minutě mnohem hůř dočká
-    # spuštění. Tenhle pipeline to postihuje nejvíc (nejčastější interval),
-    # takže "žádná data o zpoždění" bylo v appce vidět skoro pořád.
-    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
   workflow_dispatch: {}
 
 jobs:
