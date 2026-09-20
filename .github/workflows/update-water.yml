@@ -3,17 +3,17 @@ name: Update water data
 # Nahrazuje dřívější ručně vkládaný snímek vody živými daty ze stanice
 # Velvary (ČHMÚ hydrologie). ČHMÚ tahle data aktualizuje každých 10 minut,
 # takže i appka se je snaží držet čerstvá. Veřejná data, žádný secret.
+#
+# Bez automatického časovače: skutečný zdroj pravdy je teď droplet cron
+# (infra/do-pipelines/, běží stejný scripts/update-water.mjs mnohem
+# spolehlivěji než GitHub Actions scheduler — viz jeho README.md). Když
+# tenhle workflow běžel na schedule souběžně s droplem, občas si oba pushe
+# šláply na paty a skončilo to skutečným merge konfliktem v data/water.json
+# (dva nezávisle vypočtené výsledky, ne jen "fast-forward" kolize) — bez
+# opravitelný retry smyčkou, jen zbytečný failed e-mail. Workflow zůstává
+# pro ruční spuštění (workflow_dispatch), např. při ladění.
 
 on:
-  schedule:
-    # Schválně mimo kulaté minuty (ne */15) — GitHub Actions dokumentuje, že
-    # scheduled běhy naražené přesně na :00/:15/:30/:45 (kdy je spouští
-    # obrovské množství repozitářů najednou) mívají mnohem větší šanci na
-    # zpoždění nebo úplné vynechání. V historii běhů tohohle pipeline byly
-    # reálné rozestupy hodiny místo 15 minut — proto appka dlouho ukazovala
-    # "nelze ověřit" u vody. Offset odlišný od update-traffic.yml, aby si oba
-    # 15minutové pipeline nešlapaly na paty ve stejnou vteřinu.
-    - cron: '9,24,39,54 * * * *'
   workflow_dispatch: {}
 
 jobs:
