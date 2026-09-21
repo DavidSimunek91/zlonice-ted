@@ -1,1 +1,1 @@
-{"status":"ok","updated":"2026-09-21T19:55:02.965Z","byTrip":{"590_174_260901":{"isCanceled":false,"isAtStop":false,"delayAvailable":true,"delayMinutes":0,"delaySeconds":31,"scheduled":"2026-09-21T22:45:00+02:00","predicted":"2026-09-21T22:45:31+02:00"}}}
+{"status":"ok","updated":"2026-09-21T20:00:03.173Z","byTrip":{"590_174_260901":{"isCanceled":false,"isAtStop":false,"delayAvailable":true,"delayMinutes":0,"delaySeconds":-16,"scheduled":"2026-09-21T22:45:00+02:00","predicted":"2026-09-21T22:44:44+02:00"}}}
