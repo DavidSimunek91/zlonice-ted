@@ -1,5 +1,7 @@
 {
-  "status": "error",
-  "updated": "2026-09-21T06:50:28.035Z",
-  "message": "fetch failed"
+  "status": "ok",
+  "updated": "2026-09-21T07:10:08.013Z",
+  "sourceFile": "alert_cap_50_200940.xml",
+  "hasActive": false,
+  "alerts": []
 }
