@@ -1,7 +1,18 @@
 {
   "status": "ok",
-  "updated": "2026-09-22T11:50:05.027Z",
-  "sourceFile": "alert_cap_50_220739.xml",
-  "hasActive": false,
-  "alerts": []
+  "updated": "2026-09-22T12:00:05.615Z",
+  "sourceFile": "alert_cap_70_221200.xml",
+  "hasActive": true,
+  "alerts": [
+    {
+      "event": "Hydrologické sucho",
+      "severity": "Severe",
+      "urgency": "Immediate",
+      "certainty": "Observed",
+      "headline": null,
+      "onset": "2026-09-22T14:00:00+02:00",
+      "expires": null,
+      "web": "https://hamr.chmi.cz/"
+    }
+  ]
 }
