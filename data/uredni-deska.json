@@ -1,7 +1,17 @@
 {
   "status": "ok",
-  "updated": "2026-09-22T06:07:04.333Z",
+  "updated": "2026-09-23T06:07:08.368Z",
   "items": [
+    {
+      "id": 1247,
+      "title": "Oznámení o době a místu konání voleb",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1247&action=detail",
+      "pubDate": "2026-09-21T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "OZNÁMENÍ O DOBĚ A MÍSTU KONÁNÍ VOLEB DO ZASTUPITELSTEV OBCÍ podle § 5 zákona č.…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13883851"
+    },
     {
       "id": 1246,
       "title": "Rozpočtové opatření č. 3 / 2026",
@@ -104,16 +114,6 @@
       "summary": null,
       "note": "Příloha č. 1 aukční vyhlášky – věci nemovité Čj.: UZSVM/A/309537/2026-SBEK AUKČNÍ VYHLÁŠKA Elektronická aukce se…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13760584"
-    },
-    {
-      "id": 1237,
-      "title": "Územní studie krajiny - ORP Slaný, týká se i Zlonic",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1237&action=detail",
-      "pubDate": "2026-07-28T05:59:37.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Pro území ORP Slaný se zpracovává Územní studie krajiny, která bude důležitým podkladem pro budoucí…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13752507"
     }
   ]
 }
