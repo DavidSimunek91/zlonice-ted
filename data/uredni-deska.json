@@ -1,7 +1,47 @@
 {
   "status": "ok",
-  "updated": "2026-09-23T06:07:08.368Z",
+  "updated": "2026-09-24T06:07:05.647Z",
   "items": [
+    {
+      "id": 1248,
+      "title": "Riziko šíření karanténního škůdce jasanů, polníka jasanového",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1248&action=detail",
+      "pubDate": "2026-09-24T05:26:22.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Viz přiložený dokument",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13890506"
+    },
+    {
+      "id": 1249,
+      "title": "Exekuční příkaz - Vyšínek 10",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1249&action=detail",
+      "pubDate": "2026-09-23T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Soudní exekutor Mgr. Pavel Preus Exekutorský úřad Praha 8 adresa: Kodaňská 1441/46 Praha 10100 tel.:…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13890522"
+    },
+    {
+      "id": 1250,
+      "title": "Aukční vyhláška - Drnov, čp. 11",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1250&action=detail",
+      "pubDate": "2026-09-23T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "UZSVM požádal o zveřejnění aukce nemovitosti Drnov, čp. 11",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13890555"
+    },
+    {
+      "id": 1251,
+      "title": "Aukční vyhláška - Slaný, čp 128",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1251&action=detail",
+      "pubDate": "2026-09-23T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Aukční vyhláška – věci nemovité Čj.: UZSVM/A/407456/2026-SBE AUKČNÍ VYHLÁŠKA č. EAS/SBE/038/2026 Elektronická aukce se řídí…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13890574"
+    },
     {
       "id": 1247,
       "title": "Oznámení o době a místu konání voleb",
@@ -74,46 +114,6 @@
       "summary": null,
       "note": "Ve Zlonicích dne 25. srpna 2026 Informace o počtu a sídlech volebních okrsků V souladu…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13795617"
-    },
-    {
-      "id": 1241,
-      "title": "Rozhodnutí - uzavírka místní komunikace - Alešova ulice",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1241&action=detail",
-      "pubDate": "2026-08-24T04:58:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Uzavírka mezi domy čp. 104 - 105 pro výstavbu inženýrských síti.",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13789125"
-    },
-    {
-      "id": 1240,
-      "title": "Tmáň - Oznámení o dokončení obnovy katastrálního operátu a jeho vyložení k veřejnému nahlédnutí",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1240&action=detail",
-      "pubDate": "2026-08-10T04:47:31.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "OZNÁMENÍ o dokončení obnovy katastrálního operátu a jeho vyložení k veřejnému nahlédnutí Obecní úřad Zlonice…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13768444"
-    },
-    {
-      "id": 1239,
-      "title": "Opatření obecné povahy při nedostatku vody",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1239&action=detail",
-      "pubDate": "2026-08-07T04:51:46.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Vodoprávní úřad znovu připomíná platnost opatření z roku 2025 - viz zde.",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13766603"
-    },
-    {
-      "id": 1238,
-      "title": "Aukční vyhláška - Drnov, čp. 11",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1238&action=detail",
-      "pubDate": "2026-08-04T06:42:30.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Příloha č. 1 aukční vyhlášky – věci nemovité Čj.: UZSVM/A/309537/2026-SBEK AUKČNÍ VYHLÁŠKA Elektronická aukce se…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13760584"
     }
   ]
 }
