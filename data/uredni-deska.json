@@ -1,7 +1,17 @@
 {
   "status": "ok",
-  "updated": "2026-09-29T06:07:09.945Z",
+  "updated": "2026-10-01T06:07:05.690Z",
   "items": [
+    {
+      "id": 1252,
+      "title": "Zásady územního rozvoje kraje - 17. aktualizace",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1252&action=detail",
+      "pubDate": "2026-09-28T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "V Praze dne: 21. 9. 2026 Spisová značka: SZ 162589/2024/KUSK ÚPS/MP Č. j.: 135904/2026/KUSK Vyřizuje:…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13903326"
+    },
     {
       "id": 1248,
       "title": "Riziko šíření karanténního škůdce jasanů, polníka jasanového",
@@ -104,16 +114,6 @@
       "summary": null,
       "note": "Záměr prodeje – část pozemku 498/1 a 499/1 parcely o výměře cca 190m2, na plánku…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13800615"
-    },
-    {
-      "id": 1242,
-      "title": "Informace o počtu a sídlech volebních okrsků - obecní volby 2026",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1242&action=detail",
-      "pubDate": "2026-08-25T06:50:58.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Ve Zlonicích dne 25. srpna 2026 Informace o počtu a sídlech volebních okrsků V souladu…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13795617"
     }
   ]
 }
