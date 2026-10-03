@@ -1,1 +1,3 @@
 node_modules/
+home-proxy/.env
+home-proxy/proxy.log
