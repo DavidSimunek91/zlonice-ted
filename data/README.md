@@ -226,10 +226,21 @@ stejně snadno jako Open-Meteo.
 - **Ostatní typy dokumentů** (vyhlášky, svolání zastupitelstva, uzavírky…):
   appka ukazuje skutečný úryvek textu, ne metadata o příloze. Zdroj (v
   pořadí, jak se zkouší): text přímo z RSS popisu (když ho úřad napsal
-  rovnou tam) → náhled první strany přílohy (`pdftotext`, a když PDF nemá
-  textovou vrstvu, OCR jen té jedné stránky, ne celého dokumentu) →
-  teprve když ani jedno nevyjde, obecná hláška "ke stažení N příloh".
-  Nikdy se nic nevymýšlí, jen se hledá skutečný text v dokumentu.
+  rovnou tam a nejde jen o frázi typu "Viz přiložený dokument" — ty appka
+  pozná a přeskočí, viz `isLowInfoText`) → náhled první strany přílohy
+  (`pdftotext`, a když PDF nemá textovou vrstvu, OCR jen té jedné stránky,
+  ne celého dokumentu) → teprve když ani jedno nevyjde, obecná hláška
+  "ke stažení N příloh". Nikdy se nic nevymýšlí, jen se hledá skutečný
+  text v dokumentu.
+- **Náhled přílohy přeskakuje hlavičku úředního dopisu.** Dokumenty od
+  různých úřadů (kraj, exekutor, obec) mívají na 1. straně blok
+  referenčních údajů (spisová značka, číslo jednací, kontakt na
+  vyřizujícího úředníka…), než se dostanou k vlastnímu obsahu — ten blok
+  appka přeskočí a najde, KDE obsah doopravdy začíná (`findBodyStartIndex`
+  v `scripts/update-uredni-deska.mjs`): buď řádek "Věc: …", nebo krátký
+  nadpis psaný velkými písmeny (VEŘEJNÁ VYHLÁŠKA, EXEKUČNÍ PŘÍKAZ…).
+  Hledá se jen v prvních ~12 řádcích a jen v řádcích bez číslice (ať
+  zkratky jako "KUSK" ve spisové značce neprojdou jako "nadpis").
 - **Když parser řádky "Příjmy/Výdaje celkem" nenajde** (jiný formát
   dokumentu, budoucí verze KEO4 apod.), položka se zobrazí jako obecná
   položka (viz výš) bez čísel — appka si nikdy nevymýšlí souhrn, který
