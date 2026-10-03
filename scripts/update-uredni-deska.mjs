@@ -123,8 +123,21 @@ function descriptionPreview(rawDescription) {
   return text || null;
 }
 
-// Řádky, které se opakují na každé stránce/dokumentu ("hlavička" KEO4
-// i běžných obecních tiskopisů) — nenesou žádnou informaci o obsahu.
+// Fráze, které úřad někdy napíše rovnou do RSS popisu místo skutečného
+// textu — formálně "obsah", ale občanovi neřeknou nic navíc oproti
+// samotnému názvu položky. V tom případě je lepší zkusit náhled přílohy
+// (viz volání v main()), než takovouhle frázi rovnou použít jako "note".
+function isLowInfoText(text) {
+  const normalized = text.trim().toLowerCase().replace(/[.,;:!]+$/, '');
+  if (normalized.length < 12) return true;
+  const fillers = ['viz přiložený dokument', 'viz příloha', 'viz přílohu', 'viz zde', 'viz odkaz'];
+  return fillers.includes(normalized);
+}
+
+// Řádky, které se opakují na každé stránce/dokumentu — ať jde o hlavičku
+// KEO4 tiskopisů Městyse Zlonice, nebo o referenční údaje typické pro
+// úřední dopisy odjinud (kraj, exekutor, stát). Nenesou žádnou informaci
+// o OBSAHU dokumentu, jen o jeho evidenci.
 const BOILERPLATE_LINE_RE = [
   /^Městys Zlonice/i,
   /^KEO4/i,
@@ -133,10 +146,45 @@ const BOILERPLATE_LINE_RE = [
   /^\d+\/\d+$/, // číslo strany typu "1/3"
   /^Nám\.? Pod Lipami/i, // adresa v hlavičce tiskopisů úřadu
   /^\d{3}\s?\d{2}\s+\S/, // PSČ + obec, pokračování adresy na dalším řádku
+  /^Spisov[áa] zna[čc]ka/i,
+  /^(Č\.?\s?j\.?|[ČC]íslo jednac[íi])[:\s]/i,
+  /^Vy[řr]izuje/i,
+  /^Zna[čc]ka[:\s]/i,
+  /^Dle rozd[ěe]lovn[íi]ku$/i,
+  /^viz rozd[ěe]lovn[íi]k$/i,
 ];
 
+// Dokumenty od různých úřadů (kraj, exekutor, obec) mívají na začátku
+// 1. strany blok referenčních údajů (datum, spisová značka, kontakt...),
+// než se dostanou k vlastnímu obsahu. Ten blok nejde obecně vyfiltrovat
+// řádek po řádku (každý úřad má jiné položky) — spolehlivější je najít,
+// KDE obsah ZAČÍNÁ: buď řádek "Věc: ..." (standardní pole předmětu
+// úřední korespondence), nebo krátký nadpis psaný velkými písmeny
+// (VEŘEJNÁ VYHLÁŠKA, EXEKUČNÍ PŘÍKAZ, SVOLÁNÍ ZASTUPITELSTVA...). Hledá
+// se jen v prvních pár řádcích, ať se omylem neusekne něco uprostřed
+// běžného textu, kde velká písmena vyjdou náhodou.
+function findBodyStartIndex(lines) {
+  const searchLimit = Math.min(lines.length, 12);
+  for (let i = 0; i < searchLimit; i++) {
+    const line = lines[i];
+    if (/^v[ěe]c\s*:/i.test(line)) return i;
+    // Referenční údaje (spisové značky, telefony...) vždy obsahují
+    // číslici — skutečný nadpis dokumentu ne. Tahle podmínka sama
+    // vyřadí zkratky typu "KUSK" v čísle jednacím, co by jinak omylem
+    // prošly jako "nadpis velkými písmeny" níž.
+    if (/\d/.test(line)) continue;
+    const letters = line.replace(/[^\p{L}]/gu, '');
+    if (letters.length < 6 || letters.length > 70) continue;
+    const upper = letters.replace(/[^\p{Lu}]/gu, '');
+    if (upper.length / letters.length > 0.9) return i;
+  }
+  return -1;
+}
+
 function cleanPreviewText(text) {
-  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const rawLines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const bodyStart = findBodyStartIndex(rawLines);
+  const lines = bodyStart >= 0 ? rawLines.slice(bodyStart) : rawLines;
   const kept = lines.filter((l) => !BOILERPLATE_LINE_RE.some((re) => re.test(l)));
   return kept.join(' ').replace(/\s+/g, ' ').trim();
 }
@@ -309,18 +357,28 @@ async function main() {
       }
     } else {
       const fromDescription = descriptionPreview(rawDescription);
-      if (fromDescription) {
+      // "Viz přiložený dokument." je formálně neprázdný text, ale
+      // neříká nic navíc oproti názvu položky — v tom případě raději
+      // zkusit náhled přílohy, než takovouhle frázi rovnou použít.
+      const descriptionIsUseful = fromDescription && !isLowInfoText(fromDescription);
+      if (descriptionIsUseful) {
         entry.note = truncateWords(fromDescription, NOTE_MAX_WORDS);
       } else if (fileUrls[0]) {
         try {
           const preview = await extractDocPreview(fileUrls[0]);
-          entry.note = preview ? truncateWords(preview, NOTE_MAX_WORDS) : fallbackNote(fileUrls.length);
+          if (preview) {
+            entry.note = truncateWords(preview, NOTE_MAX_WORDS);
+          } else if (fromDescription) {
+            entry.note = truncateWords(fromDescription, NOTE_MAX_WORDS);
+          } else {
+            entry.note = fallbackNote(fileUrls.length);
+          }
         } catch (err) {
           console.warn(`Položka ${id}: náhled přílohy selhal (${err.message}), zobrazí se jen obecná hláška.`);
-          entry.note = fallbackNote(fileUrls.length);
+          entry.note = fromDescription ? truncateWords(fromDescription, NOTE_MAX_WORDS) : fallbackNote(fileUrls.length);
         }
       } else {
-        entry.note = fallbackNote(0);
+        entry.note = fromDescription ? truncateWords(fromDescription, NOTE_MAX_WORDS) : fallbackNote(0);
       }
     }
 
