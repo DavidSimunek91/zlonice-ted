@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stránka nenalezena — Ve Zlonicích</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/Inter-400.woff2') format('woff2');}
+@font-face{font-family:'Roboto Slab';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/RobotoSlab-600.woff2') format('woff2');}
+:root{
+  --bg:#F7F5EE; --line:#E2DCCB; --text:#262019; --text-2:#5B5346;
+  --green:#3C7A44; --green-text:#2F6B38;
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-display:'Roboto Slab',Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#171B15; --line:#333A2B; --text:#ECE7DA; --text-2:#AFA894; --green:#6FAE6F; --green-text:#8FB37E; }
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-sans);
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  text-align:center; padding:2rem;
+}
+.wrap{max-width:420px;}
+.code{font-family:var(--font-display);font-size:4rem;font-weight:600;color:var(--green);line-height:1;margin:0 0 .5rem;}
+h1{font-size:1.5rem;margin:0 0 .75rem;}
+p{color:var(--text-2);font-size:1rem;line-height:1.5;margin:0 0 1.5rem;}
+a{display:inline-block;color:var(--green-text);font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:.6rem 1.2rem;}
+a:hover{border-color:var(--green);}
+:focus-visible{outline:2px solid var(--green-text);outline-offset:2px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="code">404</p>
+  <h1>Stránka nenalezena</h1>
+  <p>Tahle adresa na vezlonicich.cz neexistuje, nebo se přesunula.</p>
+  <a href="/">← Zpátky na úvod</a>
+</div>
+</body>
+</html>

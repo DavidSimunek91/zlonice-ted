@@ -4,7 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ve Zlonicích</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌾</text></svg>">
+<meta name="description" content="Počasí, autobusy, úřední deska, ovzduší a řemeslníci ve Zlonicích na jednom místě. Neoficiální komunitní přehled.">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ve Zlonicích">
+<meta property="og:title" content="Ve Zlonicích">
+<meta property="og:description" content="Počasí, autobusy, úřední deska, ovzduší a řemeslníci ve Zlonicích na jednom místě. Neoficiální komunitní přehled.">
+<meta property="og:url" content="https://vezlonicich.cz/">
+<meta property="og:image" content="https://vezlonicich.cz/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="cs_CZ">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ve Zlonicích">
+<meta name="twitter:description" content="Počasí, autobusy, úřední deska, ovzduší a řemeslníci ve Zlonicích na jednom místě. Neoficiální komunitní přehled.">
+<meta name="twitter:image" content="https://vezlonicich.cz/og.png">
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#3C7A44">
 <style>
 :root{
   /* základní paleta (světlý režim) */
@@ -112,7 +133,7 @@ body{
 button, input, select{font:inherit;}
 :focus-visible{outline:2px solid var(--green-text); outline-offset:2px;}
 /* Jemná textura řádků polí táhnoucí se celou stránkou, ne jen hero —
-   sjednocuje vizuální identitu appky s krajinou Polabí. Karty se
+   sjednocuje vizuální identitu stránky s krajinou Polabí. Karty se
    živými daty mají vlastní --surface pozadí, takže zůstávají čisté
    a čitelné, textura je vidět jen v mezerách mezi nimi. */
 body::before{
@@ -224,7 +245,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .card .v{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-28);font-weight:600;line-height:1;}
 .card .v small{font-size:var(--fs-16);font-weight:500;color:var(--ink-soft);}
 .card .sub{margin-top:.3rem;font-size:var(--fs-14);color:var(--ink-soft);}
-.card.skel .v, .card.skel .sub{opacity:.35;}
+.card.skel .v, .card.skel .sub{color:var(--text-3);}
 .card .takeaway{margin-top:.55rem;display:inline-flex;align-items:center;font-size:var(--fs-12);font-family:var(--font-sans);padding:.18rem .55rem;border-radius:999px;cursor:help;}
 .card .takeaway.good{background:var(--good-soft);color:var(--good);}
 .card .takeaway.warn{background:var(--warn-soft);color:var(--warn);}
@@ -333,7 +354,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .water-ticks > span:nth-child(5){align-items:flex-end;}
 .water-ticks > span:not(:nth-child(1)):not(:nth-child(5)){align-items:center;}
 .water-ticks .name{color:var(--ink);text-transform:none;letter-spacing:0;}
-.water-ticks .range{opacity:.7;}
+.water-ticks .range{color:var(--text-3);}
 .water-extra{display:flex;gap:1.4rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.9rem;}
 .water-extra div{font-size:var(--fs-14);color:var(--ink-soft);}
 .water-extra b{display:block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ink);font-size:var(--fs-16);font-weight:600;}
@@ -435,7 +456,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .trade-search{display:block;width:100%;height:48px;padding:0 1rem;margin:0 0 1rem;border-radius:var(--r-card);border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:var(--fs-16);}
 .trade-filters{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:0 0 1.2rem;position:relative;}
 .trade-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:.35rem;min-height:44px;padding:.35rem .9rem;border-radius:var(--r-pill);font-size:var(--fs-14);background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
-.trade-chip .n{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);opacity:.75;}
+.trade-chip .n{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);}
 .trade-chip:hover{border-color:var(--spruce);}
 .trade-chip.active{background:var(--spruce-soft);color:var(--green-text);border-color:var(--spruce);font-weight:600;}
 .trade-more-cats{position:relative;}
@@ -602,7 +623,7 @@ footer a{text-decoration:underline;}
       <p class="section-foot">Zdroj: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a> · živě</p>
       <details class="how-details">
         <summary>Jak to funguje</summary>
-        <p>Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "žádná data o zpoždění" znamená, že live zpoždění teď appce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky appka neukazuje.</p>
+        <p>Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "žádná data o zpoždění" znamená, že live zpoždění teď stránce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky stránka neukazuje.</p>
       </details>
     </div>
   </section>
@@ -627,7 +648,7 @@ footer a{text-decoration:underline;}
       <p class="section-foot">Zdroj: <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> · živě</p>
       <details class="how-details">
         <summary>Jak to funguje</summary>
-        <p>Zdroj: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Appka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení.</p>
+        <p>Zdroj: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Stránka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení.</p>
       </details>
     </div>
   </section>
@@ -645,7 +666,7 @@ footer a{text-decoration:underline;}
       <p class="section-foot">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> · živě</p>
       <details class="how-details">
         <summary>Jak to funguje</summary>
-        <p>Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS), poslední 3 zprávy. U rozpočtových opatření appka automaticky přečte přiloženou PDF přílohu a spočítá rozdíl v příjmech/výdajích — u ostatních dokumentů ukazuje krátký úryvek textu (RSS popis, nebo náhled přílohy). Appka si nic nevymýšlí — jen ukazuje, co skutečně stojí ve zdroji.</p>
+        <p>Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS), poslední 3 zprávy. U rozpočtových opatření stránka automaticky přečte přiloženou PDF přílohu a spočítá rozdíl v příjmech/výdajích — u ostatních dokumentů ukazuje krátký úryvek textu (RSS popis, nebo náhled přílohy). Stránka si nic nevymýšlí — jen ukazuje, co skutečně stojí ve zdroji.</p>
       </details>
     </div>
   </section>
@@ -706,7 +727,7 @@ footer a{text-decoration:underline;}
         <h2 class="display">O Zlonicích</h2>
       </div>
     </div>
-    <p class="lede">Malá obec ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
+    <p class="lede">Městys ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
     <div class="hero-facts">
       <div class="fact">
         <span class="k">obyvatel</span><span class="v">2 294</span>
@@ -725,7 +746,7 @@ footer a{text-decoration:underline;}
       <div class="obec-data-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;">
           <strong style="font-size:var(--fs-16);">Místní firmy podle oboru</strong>
-          <span class="tag live"><span class="dot"></span>živě · ARES</span>
+          <span class="tag snapshot"><span class="dot"></span>aktualizace denně · ARES</span>
         </div>
         <div class="bars" id="aresBars">
           <div class="bar-row"><span class="lbl">načítám…</span><span class="bar-track"><span class="bar-fill" style="width:0%;"></span></span><span class="n">—</span></div>
@@ -750,7 +771,7 @@ footer a{text-decoration:underline;}
       <p class="section-foot">Zdroj: <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> · aktualizace týdně</p>
       <details class="how-details">
         <summary>Jak to funguje</summary>
-        <p>Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web appka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt".</p>
+        <p>Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web stránka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt".</p>
       </details>
     </div>
   </section>
@@ -762,8 +783,9 @@ footer a{text-decoration:underline;}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20 6 8M12 20 12 4M18 20 18 8"/><ellipse cx="4.5" cy="9.5" rx="1.6" ry="2.7" transform="rotate(-25 4.5 9.5)" fill="currentColor" stroke="none"/><ellipse cx="7.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 7.5 7.5)" fill="currentColor" stroke="none"/><ellipse cx="10.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 10.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="13.5" cy="4" rx="1.6" ry="2.7" transform="rotate(20 13.5 4)" fill="currentColor" stroke="none"/><ellipse cx="16.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 16.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="19.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 19.5 7.5)" fill="currentColor" stroke="none"/></svg>
     ve zlonicích · vezlonicich.cz
   </div>
-  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (živě). Řemeslníci a služby — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES / živnostenský rejstřík</a> a <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> (aktualizace jednou týdně). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní situace — <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (kontrola na pozadí každých 15 minut).</p>
+  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (aktualizace jednou denně). Řemeslníci a služby — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES / živnostenský rejstřík</a> a <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> (aktualizace jednou týdně). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní situace — <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (kontrola na pozadí každých 15 minut).</p>
   <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
+  <p>Provozuje: [JMÉNO / KONTAKT]</p>
 </footer>
 
 <script>
@@ -871,7 +893,7 @@ function humidityBand(pct){ return HUMIDITY_BANDS.find(b => pct <= b.max); }
 // (výjimka pás podél Zlonického potoka, tam fluvizem) — hlinitá, humusem
 // bohatá půda, na kterou tyhle obecné hlinité hodnoty docela sedí. Přesný
 // bod vadnutí/kapacita se ale i tak liší parcelu od parcely (zrnitost,
-// obsah humusu), appka pro Zlonice žádný konkrétní rozbor půdy nemá —
+// obsah humusu), stránka pro Zlonice žádný konkrétní rozbor půdy nemá —
 // tohle jsou obecné orientační hranice pro hlinitou půdu, ne přesná
 // agronomická diagnóza jednoho konkrétního pozemku.
 const SOIL_MOISTURE_BANDS = [
@@ -954,9 +976,9 @@ function hourGoodForSpray(H, idx){
   const hr = new Date(H.time[idx]).getHours();
   return hr >= 19 && hr < 23;
 }
-// "teď" smí appka ukázat jen mezi východem a západem slunce (H.is_day z
+// "teď" smí stránka ukázat jen mezi východem a západem slunce (H.is_day z
 // Open-Meteo) — v noci i kdyby hodinová podmínka náhodou seděla (např. by
-// předpověď posunula okno zalévání), appka radši hledá nejbližší OPRAVDU
+// předpověď posunula okno zalévání), stránka radši hledá nejbližší OPRAVDU
 // vhodnou hodinu dopředu a řekne "zítra od HH:MM", když to vyjde na jiné
 // kalendářní datum než teď.
 function nextGoodWindow(H, startIdx, predicate){
@@ -1011,7 +1033,7 @@ async function loadWeather(){
     const wBand = beaufortFor(c.wind_speed_10m);
     // Vlhkost půdy (0-1 cm, povrch) — modelovaný odhad (land-surface model),
     // ne měření senzorem přímo ve Zlonicích, proto title vysvětlivka jako
-    // u ostatních "appka odhaduje" hodnot na webu. Vlastní hodnotící odznak
+    // u ostatních "stránka odhaduje" hodnot na webu. Vlastní hodnotící odznak
     // (soilBand), ne jen holé číslo — ale oddělený od odznaku vlhkosti
     // vzduchu, ať je jasné, ke které hodnotě se který vztahuje.
     const soilPct = typeof c.soil_moisture_0_to_1cm === 'number' ? Math.round(c.soil_moisture_0_to_1cm * 100) : null;
@@ -1116,7 +1138,7 @@ function bandFor(v){ return EAQI_BANDS.find(b => v <= b.max); }
 
 // Jemné částice PM2,5 — orientační pásma vůči doporučením WHO z r. 2021
 // (roční průměr 5 µg/m³, 24h průměr 15 µg/m³) a ročnímu imisnímu limitu EU
-// (25 µg/m³). Appka ukazuje okamžitou hodnotu, ne průměr přes den/rok, takže
+// (25 µg/m³). Stránka ukazuje okamžitou hodnotu, ne průměr přes den/rok, takže
 // je to vodítko, ne přesný právní stav — proto jsou pásma popsaná slovně
 // ("co pro mě znamená"), ne jen jako čísla vůči limitu.
 // Zdroj: WHO Global Air Quality Guidelines 2021.
@@ -1141,7 +1163,7 @@ const PM10_BANDS = [
 function bandForPM10(v){ return PM10_BANDS.find(b => v <= b.max); }
 
 // Ozon (přízemní O3) — orientační pásma vůči doporučení WHO (8h průměr 100 µg/m³)
-// a evropskému imisnímu limitu (120 µg/m³). Appka ukazuje okamžitou hodnotu,
+// a evropskému imisnímu limitu (120 µg/m³). Stránka ukazuje okamžitou hodnotu,
 // ne 8h průměr, takže je to spíš vodítko než přesný právní stav.
 const O3_BANDS = [
   {max:60, name:'Nízká', level:'good', desc:'Bez rizika, typická úroveň i mimo dopravní špičku. Nic neomezuj.'},
@@ -1163,36 +1185,35 @@ const NO2_BANDS = [
 ];
 function bandForNO2(v){ return NO2_BANDS.find(b => v <= b.max); }
 
-// Pyl — CAMS (Copernicus Atmosphere Monitoring Service) data, appka je bere
+// Pyl — CAMS (Copernicus Atmosphere Monitoring Service) data, stránka je bere
 // stejným přímým voláním na Open-Meteo jako zbytek kvality ovzduší (žádná
-// nová pipeline). Mimo pylovou sezónu appka pole buď nedostane, nebo budou
+// nová pipeline). Mimo pylovou sezónu stránka pole buď nedostane, nebo budou
 // nulová — v obou případech radši řádek úplně schovat, než ukazovat
 // "0 zrn/m³" u šesti druhů, který nikoho nezajímá.
 //
-// Škála: dřív appka schválně žádnou neměla ("prahy se mezi zdroji liší,
-// appka by jen hádala") — ale bez škály samotné číslo nic neřekne (viz
+// Škála: dřív stránka schválně žádnou neměla ("prahy se mezi zdroji liší,
+// stránka by jen hádala") — ale bez škály samotné číslo nic neřekne (viz
 // dotaz uživatele: "20 zrn/m³, je to hodně, málo?"). Různé pylové služby
 // se sice různí ve 4stupňových škálách (low/moderate/high/very high), ale
 // shodují se aspoň na dvou konkrétních prahových hodnotách na druh pylu,
 // citovaných napříč odbornou literaturou (EAACI — European Academy of
 // Allergy and Clinical Immunology, např. Pfaar a kol. 2024 Task Force
-// report): "začátek sezóny" a "špička sezóny". Appka proto staví jen na
+// report): "začátek sezóny" a "špička sezóny". Stránka proto staví jen na
 // těch dvou ověřených bodech, ne na nejisté jemnější škále:
 //   pod "sezóna"          → Zanedbatelné (dobrá)
 //   mezi "sezóna"–"špička" → Zvýšené (mírné varování)
 //   nad "špička"           → Vysoké (výrazné)
-// Bříza/olše/oliva/pelyněk: sezóna ≥10 zrn/m³, špička ≥100 zrn/m³.
+// Bříza/olše/pelyněk: sezóna ≥10 zrn/m³, špička ≥100 zrn/m³.
 // Tráva/ambrózie: sezóna ≥3 zrn/m³, špička ≥50 zrn/m³ (mají nižší práh —
 // vyvolávají příznaky už při menším množství).
 const POLLEN_META = {
   birch_pollen:   {label:'Bříza',    icon:'🌳', season:10, peak:100},
   alder_pollen:   {label:'Olše',     icon:'🌲', season:10, peak:100},
-  olive_pollen:   {label:'Oliva',    icon:'🫒', season:10, peak:100},
   mugwort_pollen: {label:'Pelyněk',  icon:'🌿', season:10, peak:100},
   grass_pollen:   {label:'Tráva',    icon:'🌾', season:3,  peak:50},
   ragweed_pollen: {label:'Ambrózie', icon:'🌱', season:3,  peak:50},
 };
-const POLLEN_NOTICEABLE = 1; // grains/m³ — pod tím appka druh vůbec nezmiňuje
+const POLLEN_NOTICEABLE = 1; // grains/m³ — pod tím stránka druh vůbec nezmiňuje
 
 function pollenLevel(value, season, peak){
   if (value < season) return {name:'Zanedbatelné', level:'good'};
@@ -1208,13 +1229,13 @@ function renderPollen(c){
     .sort((a, b) => b.value - a.value);
   el.hidden = false;
   // Mimo sezónu/bez zjistitelného pylu je "žádný pyl" pozitivní zpráva
-  // (relevantní hlavně pro alergiky), ne nic k zobrazení — appka to
+  // (relevantní hlavně pro alergiky), ne nic k zobrazení — stránka to
   // dřív jen vyprázdnila (.aqi-pollen má barvu pozadí a padding natvrdo
   // v CSS, takže zůstal viditelný prázdný "balónek"), teď to řekne
   // nahlas, stejný princip jako "✅ Klidno" u dopravy.
   if (items.length === 0){
     const names = Object.values(POLLEN_META).map(m => m.label).join(', ');
-    el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 Pyl dnes</b><span>CAMS/Copernicus</span></div><div class="pollen-ok">✅ Žádný pyl nad rozlišovací mez appky (&lt; ${POLLEN_NOTICEABLE} zrn/m³) — sledované druhy: ${escapeHtml(names)}.</div>`;
+    el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 Pyl dnes</b><span>CAMS/Copernicus</span></div><div class="pollen-ok">✅ Žádný pyl nad rozlišovací mez stránky (&lt; ${POLLEN_NOTICEABLE} zrn/m³) — sledované druhy: ${escapeHtml(names)}.</div>`;
     return;
   }
   const chips = items.map(p => {
@@ -1240,7 +1261,7 @@ function renderPollen(c){
 
 async function loadAirQuality(){
   try{
-    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm10,pm2_5,ozone,nitrogen_dioxide,european_aqi,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen&timezone=Europe%2FBerlin`;
+    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm10,pm2_5,ozone,nitrogen_dioxide,european_aqi,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,ragweed_pollen&timezone=Europe%2FBerlin`;
     const res = await fetch(url);
     const data = await res.json();
     const c = data.current;
@@ -1308,7 +1329,7 @@ function aresCountContext(count){
   return `To je ${per1000Str} na 1000 obyvatel — blízko celostátnímu průměru (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.`;
 }
 
-// Jeden dotaz na jednu stránku výsledků, s časovým limitem — bez něj by appka
+// Jeden dotaz na jednu stránku výsledků, s časovým limitem — bez něj by stránka
 // při pomalé odpovědi ARESu zůstala navždy na "načítám…", což vypadá stejně
 // jako "nic se nenačetlo".
 async function fetchAresPage(kodObce, start){
@@ -1327,27 +1348,49 @@ async function fetchAresPage(kodObce, start){
   }
 }
 
-async function loadAres(){
+// Kolikrát 5 dotazů na stovky subjektů při KAŽDÉ návštěvě (~1,5 MB) by
+// zbytečně zatěžovalo ARES i stránku — scripts/fetch-ares.mjs tohle stáhne
+// jednou denně na pozadí (viz .github/workflows/update-firms.yml) a uloží
+// jen pole, co stránka reálně používá. Živé volání zůstává jako záložní
+// cesta, kdyby soubor chyběl nebo pipeline zrovna neběžela — stránka má tedy
+// pořád funkční zobrazení i bez něj, jen pomalejší.
+async function loadAresFromCache(){
+  const res = await fetch('./data/firms.json', { cache: 'no-store' });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const data = await res.json();
+  if (data.status !== 'ok' || !Array.isArray(data.active)) throw new Error('neplatný obsah souboru');
+  return data.active;
+}
+
+async function loadAresLive(){
   const KOD_OBCE = 533114; // Zlonice, RÚIAN
+  const first = await fetchAresPage(KOD_OBCE, 0);
+  const total = first.pocetCelkem || 0;
+  const remainingStarts = [];
+  for (let start = 100; start < Math.min(total, 1000); start += 100) remainingStarts.push(start);
+  const rest = await Promise.all(remainingStarts.map(start => fetchAresPage(KOD_OBCE, start)));
+  const all = [first, ...rest].flatMap(d => d.ekonomickeSubjekty || []);
+  return all.filter(s => s.seznamRegistraci && s.seznamRegistraci.stavZdrojeRos === 'AKTIVNI');
+}
+
+async function loadAres(){
   let active;
 
   // Načtení dat je oddělené od vykreslení bar grafu a statistik — chyba v jedné
-  // části appky (např. při počítání nejstarší/nejnovější firmy) tak nikdy
+  // části stránky (např. při počítání nejstarší/nejnovější firmy) tak nikdy
   // nesmaže graf, který se už předtím úspěšně vykreslil.
   try{
-    const first = await fetchAresPage(KOD_OBCE, 0);
-    const total = first.pocetCelkem || 0;
-    const remainingStarts = [];
-    for (let start = 100; start < Math.min(total, 1000); start += 100) remainingStarts.push(start);
-    const rest = await Promise.all(remainingStarts.map(start => fetchAresPage(KOD_OBCE, start)));
-    const all = [first, ...rest].flatMap(d => d.ekonomickeSubjekty || []);
-    active = all.filter(s => s.seznamRegistraci && s.seznamRegistraci.stavZdrojeRos === 'AKTIVNI');
-  }catch(e){
-    const msg = e.name === 'AbortError' ? 'vypršel časový limit' : e.message;
-    const errorHtml = `<div class="soon-card">Data z ARESu se nepodařilo načíst (${msg}).</div>`;
-    document.getElementById('aresBars').innerHTML = errorHtml;
-    document.getElementById('aresStats').innerHTML = '';
-    return;
+    active = await loadAresFromCache();
+  }catch(cacheErr){
+    try{
+      active = await loadAresLive();
+    }catch(e){
+      const msg = e.name === 'AbortError' ? 'vypršel časový limit' : e.message;
+      const errorHtml = `<div class="soon-card">Data z ARESu se nepodařilo načíst (${msg}).</div>`;
+      document.getElementById('aresBars').innerHTML = errorHtml;
+      document.getElementById('aresStats').innerHTML = '';
+      return;
+    }
   }
 
   try{
@@ -1390,9 +1433,9 @@ async function loadAres(){
   }
 }
 
-// ČHMÚ výstrahy — appka sama na ČHMÚ nevolá (opendata.chmi.cz nemá CORS
+// ČHMÚ výstrahy — stránka sama na ČHMÚ nevolá (opendata.chmi.cz nemá CORS
 // hlavičky), čte jen data/alerts.json, který na pozadí naplňuje naplánovaný
-// GitHub Actions skript (scripts/update-alerts.mjs). Appka navíc kontroluje
+// GitHub Actions skript (scripts/update-alerts.mjs). Stránka navíc kontroluje
 // stáří dat: bezpečnostní informace se nesmí tvářit jako aktuální, když
 // pipeline třeba přestala běžet.
 const ALERT_STALE_MS = 90 * 60 * 1000; // pipeline běží každých 10 min
@@ -1400,6 +1443,13 @@ const SEVERITY_RANK = {Extreme:4, Severe:3, Moderate:2, Minor:1, Unknown:0};
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+// Jízdní řád má názvy zastávek bez mezery za čárkou ("Nové Strašecí,Palackého")
+// — čistě kosmetická oprava pro zobrazení, nikdy ne na hodnotu/klíč použitou
+// pro vyhledání v depData.stops (ten musí zůstat přesně podle zdroje dat).
+function fixStopName(name){
+  return String(name).replace(/,(?=\S)/g, ', ');
 }
 
 function setAlertBanner(cls, tagCls, tagText, headline, detailHtml){
@@ -1476,7 +1526,7 @@ async function loadAlerts(){
 }
 
 // Dopravní situace (nehody, uzavírky, práce na silnici) — ŘSD/NDIC,
-// viz scripts/update-traffic.mjs a data/README.md. Appka nikdy nevolá
+// viz scripts/update-traffic.mjs a data/README.md. Stránka nikdy nevolá
 // ŘSD přímo (Basic Auth s neveřejnými údaji), jen čte předzpracovaný
 // JSON. Stejná bezpečnostní zásada jako u výstrah ČHMÚ: cokoli
 // nejasného/starého se ukáže jako "nelze ověřit", ne jako "žádné situace".
@@ -1573,9 +1623,9 @@ async function loadTraffic(){
   }
 }
 
-// Autobusové odjezdy — appka čte jen předzpracovaný jízdní řád (PID GTFS
+// Autobusové odjezdy — stránka čte jen předzpracovaný jízdní řád (PID GTFS
 // nemá CORS, navíc je to 46 MB zip), viz scripts/update-departures.mjs a
-// data/README.md. "Další odjezdy" appka počítá sama z aktuálního data a
+// data/README.md. "Další odjezdy" stránka počítá sama z aktuálního data a
 // dne v týdnu, ne z předpočítaného seznamu — pipeline běží jednou denně,
 // ale "za kolik minut" musí být vždycky čerstvé vůči hodinám návštěvníka.
 const DAY_LABELS = ['dnes', 'zítra'];
@@ -1593,7 +1643,7 @@ function isServiceActiveOn(service, dateStr, dayIndex){
 }
 
 // Vrátí další odjezdy pro zastávku — nejdřív ze zbytku dneška, a pokud jich
-// je málo, doplní začátkem zítřka (ať appka večer neukazuje jen prázdno).
+// je málo, doplní začátkem zítřka (ať stránka večer neukazuje jen prázdno).
 function upcomingDepartures(depData, stopName, count){
   const deps = depData.stops[stopName] || [];
   const now = new Date();
@@ -1628,7 +1678,7 @@ function upcomingDepartures(depData, stopName, count){
 
 // Živé zpoždění (Golemio API, viz scripts/update-live-departures.mjs) je
 // doplněk k jízdnímu řádu, ne náhrada — když pipeline vypadne nebo secret
-// GOLEMIO_API_KEY ještě není nastavený, appka prostě zpoždění nezobrazí a
+// GOLEMIO_API_KEY ještě není nastavený, stránka prostě zpoždění nezobrazí a
 // jízdní řád funguje dál přesně jako předtím. Nikdy nehádá "asi na čas".
 const LIVE_DEP_STALE_MS = 30 * 60 * 1000; // pipeline běží každých 5 min
 let liveDelaysByTrip = null;
@@ -1646,7 +1696,7 @@ async function loadLiveDelays(){
   }
 }
 
-// Vrátí jen SKUTEČNÝ signál (zrušeno/zpoždění/na čase) nebo null, když appka
+// Vrátí jen SKUTEČNÝ signál (zrušeno/zpoždění/na čase) nebo null, když stránka
 // neví (chybí klíč, pipeline neběžela, Golemio spoj ještě nesleduje). null
 // se dřív ukazoval jako opakovaný šedý odznak "zatím bez live dat" u KAŽDÉHO
 // spoje — teď to vysvětluje jedna věta pod celou tabulkou (.dep-live-note),
@@ -1682,7 +1732,7 @@ function renderDepartures(depData, stopName){
   const list = document.getElementById('depList');
   if (deps.length === 0){
     next.innerHTML = '';
-    list.innerHTML = '<div class="sub">Pro tuhle zastávku a nejbližší dny appka nenašla žádný spoj linek 590/591/594.</div>';
+    list.innerHTML = '<div class="sub">Pro tuhle zastávku a nejbližší dny stránka nenašla žádný spoj linek 590/591/594.</div>';
     return;
   }
 
@@ -1693,7 +1743,7 @@ function renderDepartures(depData, stopName){
   next.innerHTML = `
     <span class="dep-next-route">${first.route}</span>
     <div class="dep-next-body">
-      <span class="dep-next-headsign">${first.headsign}</span>
+      <span class="dep-next-headsign">${fixStopName(first.headsign)}</span>
       <span class="dep-next-time">${f.h}:${f.m}</span>
       <span class="dep-next-rel">${f.rel}</span>
       ${status ? `<span class="dep-next-status ${status.level}">${status.text}</span>` : ''}
@@ -1715,7 +1765,7 @@ function renderDepartures(depData, stopName){
     return `${dayLabel}<div class="dep-table-row">
       <span class="dep-time">${r.h}:${r.m}</span>
       <span class="dep-route">${dep.route}</span>
-      <span class="dep-headsign">${dep.headsign}${st ? `<span class="dep-delay ${st.level}">${st.text}</span>` : ''}</span>
+      <span class="dep-headsign">${fixStopName(dep.headsign)}${st ? `<span class="dep-delay ${st.level}">${st.text}</span>` : ''}</span>
     </div>`;
   }).join('');
   list.innerHTML = rows;
@@ -1732,7 +1782,7 @@ async function loadDepartures(){
     if (data.status !== 'ok') throw new Error(data.message || 'neznámá chyba');
 
     const stopNames = Object.keys(data.stops).sort((a,b) => a === 'Zlonice' ? -1 : b === 'Zlonice' ? 1 : a.localeCompare(b, 'cs'));
-    select.innerHTML = stopNames.map(name => `<option value="${name}">${name}</option>`).join('');
+    select.innerHTML = stopNames.map(name => `<option value="${name}">${fixStopName(name)}</option>`).join('');
     select.value = stopNames.includes('Zlonice') ? 'Zlonice' : stopNames[0];
     select.addEventListener('change', () => renderDepartures(data, select.value));
 
@@ -1745,7 +1795,7 @@ async function loadDepartures(){
     if (stopNames.length > 0 && stopNames.length <= 4){
       select.hidden = true;
       seg.hidden = false;
-      seg.innerHTML = stopNames.map(name => `<button type="button" class="${name === select.value ? 'active' : ''}" data-stop="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join('');
+      seg.innerHTML = stopNames.map(name => `<button type="button" class="${name === select.value ? 'active' : ''}" data-stop="${escapeHtml(name)}">${escapeHtml(fixStopName(name))}</button>`).join('');
       seg.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
         select.value = btn.dataset.stop;
         seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
@@ -1774,9 +1824,9 @@ async function loadDepartures(){
   }
 }
 
-// Voda — appka čte jen předzpracovaný data/water.json (ČHMÚ opendata nemá
+// Voda — stránka čte jen předzpracovaný data/water.json (ČHMÚ opendata nemá
 // CORS), viz scripts/update-water.mjs. Stejná bezpečnostní zásada jako u
-// výstrah: appka kontroluje stáří dat a při zastaralosti to řekne
+// výstrah: stránka kontroluje stáří dat a při zastaralosti to řekne
 // nahlas, netváří se, že poslední známá hodnota je aktuální.
 const WATER_STALE_MS = 90 * 60 * 1000; // pipeline běží každých 15 min
 
@@ -1794,7 +1844,7 @@ function waterTempBand(c){ return WATER_TEMP_BANDS.find(b => c <= b.max); }
 
 // Průtok (Q) — stejné stupně sucha/povodňové aktivity jako u vodního stavu,
 // jen ČHMÚ je pro tuhle stanici vede paralelně i v m³/s (thresholdsFlow),
-// ne odhad. Bez toho by "Průtok" v appce byla holá čísla bez kontextu.
+// ne odhad. Bez toho by "Průtok" v stránce byla holá čísla bez kontextu.
 function flowBand(flowM3s, th){
   if (!th || !(th.dry > 0)) return null;
   if (flowM3s < th.dry) return {name:'Sucho', level:'warn', desc:`Pod hranicí sucha ČHMÚ pro tuhle stanici (${(th.dry*1000).toFixed(0)} l/s) — tok je znatelně vyschlý.`};
@@ -1880,9 +1930,9 @@ async function loadWater(){
   }
 }
 
-// Řemeslníci a služby — appka sama na ARES/OSM nevolá stovky dotazů (to
+// Řemeslníci a služby — stránka sama na ARES/OSM nevolá stovky dotazů (to
 // dělá jednou týdně scripts/update-tradespeople.mjs na pozadí), jen čte
-// hotový data/tradespeople.json. Kategorie/lidi appka nefiltruje na
+// hotový data/tradespeople.json. Kategorie/lidi stránka nefiltruje na
 // serveru — filtr podle oboru je čistě klientský přepínač viditelnosti
 // karet, ať je to instantní bez dalšího fetch.
 const TRADE_STALE_MS = 24 * 24 * 60 * 60 * 1000; // pipeline běží týdně, tolerujeme pár vynechaných běhů
@@ -1935,7 +1985,7 @@ function renderTradeGrid(people, categories){
   let filtered = tradeActiveCat === 'all' ? people : people.filter(p => p.categories.includes(tradeActiveCat));
   filtered = peopleMatchingSearch(filtered, categories, tradeSearchQuery);
   if (filtered.length === 0){
-    grid.innerHTML = '<div class="soon-card trade-empty">Appka nikoho nenašla — zkus jiné hledání nebo obor.</div>';
+    grid.innerHTML = '<div class="soon-card trade-empty">Stránka nikoho nenašla — zkus jiné hledání nebo obor.</div>';
     return;
   }
   const capped = !tradeShowAll && filtered.length > TRADE_DEFAULT_CAP;
@@ -2025,9 +2075,9 @@ async function loadTradespeople(){
   }
 }
 
-// Úřední deska Městyse Zlonice — appka jen čte předzpracovaný přehled, viz
+// Úřední deska Městyse Zlonice — stránka jen čte předzpracovaný přehled, viz
 // scripts/update-uredni-deska.mjs (RSS + OCR rozpočtových opatření, běží
-// jen na droplu). U rozpočtových opatření appka ukazuje deterministicky
+// jen na droplu). U rozpočtových opatření stránka ukazuje deterministicky
 // spočítaný rozdíl v příjmech/výdajích (žádné LLM, žádný vymyšlený souhrn)
 // — u ostatních typů dokumentů skutečný úryvek textu (RSS popis nebo
 // náhled přílohy), ne jen metadata typu "ke stažení N příloh".
@@ -2087,7 +2137,16 @@ async function loadUredniDeska(){
     list.innerHTML = recent.map((item, i) => {
       const date = item.pubDate ? new Date(item.pubDate).toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric', year:'numeric'}) : '';
       const featured = i === 0;
-      const body = (item.type === 'rozpocet' && item.summary)
+      // Exekuční příkazy a dražební vyhlášky bývají v názvu z RSS doplněné
+      // konkrétní adresou/místní částí (dotčená nemovitost) — u téhle
+      // kategorie dokumentů appka záměrně neukazuje nic nad rámec typu
+      // dokumentu a data, žádné jméno ani adresu, jen odkaz na oficiální
+      // desku, kde si to každý může sám dohledat v kontextu.
+      const sensitiveMatch = item.title.match(/exekuční příkaz|dražební vyhláška/i);
+      const displayTitle = sensitiveMatch
+        ? sensitiveMatch[0].charAt(0).toUpperCase() + sensitiveMatch[0].slice(1)
+        : item.title;
+      const body = sensitiveMatch ? '' : (item.type === 'rozpocet' && item.summary)
         ? `<div class="board-chips">${boardChip('Příjmy', item.summary.prijmy)}${boardChip('Výdaje', item.summary.vydaje)}</div>`
         : (item.note ? `<details class="how-details"><summary>Zobrazit úryvek</summary><div class="board-note">${escapeHtml(item.note)}</div></details>` : '');
       return `<div class="board-card${featured ? ' featured' : ''}">
@@ -2095,7 +2154,7 @@ async function loadUredniDeska(){
         <div class="board-body">
           ${featured ? '<span class="board-featured-tag">Nejnovější</span>' : ''}
           <div class="board-head">
-            <h3 class="board-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></h3>
+            <h3 class="board-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">${escapeHtml(displayTitle)}</a></h3>
             <span class="board-date">${date}</span>
           </div>
           ${body}
@@ -2120,9 +2179,9 @@ loadTradespeople();
 loadUredniDeska();
 
 // Anonymní počítadlo návštěv — jen IP adresa a čas návštěvy, žádné
-// cookies, žádné trackování mezi weby, žádný vliv na běh appky (tichý
+// cookies, žádné trackování mezi weby, žádný vliv na běh stránky (tichý
 // fetch, chyba se nikam nezobrazí). Vlastní server (infra/visit-log/),
-// ne GitHub Pages logy — ty appce nejsou k dispozici. Přehled na
+// ne GitHub Pages logy — ty stránce nejsou k dispozici. Přehled na
 // /stats.html, data se ukládají jen 7 dní (viz scripts/aggregate-visits.mjs).
 try {
   fetch('https://beacon.vezlonicich.cz/hit', {mode:'no-cors', keepalive:true, cache:'no-store'}).catch(()=>{});
