@@ -161,6 +161,29 @@ stejně snadno jako Open-Meteo.
   adresa **místa podnikání** (ne nutně trvalého bydliště), jak ji sám
   živnostník při registraci uvedl.
 
+## Místní firmy podle oboru (`firms.json`)
+
+- **Zdroj:** [ARES](https://ares.gov.cz) — stejný endpoint a stejné
+  `KOD_OBCE` (533114, Zlonice) jako `loadAres()` v `index.html`, jen běží
+  na pozadí místo v prohlížeči (viz `scripts/fetch-ares.mjs`). Ukládá se
+  jen `czNace2008`, `datumVzniku` a `obchodniJmeno` u každého aktivního
+  subjektu — to jediné appka potřebuje pro graf oborů (dlaždice "Místní
+  firmy podle oboru" v sekci O Zlonicích) a statistiku nejstarší/
+  nejnovější firmy.
+- **Proč pipeline, ne přímo z appky:** appka dřív volala ARES přímo z
+  prohlížeče při KAŽDÉ návštěvě — 1 dotaz na seznam + až 9 stránkovaných
+  dotazů (100 subjektů/stránka), dohromady ~1,5 MB na jedno zobrazení.
+  Obchodní rejstřík se mění řádově dny, ne minuty — denní běh na pozadí
+  stačí.
+- **Aktualizace:** `.github/workflows/update-firms.yml`, jednou denně
+  (04:00 UTC).
+- **Zálohová cesta:** appka čte nejdřív tenhle soubor; když chybí nebo má
+  neplatný obsah, sama si to (pomaleji) dotáhne přímo z ARESu stejně jako
+  dřív — stejné bezpečnostní pravidlo jako jinde v repu, nový mechanismus
+  appku nikdy nesmí rozbít, jen zrychlit běžný případ.
+- **Veřejnost dat:** stejná zásada jako u řemeslníků výš — ARES je ze
+  zákona veřejný rejstřík, appka nezveřejňuje nic nad jeho rámec.
+
 ## Voda (`water.json`)
 
 - **Zdroj:** ČHMÚ hydrologická opendata, stanice **Velvary** (tok Bakovský

@@ -1,0 +1,49 @@
+name: Update firms data
+
+# Naplní data/firms.json seznamem aktivních ekonomických subjektů v Zlonicích
+# (ARES) pro sekci "O Zlonicích". Denní časovač stačí — ARES/obchodní
+# rejstřík se mění řádově dny, ne v řádu minut jako doprava/voda. Žádné
+# secrety nejsou potřeba.
+
+on:
+  schedule:
+    - cron: '0 4 * * *' # denně v 04:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch ARES firms data
+        run: node scripts/fetch-ares.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "firms-data-bot"
+          git config user.email "actions@github.com"
+          git add data/firms.json
+          git diff --staged --quiet && { echo "Beze změny, nic k odeslání."; exit 0; }
+          git commit -m "Update firms data [skip ci]"
+
+          # Víc pipeline v tomhle repu běží na časovač a občas si šlápnou na
+          # paty při pushi do main — bez rebase+retry to shodí celý běh do
+          # červena, i když se data samotná v pořádku stáhla (viz krok výš).
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push odmítnut (pokus $attempt/5), rebasuju na aktuální main a zkouším znovu…"
+            git fetch origin main
+            git rebase origin/main
+            sleep $((attempt * 2))
+          done
+          echo "::error::Push se nepovedl ani po 5 pokusech."
+          exit 1
