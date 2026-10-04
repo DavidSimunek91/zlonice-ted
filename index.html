@@ -168,7 +168,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .section-foot{margin-top:1.4rem;padding-top:.9rem;border-top:1px dashed var(--line);font-size:var(--fs-14);color:var(--text-3);}
 .section-foot a{color:inherit;}
 .how-details{margin-top:.5rem;}
-.how-details summary{display:inline-flex;align-items:center;gap:.3rem;font-size:var(--fs-14);color:var(--green-text);cursor:pointer;list-style:none;font-weight:600;}
+.how-details summary{display:inline-flex;align-items:center;gap:.3rem;min-height:44px;padding:.4rem 0;font-size:var(--fs-14);color:var(--green-text);cursor:pointer;list-style:none;font-weight:600;}
 .how-details summary::-webkit-details-marker{display:none;}
 .how-details summary::after{content:'▾';font-size:.7em;transition:transform .15s ease;}
 .how-details[open] summary::after{transform:rotate(180deg);}
@@ -184,9 +184,10 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
    (jeden tap = jedna sekce, ne dva). Aktivní sekce se zvýrazňuje sama
    podle polohy scrollu (viz IntersectionObserver v <script>). */
 .section-nav{position:sticky;top:0;z-index:20;background:var(--stone);border-bottom:1px solid var(--line);}
-.section-nav-inner{max-width:1080px;margin:0 auto;display:flex;gap:.45rem;overflow-x:auto;padding:.55rem 1.4rem;scrollbar-width:none;-ms-overflow-style:none;}
+.section-nav::after{content:'';position:absolute;top:0;right:0;bottom:1px;width:24px;background:linear-gradient(to right, transparent, var(--bg));pointer-events:none;}
+.section-nav-inner{max-width:1080px;margin:0 auto;display:flex;gap:.45rem;overflow-x:auto;padding:.3rem 1.4rem;scrollbar-width:none;-ms-overflow-style:none;}
 .section-nav-inner::-webkit-scrollbar{display:none;}
-.nav-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:999px;font-size:var(--fs-14);color:var(--ink-soft);text-decoration:none;white-space:nowrap;border:1px solid transparent;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
+.nav-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4rem;min-height:44px;padding:.4rem .8rem;border-radius:999px;font-size:var(--fs-14);color:var(--ink-soft);text-decoration:none;white-space:nowrap;border:1px solid transparent;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
 .nav-pill svg{width:1rem;height:1rem;flex:0 0 auto;color:var(--spruce);}
 .nav-pill:hover{background:var(--surface);}
 .nav-pill.active{background:var(--spruce-soft);color:var(--green-text);border-color:var(--spruce);font-weight:600;}
@@ -237,7 +238,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .forecast{display:flex;gap:.7rem;overflow-x:auto;padding-bottom:.3rem;}
 .fday{flex:0 0 auto;width:104px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.85rem .7rem;text-align:center;}
 .fday .d{font-size:var(--fs-12);color:var(--ink-soft);text-transform:capitalize;margin-bottom:.5rem;}
-.fday .icon{font-size:var(--fs-20);margin-bottom:.4rem;}
+.fday .icon{margin-bottom:.4rem;}
 .fday .t{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-14);}
 .fday .t .max{font-weight:700;}
 .fday .t .min{color:var(--ink-soft);}
@@ -248,12 +249,15 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .hour-tile{flex:0 0 auto;width:46px;display:flex;flex-direction:column;align-items:center;gap:.3rem;}
 .hour-tile .h{font-size:var(--fs-12);color:var(--ink-soft);font-family:var(--font-sans);font-variant-numeric:tabular-nums;}
 .hour-tile.now .h{color:var(--green-text);font-weight:700;}
-.hour-tile .icon{font-size:var(--fs-16);}
+.hour-tile .icon{display:flex;}
+.hour-tile.day-start{border-left:1px solid var(--line);padding-left:.3rem;margin-left:.1rem;}
 .hour-tile .bar-wrap{height:64px;display:flex;align-items:flex-end;}
-.hour-tile .bar{width:9px;border-radius:4px;background:var(--gold);min-height:4px;}
-.hour-tile.now .bar{background:var(--spruce);}
+.hour-tile .bar{width:9px;border-radius:4px;min-height:4px;}
 .hour-tile.night .bar{opacity:.55;}
 .hour-tile .t{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);font-weight:600;}
+.wicon{width:1.5rem;height:1.5rem;color:var(--text-2);fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;}
+.hourly-legend{display:flex;gap:1.1rem;align-items:center;margin-top:.5rem;font-size:var(--fs-12);color:var(--text-3);}
+.hourly-legend .dot{display:inline-block;width:.55rem;height:.55rem;border-radius:50%;margin-right:.3rem;}
 
 /* Na užší obrazovce (mobil) zůstávají oba pruhy vodorovně scrollovatelné
    s pevnou šířkou dlaždic — u 16 hodin/7 dnů najednou by se jinak
@@ -372,22 +376,36 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 
 /* autobus */
 .dep-top{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap;}
-.dep-top label{font-size:var(--fs-12);color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;}
-.stop-select{font-family:var(--font-sans);font-size:var(--fs-14);padding:.4rem .6rem;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);}
-.dep-list{display:flex;flex-direction:column;}
-.dep-row{display:grid;grid-template-columns:2.9rem 1fr auto;gap:.7rem;align-items:center;padding:.5rem 0;border-bottom:1px dashed var(--line);}
-.dep-row:last-child{border-bottom:none;}
-.dep-route{font-family:var(--font-sans);font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--fs-12);background:var(--gold-soft);color:var(--ochre-text);border-radius:6px;padding:.2rem 0;text-align:center;}
-.dep-headsign{font-size:var(--fs-14);}
-.dep-time{font-family:var(--font-sans);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-size:var(--fs-14);}
-.dep-time .rel{color:var(--ink-soft);font-size:var(--fs-12);margin-left:.35rem;}
-.dep-delay{display:inline-block;margin-top:.2rem;font-size:var(--fs-12);font-family:var(--font-sans);padding:.06rem .42rem;border-radius:999px;}
+.dep-top-label{font-size:var(--fs-12);color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;}
+.stop-select{font-family:var(--font-sans);font-size:var(--fs-14);padding:.4rem .6rem;min-height:44px;border-radius:var(--r-btn);border:1px solid var(--line);background:var(--surface);color:var(--ink);}
+.dep-seg{display:inline-flex;flex-wrap:wrap;border-radius:var(--r-btn);overflow:hidden;border:1px solid var(--line);}
+.dep-seg button{font:inherit;font-size:var(--fs-14);padding:.5rem .9rem;min-height:44px;border:none;background:var(--surface);color:var(--text-2);cursor:pointer;border-right:1px solid var(--line);}
+.dep-seg button:last-child{border-right:none;}
+.dep-seg button.active{background:var(--green);color:#fff;}
+
+.dep-next{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:var(--sp-16);margin-bottom:var(--sp-16);}
+.dep-next-route{font-family:var(--font-sans);font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--fs-16);background:var(--gold-soft);color:var(--ochre-text);border-radius:var(--r-btn);padding:.3rem .6rem;}
+.dep-next-body{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;flex:1 1 auto;}
+.dep-next-headsign{font-size:var(--fs-16);flex:1 1 100%;}
+.dep-next-time{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-28);font-weight:700;}
+.dep-next-rel{font-size:var(--fs-16);color:var(--text-2);}
+.dep-next-status{font-size:var(--fs-14);font-weight:600;}
+.dep-next-status.good{color:var(--green-text);}
+.dep-next-status.warn{color:var(--warn);}
+.dep-next-status.danger{color:var(--alert-text);}
+
+.dep-table{display:flex;flex-direction:column;max-width:640px;}
+.dep-table-row{display:grid;grid-template-columns:3.4rem 2.6rem 1fr;gap:.6rem;align-items:center;min-height:44px;border-bottom:1px dashed var(--line);font-size:var(--fs-14);}
+.dep-table-row:last-child{border-bottom:none;}
+.dep-table-row .dep-time{font-family:var(--font-sans);font-variant-numeric:tabular-nums;}
+.dep-table-row .dep-route{font-family:var(--font-sans);font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--fs-12);background:var(--gold-soft);color:var(--ochre-text);border-radius:6px;padding:.2rem 0;text-align:center;}
+.dep-table-row .dep-headsign{font-size:var(--fs-14);}
+.dep-delay{margin-left:.5rem;font-size:var(--fs-12);font-family:var(--font-sans);padding:.06rem .42rem;border-radius:var(--r-btn);}
 .dep-delay.good{background:var(--good-soft);color:var(--good);}
 .dep-delay.warn{background:var(--warn-soft);color:var(--warn);}
 .dep-delay.danger{background:var(--danger-soft);color:var(--danger);}
-.dep-delay.muted{background:var(--sky-soft);color:var(--sky);}
 .dep-day-label{font-size:var(--fs-12);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:.7rem 0 .3rem;}
-.dep-note{margin:1rem 0 0;font-size:var(--fs-12);color:var(--ink-soft);}
+.dep-live-note{margin:.8rem 0 0;font-size:var(--fs-12);color:var(--text-3);}
 
 .obec .lede{color:var(--ink-soft);max-width:62ch;margin:0 0 1.2rem;}
 .obec-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:1.8rem;}
@@ -414,23 +432,28 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 }
 
 /* řemeslníci */
-.trade-filters{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0 1.2rem;}
-.trade-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .7rem;border-radius:999px;font-size:var(--fs-12);background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
+.trade-search{display:block;width:100%;height:48px;padding:0 1rem;margin:0 0 1rem;border-radius:var(--r-card);border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:var(--fs-16);}
+.trade-filters{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:0 0 1.2rem;position:relative;}
+.trade-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:.35rem;min-height:44px;padding:.35rem .9rem;border-radius:var(--r-pill);font-size:var(--fs-14);background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
 .trade-chip .n{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);opacity:.75;}
 .trade-chip:hover{border-color:var(--spruce);}
 .trade-chip.active{background:var(--spruce-soft);color:var(--green-text);border-color:var(--spruce);font-weight:600;}
-.trade-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.8rem;}
-.trade-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.9rem 1rem;}
-.trade-card-head{display:flex;align-items:flex-start;gap:.6rem;}
-.trade-card-head .icon{font-size:var(--fs-20);line-height:1.3;flex:0 0 auto;}
-.trade-card-head h3{display:block;font-size:var(--fs-16);font-weight:600;margin:0;line-height:1.3;}
-.trade-cats{font-size:var(--fs-12);color:var(--ink-soft);margin-top:.1rem;}
-.trade-meta{margin-top:.55rem;font-size:var(--fs-12);color:var(--ink-soft);}
-.trade-contact{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);}
-.trade-phone{display:inline-flex;align-items:center;gap:.3rem;font-size:var(--fs-14);font-weight:600;color:var(--good);text-decoration:none;}
-.trade-find{font-size:var(--fs-12);color:var(--sky);text-decoration:underline;}
-.trade-empty{grid-column:1/-1;}
-.trade-more{grid-column:1/-1;padding:.7rem;border-radius:8px;background:var(--surface);border:1px dashed var(--line);color:var(--green-text);font-weight:600;font-size:var(--fs-14);cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
+.trade-more-cats{position:relative;}
+.trade-more-cats summary{display:inline-flex;align-items:center;min-height:44px;padding:.35rem .9rem;border-radius:var(--r-pill);font-size:var(--fs-14);background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;list-style:none;}
+.trade-more-cats summary::-webkit-details-marker{display:none;}
+.trade-more-cats[open] summary{border-color:var(--spruce);color:var(--green-text);}
+.trade-more-list{position:absolute;z-index:5;top:calc(100% + .4rem);left:0;display:flex;flex-direction:column;gap:.3rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:.5rem;min-width:210px;box-shadow:0 4px 14px var(--shadow);}
+.trade-more-list .trade-chip{width:100%;justify-content:space-between;}
+.trade-list{display:flex;flex-direction:column;}
+.trade-row{display:flex;align-items:center;gap:.8rem;padding:.7rem 0;border-bottom:1px dashed var(--line);min-height:44px;}
+.trade-row:last-child{border-bottom:none;}
+.trade-row-icon{font-size:var(--fs-20);flex:0 0 auto;width:20px;display:flex;justify-content:center;}
+.trade-row-body{flex:1 1 auto;min-width:0;}
+.trade-row-name{font-size:var(--fs-16);font-weight:600;margin:0;line-height:1.3;}
+.trade-row-meta{font-size:var(--fs-14);color:var(--ink-soft);margin-top:.1rem;}
+.trade-contact-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:40px;padding:0 .9rem;border-radius:var(--r-btn);background:var(--good-soft);color:var(--green-text);font-weight:600;font-size:var(--fs-14);text-decoration:none;}
+.trade-empty{}
+.trade-more{display:block;width:100%;margin-top:.5rem;padding:.7rem;min-height:44px;border-radius:var(--r-btn);background:var(--surface);border:1px dashed var(--line);color:var(--green-text);font-weight:600;font-size:var(--fs-14);cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
 .trade-more:hover{border-color:var(--spruce);background:var(--spruce-soft);}
 
 footer{max-width:1080px;margin:2.6rem auto 0;padding:1.6rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:var(--fs-12);}
@@ -441,6 +464,17 @@ footer a{text-decoration:underline;}
 </style>
 </head>
 <body>
+<svg class="icon-sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></symbol>
+  <symbol id="i-cloud-sun" viewBox="0 0 24 24"><path d="M12 2v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="M20 12h2" /><path d="m19.07 4.93-1.41 1.41" /><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128" /><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z" /></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></symbol>
+  <symbol id="i-cloud-fog" viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="M16 17H7" /><path d="M17 21H9" /></symbol>
+  <symbol id="i-cloud-drizzle" viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="M8 19v1" /><path d="M8 14v1" /><path d="M16 19v1" /><path d="M16 14v1" /><path d="M12 21v1" /><path d="M12 16v1" /></symbol>
+  <symbol id="i-cloud-rain" viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="M16 14v6" /><path d="M8 14v6" /><path d="M12 16v6" /></symbol>
+  <symbol id="i-cloud-snow" viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="M8 15h.01" /><path d="M8 19h.01" /><path d="M12 17h.01" /><path d="M12 21h.01" /><path d="M16 15h.01" /><path d="M16 19h.01" /></symbol>
+  <symbol id="i-cloud-lightning" viewBox="0 0 24 24"><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973" /><path d="m13 12-3 5h4l-3 5" /></symbol>
+  <symbol id="i-cloud-sun-rain" viewBox="0 0 24 24"><path d="M12 2v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="M20 12h2" /><path d="m19.07 4.93-1.41 1.41" /><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128" /><path d="M3 20a5 5 0 1 1 8.9-4H13a3 3 0 0 1 2 5.24" /><path d="M11 20v2" /><path d="M7 19v2" /></symbol>
+</svg>
 
 <header class="hero">
   <svg class="hero-motif" viewBox="0 0 160 220" fill="none" aria-hidden="true">
@@ -541,6 +575,7 @@ footer a{text-decoration:underline;}
     <div class="forecast" id="forecastRow" style="margin-top:1rem;"></div>
     <div class="hourly-head">Dnes po hodinách</div>
     <div class="hourly-strip" id="hourlyStrip"><div class="sub">načítám…</div></div>
+    <div class="hourly-legend" id="hourlyLegend"></div>
     <div class="today-tips" id="todayTips"></div>
   </section>
 
@@ -557,10 +592,13 @@ footer a{text-decoration:underline;}
     </div>
     <div class="dep-card" id="depCard">
       <div class="dep-top">
-        <label for="depStopSelect">Zastávka</label>
+        <label for="depStopSelect" class="dep-top-label">Zastávka</label>
         <select id="depStopSelect" class="stop-select"></select>
+        <div class="dep-seg" id="depSeg" hidden></div>
       </div>
-      <div class="dep-list" id="depList"><div class="sub">načítám…</div></div>
+      <div class="dep-next" id="depNext"></div>
+      <div class="dep-table" id="depList"><div class="sub">načítám…</div></div>
+      <p class="dep-live-note">Zpoždění se zobrazí, až spoj vyjede.</p>
       <p class="section-foot">Zdroj: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a> · živě</p>
       <details class="how-details">
         <summary>Jak to funguje</summary>
@@ -706,8 +744,9 @@ footer a{text-decoration:underline;}
       <span class="tag soon" id="tradeTag"><span class="dot"></span>načítám…</span>
     </div>
     <div id="tradeCard">
+      <input type="search" id="tradeSearch" class="trade-search" placeholder="Hledat řemeslníka nebo obor">
       <div class="trade-filters" id="tradeFilters"></div>
-      <div class="trade-grid" id="tradeGrid"></div>
+      <div class="trade-list" id="tradeGrid"></div>
       <p class="section-foot">Zdroj: <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> · aktualizace týdně</p>
       <details class="how-details">
         <summary>Jak to funguje</summary>
@@ -751,6 +790,13 @@ document.getElementById('clock').textContent = new Date().toLocaleString('cs-CZ'
 
   function setActive(id){
     links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+    const active = links.find(a => a.dataset.target === id);
+    // Na mobilu je pruh vodorovně scrollovatelný (víc pilulek, než se
+    // vejde) — aktivní pilulka se musí sama posunout do zorného pole,
+    // jinak by po skrolování na vzdálenou sekci zůstala schovaná mimo
+    // viditelnou část pruhu. inline:'nearest' hýbe jen vodorovným
+    // scrollem pruhu, block:'nearest' nedovolí, aby to hodilo stránku.
+    if (active) active.scrollIntoView({ inline: 'nearest', block: 'nearest' });
   }
   setActive(targets[0].id); // než se stihne vyhodnotit scroll, ať není pruh úplně prázdný
 
@@ -764,15 +810,33 @@ document.getElementById('clock').textContent = new Date().toLocaleString('cs-CZ'
   targets.forEach(t => observer.observe(t));
 })();
 
-const WMO = {
-  0:['Jasno','☀️'],1:['Skoro jasno','🌤️'],2:['Polojasno','⛅'],3:['Zataženo','☁️'],
-  45:['Mlha','🌫️'],48:['Mlha','🌫️'],
-  51:['Mrholení','🌦️'],53:['Mrholení','🌦️'],55:['Mrholení','🌦️'],
-  61:['Déšť','🌧️'],63:['Déšť','🌧️'],65:['Vydatný déšť','🌧️'],
-  71:['Sněžení','🌨️'],73:['Sněžení','🌨️'],75:['Vydatné sněžení','🌨️'],
-  80:['Přeháňky','🌦️'],81:['Přeháňky','🌦️'],82:['Silné přeháňky','🌦️'],
-  95:['Bouřka','⛈️'],96:['Bouřka s kroupami','⛈️'],99:['Bouřka s kroupami','⛈️'],
+const WMO_LABEL = {
+  0:'Jasno',1:'Skoro jasno',2:'Polojasno',3:'Zataženo',
+  45:'Mlha',48:'Mlha',
+  51:'Mrholení',53:'Mrholení',55:'Mrholení',
+  61:'Déšť',63:'Déšť',65:'Vydatný déšť',
+  71:'Sněžení',73:'Sněžení',75:'Vydatné sněžení',
+  80:'Přeháňky',81:'Přeháňky',82:'Silné přeháňky',
+  95:'Bouřka',96:'Bouřka s kroupami',99:'Bouřka s kroupami',
 };
+// Mapování WMO kódu na symbol ze sprite <svg class="icon-sprite"> v <body>
+// (Lucide ikony, self-hosted jako inline SVG, žádné CDN). Mlha (cloud-fog)
+// patří jen kódům 45/48 — žádný jiný kód na ni nemapuje.
+const WMO_ICON = {
+  0:{id:'i-sun', color:'var(--ochre)'},
+  1:{id:'i-cloud-sun'}, 2:{id:'i-cloud-sun'}, 3:{id:'i-cloud'},
+  45:{id:'i-cloud-fog'}, 48:{id:'i-cloud-fog'},
+  51:{id:'i-cloud-drizzle', color:'#3D6E8C'}, 53:{id:'i-cloud-drizzle', color:'#3D6E8C'}, 55:{id:'i-cloud-drizzle', color:'#3D6E8C'},
+  61:{id:'i-cloud-rain', color:'#3D6E8C'}, 63:{id:'i-cloud-rain', color:'#3D6E8C'}, 65:{id:'i-cloud-rain', color:'#3D6E8C'},
+  71:{id:'i-cloud-snow'}, 73:{id:'i-cloud-snow'}, 75:{id:'i-cloud-snow'},
+  80:{id:'i-cloud-sun-rain', color:'#3D6E8C'}, 81:{id:'i-cloud-sun-rain', color:'#3D6E8C'}, 82:{id:'i-cloud-rain', color:'#3D6E8C'},
+  95:{id:'i-cloud-lightning'}, 96:{id:'i-cloud-lightning'}, 99:{id:'i-cloud-lightning'},
+};
+function weatherIconHtml(code){
+  const spec = WMO_ICON[code] || WMO_ICON[3];
+  const style = spec.color ? ` style="color:${spec.color}"` : '';
+  return `<svg class="wicon"${style} aria-hidden="true"><use href="#${spec.id}"/></svg>`;
+}
 const DAYS = ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'];
 
 // weather_code od Open-Meteo je "nejvýznamnější jev, co může ten den nastat",
@@ -782,9 +846,9 @@ const DAYS = ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sob
 // vidět vedle, takže se informace neztrácí, jen ikona nepřehání.
 const PRECIP_CODES = new Set([51,53,55,61,63,65,71,73,75,80,81,82,95,96,99]);
 const RAIN_ICON_MIN_PROB = 40;
-function weatherIconFor(code, probPct){
-  if (PRECIP_CODES.has(code) && (probPct ?? 100) < RAIN_ICON_MIN_PROB) return WMO[3];
-  return WMO[code] || ['—','·'];
+function effectiveWeatherCode(code, probPct){
+  if (PRECIP_CODES.has(code) && (probPct ?? 100) < RAIN_ICON_MIN_PROB) return 3;
+  return code;
 }
 
 // Komfortní pásma relativní vlhkosti — obecný odhad dopadu na dýchání/pocit tepla,
@@ -890,12 +954,20 @@ function hourGoodForSpray(H, idx){
   const hr = new Date(H.time[idx]).getHours();
   return hr >= 19 && hr < 23;
 }
+// "teď" smí appka ukázat jen mezi východem a západem slunce (H.is_day z
+// Open-Meteo) — v noci i kdyby hodinová podmínka náhodou seděla (např. by
+// předpověď posunula okno zalévání), appka radši hledá nejbližší OPRAVDU
+// vhodnou hodinu dopředu a řekne "zítra od HH:MM", když to vyjde na jiné
+// kalendářní datum než teď.
 function nextGoodWindow(H, startIdx, predicate){
-  if (predicate(H, startIdx)) return {when:'teď', level:'good'};
-  for (let i = 1; i < Math.min(30, H.time.length - startIdx); i++){
+  const isDaytimeNow = H.is_day[startIdx] === 1;
+  if (isDaytimeNow && predicate(H, startIdx)) return {when:'teď', level:'good'};
+  const startDate = new Date(H.time[startIdx]).getDate();
+  for (let i = 1; i < Math.min(36, H.time.length - startIdx); i++){
     if (predicate(H, startIdx + i)){
       const t = new Date(H.time[startIdx + i]);
-      return {when:`od ${String(t.getHours()).padStart(2,'0')}:00`, level:'warn'};
+      const prefix = t.getDate() !== startDate ? 'zítra od ' : 'od ';
+      return {when:`${prefix}${String(t.getHours()).padStart(2,'0')}:00`, level:'warn'};
     }
   }
   return {when:'dnes už ne', level:'warn'};
@@ -965,10 +1037,10 @@ async function loadWeather(){
     const rows = days.map((iso, i) => {
       const d = new Date(iso + 'T12:00:00');
       const label = i === 0 ? 'dnes' : DAYS[d.getDay()];
-      const w = weatherIconFor(data.daily.weather_code[i], data.daily.precipitation_probability_max[i]);
+      const code = effectiveWeatherCode(data.daily.weather_code[i], data.daily.precipitation_probability_max[i]);
       return `<div class="fday">
         <div class="d">${label}</div>
-        <div class="icon">${w[1]}</div>
+        <div class="icon">${weatherIconHtml(code)}</div>
         <div class="t"><span class="max">${Math.round(data.daily.temperature_2m_max[i])}°</span> <span class="min">${Math.round(data.daily.temperature_2m_min[i])}°</span></div>
         <div class="p">${data.daily.precipitation_probability_max[i]} % srážky</div>
       </div>`;
@@ -997,18 +1069,27 @@ async function loadWeather(){
     const temps = hrs.map(h => h.temp);
     const min = Math.min(...temps), max = Math.max(...temps);
     const range = Math.max(max - min, 2);
+    const COLD_COLOR = '#8BA3B0', WARM_COLOR = '#C29A4A', TEMP_SPLIT_C = 10;
+    let lastDate = hrs.length ? hrs[0].time.getDate() : null;
     const tiles = hrs.map((h, i) => {
       const pct = Math.max(6, Math.round(((h.temp - min) / range) * 100));
-      const w = WMO[h.code] || ['—','·'];
-      const label = i === 0 ? 'teď' : String(h.time.getHours()).padStart(2, '0') + 'h';
-      return `<div class="hour-tile${i === 0 ? ' now' : ''}${h.isDay === 0 ? ' night' : ''}">
+      // Přechod přes půlnoc — svislá čára + popisek "zítra" místo hodiny,
+      // ať je na ose jasně vidět hranice mezi dny.
+      const dayStart = h.time.getDate() !== lastDate;
+      if (dayStart) lastDate = h.time.getDate();
+      const label = i === 0 ? 'teď' : (dayStart ? 'zítra' : String(h.time.getHours()).padStart(2, '0') + 'h');
+      const barColor = h.temp < TEMP_SPLIT_C ? COLD_COLOR : WARM_COLOR;
+      return `<div class="hour-tile${i === 0 ? ' now' : ''}${h.isDay === 0 ? ' night' : ''}${dayStart ? ' day-start' : ''}">
         <div class="h">${label}</div>
-        <div class="icon">${w[1]}</div>
-        <div class="bar-wrap"><div class="bar" style="height:${pct}%;"></div></div>
+        <div class="icon">${weatherIconHtml(h.code)}</div>
+        <div class="bar-wrap"><div class="bar" style="height:${pct}%;background:${barColor};"></div></div>
         <div class="t">${Math.round(h.temp)}°</div>
       </div>`;
     }).join('');
     document.getElementById('hourlyStrip').innerHTML = tiles;
+    document.getElementById('hourlyLegend').innerHTML =
+      `<span><span class="dot" style="background:${COLD_COLOR}"></span>pod ${TEMP_SPLIT_C} °C</span>` +
+      `<span><span class="dot" style="background:${WARM_COLOR}"></span>od ${TEMP_SPLIT_C} °C</span>`;
   }catch(e){
     document.getElementById('hourlyStrip').innerHTML = `<div class="sub">Hodinový průběh se nepodařilo zobrazit.</div>`;
   }
@@ -1565,58 +1646,76 @@ async function loadLiveDelays(){
   }
 }
 
-function delayBadgeFor(tripId){
-  // Dřív appka při liveDelaysByTrip === null (chybí GOLEMIO_API_KEY,
-  // pipeline spadla, nebo jsou data stará) mlčela úplně — u žádného spoje
-  // se neukázal žádný odznak, což vypadalo, jako by appka live zpoždění
-  // vůbec neuměla, ne že zrovna dočasně nefunguje. Teď se to řekne
-  // explicitně, stejný princip jako u konkrétního spoje bez dat níž:
-  // "nevíme" musí být vždycky vidět jako "nevíme", nikdy jako ticho.
-  // Text schválně neříká "porucha"/"nedostupné" — to zní jako bug. Jde
-  // často o naprosto normální stav (pipeline zrovna neběžela), ne o chybu.
-  if (!liveDelaysByTrip) return `<span class="dep-delay muted">žádná data o zpoždění</span>`;
-  // Když je funkce zapnutá, ale konkrétní spoj ještě live data nemá
-  // (Golemio ho ještě nezačala sledovat, typicky dokud nevyjel), appka to
-  // musí říct explicitně — jinak nejde rozeznat "ověřeno na čas" od
-  // "nevíme", což je přesně to tiché hádání, které appka jinde odmítá.
+// Vrátí jen SKUTEČNÝ signál (zrušeno/zpoždění/na čase) nebo null, když appka
+// neví (chybí klíč, pipeline neběžela, Golemio spoj ještě nesleduje). null
+// se dřív ukazoval jako opakovaný šedý odznak "zatím bez live dat" u KAŽDÉHO
+// spoje — teď to vysvětluje jedna věta pod celou tabulkou (.dep-live-note),
+// ať se neopakuje to samé desetkrát pod sebou.
+function liveStatusFor(tripId){
+  if (!liveDelaysByTrip) return null;
   const live = tripId ? liveDelaysByTrip[tripId] : null;
-  if (!live) return `<span class="dep-delay muted">zatím bez live dat</span>`;
-  if (live.isCanceled) return `<span class="dep-delay danger">zrušeno</span>`;
-  if (!live.delayAvailable || live.delayMinutes == null) return `<span class="dep-delay muted">zatím bez live dat</span>`;
+  if (!live) return null;
+  if (live.isCanceled) return {level:'danger', text:'zrušeno'};
+  if (!live.delayAvailable || live.delayMinutes == null) return null;
   const mins = live.delayMinutes;
-  if (mins <= 1) return `<span class="dep-delay good">na čase</span>`;
-  if (mins <= 5) return `<span class="dep-delay warn">+${mins} min</span>`;
-  return `<span class="dep-delay danger">+${mins} min</span>`;
+  if (mins <= 1) return {level:'good', text:'na čase'};
+  if (mins <= 5) return {level:'warn', text:`+${mins} min`};
+  return {level:'danger', text:`+${mins} min`};
 }
 
+function formatDeparture(dep, now){
+  const h = String(Math.floor(dep.minutes/60)).padStart(2,'0');
+  const m = String(dep.minutes%60).padStart(2,'0');
+  let rel = DAY_LABELS[dep.dayOffset];
+  if (dep.dayOffset === 0){
+    const inMin = dep.minutes - (now.getHours()*60 + now.getMinutes());
+    rel = inMin <= 0 ? 'teď' : (inMin < 60 ? `za ${inMin} min` : `za ${(Math.round(inMin/60*10)/10).toFixed(1).replace('.', ',')} h`);
+  }
+  return {h, m, rel};
+}
+
+// Nejbližší spoj jako zvýrazněná karta (#depNext), zbytek jako kompaktní
+// tabulka čas · linka · cíl (#depList) — ne jeden nerozlišený seznam.
 function renderDepartures(depData, stopName){
-  const deps = upcomingDepartures(depData, stopName, 6);
+  const deps = upcomingDepartures(depData, stopName, 7);
+  const next = document.getElementById('depNext');
   const list = document.getElementById('depList');
   if (deps.length === 0){
+    next.innerHTML = '';
     list.innerHTML = '<div class="sub">Pro tuhle zastávku a nejbližší dny appka nenašla žádný spoj linek 590/591/594.</div>';
     return;
   }
 
   const now = new Date();
-  let lastDayOffset = null;
-  const rows = deps.map(dep => {
-    const h = String(Math.floor(dep.minutes/60)).padStart(2,'0');
-    const m = String(dep.minutes%60).padStart(2,'0');
-    let rel = '';
-    if (dep.dayOffset === 0){
-      const inMin = dep.minutes - (now.getHours()*60 + now.getMinutes());
-      rel = inMin <= 0 ? 'teď' : (inMin < 60 ? `za ${inMin} min` : `za ${(Math.round(inMin/60*10)/10).toFixed(1).replace('.', ',')} h`);
-    }
+  const [first, ...rest] = deps;
+  const f = formatDeparture(first, now);
+  const status = liveStatusFor(first.tripId);
+  next.innerHTML = `
+    <span class="dep-next-route">${first.route}</span>
+    <div class="dep-next-body">
+      <span class="dep-next-headsign">${first.headsign}</span>
+      <span class="dep-next-time">${f.h}:${f.m}</span>
+      <span class="dep-next-rel">${f.rel}</span>
+      ${status ? `<span class="dep-next-status ${status.level}">${status.text}</span>` : ''}
+    </div>`;
+
+  if (rest.length === 0){
+    list.innerHTML = '';
+    return;
+  }
+  let lastDayOffset = first.dayOffset;
+  const rows = rest.map(dep => {
+    const r = formatDeparture(dep, now);
     let dayLabel = '';
     if (dep.dayOffset !== lastDayOffset){
       lastDayOffset = dep.dayOffset;
       dayLabel = `<div class="dep-day-label">${DAY_LABELS[dep.dayOffset]}</div>`;
     }
-    const delay = delayBadgeFor(dep.tripId);
-    return `${dayLabel}<div class="dep-row">
+    const st = liveStatusFor(dep.tripId);
+    return `${dayLabel}<div class="dep-table-row">
+      <span class="dep-time">${r.h}:${r.m}</span>
       <span class="dep-route">${dep.route}</span>
-      <span class="dep-headsign">${dep.headsign}</span>
-      <span class="dep-time">${h}:${m}${rel ? `<span class="rel">${rel}</span>` : ''}${delay ? `<br>${delay}` : ''}</span>
+      <span class="dep-headsign">${dep.headsign}${st ? `<span class="dep-delay ${st.level}">${st.text}</span>` : ''}</span>
     </div>`;
   }).join('');
   list.innerHTML = rows;
@@ -1636,6 +1735,24 @@ async function loadDepartures(){
     select.innerHTML = stopNames.map(name => `<option value="${name}">${name}</option>`).join('');
     select.value = stopNames.includes('Zlonice') ? 'Zlonice' : stopNames[0];
     select.addEventListener('change', () => renderDepartures(data, select.value));
+
+    // Málo zastávek (běžný případ u jedné obce) → segmentový přepínač místo
+    // <select>u, je to rychlejší na dotek a jde vidět všechny možnosti
+    // najednou. <select> zůstává v DOMu (hidden) jako zdroj pravdy o
+    // vybrané hodnotě, ať renderDepartures/loadLiveDelays nemusí znát dvě
+    // různé cesty, jak se zastávka vybírá.
+    const seg = document.getElementById('depSeg');
+    if (stopNames.length > 0 && stopNames.length <= 4){
+      select.hidden = true;
+      seg.hidden = false;
+      seg.innerHTML = stopNames.map(name => `<button type="button" class="${name === select.value ? 'active' : ''}" data-stop="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join('');
+      seg.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+        select.value = btn.dataset.stop;
+        seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+        renderDepartures(data, select.value);
+      }));
+    }
+
     renderDepartures(data, select.value);
 
     try{
@@ -1769,88 +1886,101 @@ async function loadWater(){
 // serveru — filtr podle oboru je čistě klientský přepínač viditelnosti
 // karet, ať je to instantní bez dalšího fetch.
 const TRADE_STALE_MS = 24 * 24 * 60 * 60 * 1000; // pipeline běží týdně, tolerujeme pár vynechaných běhů
-const TRADE_DEFAULT_CAP = 18; // "Vše" se stovkou+ karet najednou je needitovatelný scroll, ne užitečný přehled
+const TRADE_DEFAULT_CAP = 10; // "Ukaž prvních 10, pod nimi Zobrazit dalších N"
+const TRADE_VISIBLE_CATS = 6; // zbytek jde do rozbalovacího "Další obory"
 
-// Jestli je "Vše" zrovna rozbalené na celý seznam — resetuje se na
-// oříznutý pohled při každém přepnutí kategorie (viz posluchač níž), aby
-// návrat na "Vše" zase začínal úsporně, ne tam, kde uživatel skončil.
+// Jestli je seznam zrovna rozbalený na celý výsledek (resetuje se při
+// každé změně filtru/hledání, aby přepnutí zase začínalo úsporně).
 let tradeShowAll = false;
+let tradeSearchQuery = '';
+let tradeActiveCat = 'all';
 
 function tradeContactHtml(person, categoryLabel){
   if (person.phone){
     const telHref = 'tel:' + person.phone.replace(/[^\d+]/g, '');
-    return `<a class="trade-phone" href="${telHref}">📞 ${escapeHtml(person.phone)}</a>`;
+    return `<a class="trade-contact-btn" href="${telHref}">${escapeHtml(person.phone)}</a>`;
   }
   const q = encodeURIComponent(`${person.name} ${person.village || 'Zlonice'} ${categoryLabel}`.trim());
-  return `<a class="trade-find" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Najít kontakt ↗</a>`;
+  return `<a class="trade-contact-btn" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Kontakt</a>`;
 }
 
-function tradeCardHtml(p, categories){
+function tradeRowHtml(p, categories){
   const catLabels = p.categories.map(id => categories[id]?.label).filter(Boolean);
   const icon = categories[p.categories[0]]?.icon || '🛠️';
-  const meta = [p.village, p.since ? `podniká od ${p.since}` : null].filter(Boolean).join(' · ');
-  return `
-    <div class="trade-card">
-      <div class="trade-card-head">
-        <span class="icon">${icon}</span>
-        <div>
-          <h3>${escapeHtml(p.name)}</h3>
-          <div class="trade-cats">${escapeHtml(catLabels.join(' · '))}</div>
-        </div>
-      </div>
-      ${meta ? `<div class="trade-meta">${escapeHtml(meta)}</div>` : ''}
-      <div class="trade-contact">${tradeContactHtml(p, catLabels[0] || '')}</div>
-    </div>`;
+  const meta = [catLabels.join(', '), p.village].filter(Boolean).join(' · ');
+  return `<div class="trade-row">
+    <span class="trade-row-icon">${icon}</span>
+    <div class="trade-row-body">
+      <h3 class="trade-row-name">${escapeHtml(p.name)}</h3>
+      <div class="trade-row-meta">${escapeHtml(meta)}</div>
+    </div>
+    ${tradeContactHtml(p, catLabels[0] || '')}
+  </div>`;
 }
 
-function renderTradeGrid(people, categories, activeId){
+// Hledání je čistě klientské (žádný další fetch) — filtruje podle jména,
+// oboru i obce najednou, ať nemusí uživatel vědět, do kterého pole patří
+// to, co hledá.
+function peopleMatchingSearch(people, categories, query){
+  if (!query) return people;
+  const q = query.toLowerCase();
+  return people.filter(p => {
+    const catLabels = p.categories.map(id => categories[id]?.label).filter(Boolean).join(' ').toLowerCase();
+    return p.name.toLowerCase().includes(q) || (p.village || '').toLowerCase().includes(q) || catLabels.includes(q);
+  });
+}
+
+function renderTradeGrid(people, categories){
   const grid = document.getElementById('tradeGrid');
-  const filtered = activeId === 'all' ? people : people.filter(p => p.categories.includes(activeId));
+  let filtered = tradeActiveCat === 'all' ? people : people.filter(p => p.categories.includes(tradeActiveCat));
+  filtered = peopleMatchingSearch(filtered, categories, tradeSearchQuery);
   if (filtered.length === 0){
-    grid.innerHTML = '<div class="soon-card trade-empty">V téhle kategorii appka zatím nikoho nenašla.</div>';
+    grid.innerHTML = '<div class="soon-card trade-empty">Appka nikoho nenašla — zkus jiné hledání nebo obor.</div>';
     return;
   }
-  // Jen "Vše" se ořezává — konkrétní obor si uživatel vybral schválně,
-  // tam má vidět všechny, i kdyby jich bylo pár desítek. "Vše" bez
-  // omezení ale znamená stovky karet hned po načtení stránky, což není
-  // přehled, jen dlouhý scroll — proto defaultně jen prvních pár desítek
-  // + tlačítko na rozbalení.
-  const capped = activeId === 'all' && !tradeShowAll && filtered.length > TRADE_DEFAULT_CAP;
+  const capped = !tradeShowAll && filtered.length > TRADE_DEFAULT_CAP;
   const shown = capped ? filtered.slice(0, TRADE_DEFAULT_CAP) : filtered;
-  const cards = shown.map(p => tradeCardHtml(p, categories)).join('');
+  const rows = shown.map(p => tradeRowHtml(p, categories)).join('');
   const moreBtn = capped
-    ? `<button type="button" class="trade-more" id="tradeShowAllBtn">Zobrazit všech ${filtered.length} →</button>`
+    ? `<button type="button" class="trade-more" id="tradeShowAllBtn">Zobrazit dalších ${filtered.length - TRADE_DEFAULT_CAP} →</button>`
     : '';
-  grid.innerHTML = cards + moreBtn;
+  grid.innerHTML = rows + moreBtn;
   if (capped){
     document.getElementById('tradeShowAllBtn').addEventListener('click', () => {
       tradeShowAll = true;
-      renderTradeGrid(people, categories, activeId);
+      renderTradeGrid(people, categories);
     });
   }
 }
 
+// Jen 6 nejčastějších oborů viditelně — zbytek za "Další obory ▾"
+// (<details>, žádný vlastní dropdown JS navíc). Posluchač na kliknutí se
+// připojuje jednou v loadTradespeople (ne tady) — tahle funkce jen vykreslí
+// aktuální stav, ať se při každém renderu nehromadí další a další listener
+// na tom samém #tradeFilters elementu.
 function renderTradeFilters(people, categories){
   const counts = {};
   people.forEach(p => p.categories.forEach(id => { counts[id] = (counts[id] || 0) + 1; }));
   const sortedIds = Object.keys(categories).sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+  const visibleIds = sortedIds.slice(0, TRADE_VISIBLE_CATS);
+  const restIds = sortedIds.slice(TRADE_VISIBLE_CATS);
 
   const chip = (id, label, icon, n, active) =>
     `<button type="button" class="trade-chip${active ? ' active' : ''}" data-cat="${id}">${icon ? icon + ' ' : ''}${escapeHtml(label)} <span class="n">${n}</span></button>`;
 
-  const html = [chip('all', 'Vše', '', people.length, true)]
-    .concat(sortedIds.map(id => chip(id, categories[id].label, categories[id].icon, counts[id] || 0, false)))
-    .join('');
-  const filters = document.getElementById('tradeFilters');
-  filters.innerHTML = html;
+  let html = chip('all', 'Vše', '', people.length, tradeActiveCat === 'all') +
+    visibleIds.map(id => chip(id, categories[id].label, categories[id].icon, counts[id] || 0, tradeActiveCat === id)).join('');
 
-  filters.addEventListener('click', (e) => {
-    const btn = e.target.closest('.trade-chip');
-    if (!btn) return;
-    tradeShowAll = false;
-    filters.querySelectorAll('.trade-chip').forEach(c => c.classList.toggle('active', c === btn));
-    renderTradeGrid(people, categories, btn.dataset.cat);
-  });
+  if (restIds.length > 0){
+    const restActive = restIds.includes(tradeActiveCat);
+    const label = restActive ? categories[tradeActiveCat].label : 'Další obory';
+    html += `<details class="trade-more-cats"${restActive ? ' open' : ''}>
+      <summary>${escapeHtml(label)} ▾</summary>
+      <div class="trade-more-list">${restIds.map(id => chip(id, categories[id].label, categories[id].icon, counts[id] || 0, tradeActiveCat === id)).join('')}</div>
+    </details>`;
+  }
+
+  document.getElementById('tradeFilters').innerHTML = html;
 }
 
 async function loadTradespeople(){
@@ -1867,8 +1997,25 @@ async function loadTradespeople(){
 
     tag.className = 'tag snapshot';
     tag.innerHTML = '<span class="dot"></span>aktualizace týdně · ARES';
-    renderTradeFilters(data.people, data.categories);
-    renderTradeGrid(data.people, data.categories, 'all');
+
+    const { people, categories } = data;
+    renderTradeFilters(people, categories);
+    renderTradeGrid(people, categories);
+
+    document.getElementById('tradeFilters').addEventListener('click', (e) => {
+      const btn = e.target.closest('.trade-chip');
+      if (!btn) return;
+      tradeShowAll = false;
+      tradeActiveCat = btn.dataset.cat;
+      renderTradeFilters(people, categories);
+      renderTradeGrid(people, categories);
+    });
+
+    document.getElementById('tradeSearch').addEventListener('input', (e) => {
+      tradeShowAll = false;
+      tradeSearchQuery = e.target.value.trim();
+      renderTradeGrid(people, categories);
+    });
   }catch(e){
     tag.className = 'tag warn';
     tag.innerHTML = '<span class="dot"></span>nelze ověřit';
