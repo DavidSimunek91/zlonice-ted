@@ -7,61 +7,110 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌾</text></svg>">
 <style>
 :root{
-  --stone:#EDEAE0; --ink:#262019; --ink-soft:#5B5346;
-  --spruce:#3C5C42; --spruce-soft:#E1E7DA;
-  --gold:#A8791F; --gold-soft:#F3E8CE;
-  --line:#D7D0BE; --surface:#F7F5EE;
+  /* základní paleta (světlý režim) */
+  --bg:#F7F5EE; --surface:rgba(255,255,255,.6); --line:#E2DCCB;
+  --text:#262019; --text-2:#5B5346; --text-3:#6B6255;
+  --green:#3C7A44; --green-text:#2F6B38;
+  --ochre:#A8791F; --ochre-text:#7A5712;
+  --alert-text:#9B2C1F; --alert-bg:#F6E1DC;
+
+  /* škála EAQI/vody — stejná v obou režimech (datová vizualizace, ne UI
+     prvek), ať je to jeden zdroj pravdy místo hex rozesetého ve 3 místech */
+  --aqi-1:#4C9A4C; --aqi-2:#8FBF3F; --aqi-3:#E8C33D; --aqi-4:#E8892F; --aqi-5:#D14E3B; --aqi-6:#8B2E4A;
+
+  /* doplňkové tóny — stejná role jako dřív, odvozené z palety výš, ať má
+     barva jeden zdroj pravdy; warn/sky nemají předlohu v zadání, zůstávají
+     vlastní */
+  --stone:var(--bg); --ink:var(--text); --ink-soft:var(--text-2);
+  --spruce:var(--green); --spruce-soft:#E1E7DA;
+  --gold:var(--ochre); --gold-soft:#F3E8CE;
+  --good:var(--green); --good-soft:#E1EFDF;
+  --warn:#875A15; --warn-soft:#F5E7CC;
+  --danger:var(--alert-text); --danger-soft:var(--alert-bg);
   --sky:#3E5A70; --sky-soft:#DEE7EC;
-  --good:#3C7A44; --good-soft:#E1EFDF;
-  --warn:#B5791C; --warn-soft:#F5E7CC;
-  --danger:#A23B2E; --danger-soft:#F4E1DC;
   --shadow:rgba(38,32,25,.09);
+
+  /* typografie (12/14/16/20/28/40 px); --fs-32 je jediná výjimka ze
+     škály — mobilní velikost H1 podle hierarchie v kole 1c */
+  --fs-12:.75rem; --fs-14:.875rem; --fs-16:1rem; --fs-20:1.25rem; --fs-28:1.75rem; --fs-32:2rem; --fs-40:2.5rem;
+
+  /* mezery (4/8/12/16/24/32/48/64 px) */
+  --sp-4:.25rem; --sp-8:.5rem; --sp-12:.75rem; --sp-16:1rem; --sp-24:1.5rem; --sp-32:2rem; --sp-48:3rem; --sp-64:4rem;
+
+  /* radius */
+  --r-card:12px; --r-btn:8px; --r-pill:999px;
+
+  /* písma (self-hosted, viz @font-face níž) */
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-display:'Roboto Slab',"Rockwell Nova","Rockwell",Georgia,serif;
 }
 @media (prefers-color-scheme: dark){
   :root{
-    --stone:#171B15; --ink:#ECE7DA; --ink-soft:#AFA894;
-    --spruce:#8FB37E; --spruce-soft:#212A1C;
-    --gold:#D6A94A; --gold-soft:#332A15;
-    --line:#333A2B; --surface:#1D2118;
-    --sky:#8FAFC9; --sky-soft:#1C262C;
-    --good:#6FAE6F; --good-soft:#1E2B1D;
+    --bg:#171B15; --surface:rgba(255,255,255,.05); --line:#333A2B;
+    --text:#ECE7DA; --text-2:#AFA894; --text-3:#8C8672;
+    --green:#6FAE6F; --green-text:#8FB37E;
+    --ochre:#C79A42; --ochre-text:#D6A94A;
+    --alert-text:#D97A6A; --alert-bg:#33201B;
+
+    --stone:var(--bg); --ink:var(--text); --ink-soft:var(--text-2);
+    --spruce:var(--green); --spruce-soft:#212A1C;
+    --gold:var(--ochre); --gold-soft:#332A15;
+    --good:var(--green); --good-soft:#1E2B1D;
     --warn:#D9A94A; --warn-soft:#332A15;
-    --danger:#D97A6A; --danger-soft:#33201B;
+    --danger:var(--alert-text); --danger-soft:var(--alert-bg);
+    --sky:#8FAFC9; --sky-soft:#1C262C;
     --shadow:rgba(0,0,0,.4);
   }
 }
 :root[data-theme="dark"]{
-  --stone:#171B15; --ink:#ECE7DA; --ink-soft:#AFA894;
-  --spruce:#8FB37E; --spruce-soft:#212A1C;
-  --gold:#D6A94A; --gold-soft:#332A15;
-  --line:#333A2B; --surface:#1D2118;
-  --sky:#8FAFC9; --sky-soft:#1C262C;
-  --good:#6FAE6F; --good-soft:#1E2B1D;
+  --bg:#171B15; --surface:rgba(255,255,255,.05); --line:#333A2B;
+  --text:#ECE7DA; --text-2:#AFA894; --text-3:#8C8672;
+  --green:#6FAE6F; --green-text:#8FB37E;
+  --ochre:#C79A42; --ochre-text:#D6A94A;
+  --alert-text:#D97A6A; --alert-bg:#33201B;
+
+  --stone:var(--bg); --ink:var(--text); --ink-soft:var(--text-2);
+  --spruce:var(--green); --spruce-soft:#212A1C;
+  --gold:var(--ochre); --gold-soft:#332A15;
+  --good:var(--green); --good-soft:#1E2B1D;
   --warn:#D9A94A; --warn-soft:#332A15;
-  --danger:#D97A6A; --danger-soft:#33201B;
+  --danger:var(--alert-text); --danger-soft:var(--alert-bg);
+  --sky:#8FAFC9; --sky-soft:#1C262C;
   --shadow:rgba(0,0,0,.4);
 }
 :root[data-theme="light"]{
-  --stone:#EDEAE0; --ink:#262019; --ink-soft:#5B5346;
-  --spruce:#3C5C42; --spruce-soft:#E1E7DA;
-  --gold:#A8791F; --gold-soft:#F3E8CE;
-  --line:#D7D0BE; --surface:#F7F5EE;
+  --bg:#F7F5EE; --surface:rgba(255,255,255,.6); --line:#E2DCCB;
+  --text:#262019; --text-2:#5B5346; --text-3:#6B6255;
+  --green:#3C7A44; --green-text:#2F6B38;
+  --ochre:#A8791F; --ochre-text:#7A5712;
+  --alert-text:#9B2C1F; --alert-bg:#F6E1DC;
+
+  --stone:var(--bg); --ink:var(--text); --ink-soft:var(--text-2);
+  --spruce:var(--green); --spruce-soft:#E1E7DA;
+  --gold:var(--ochre); --gold-soft:#F3E8CE;
+  --good:var(--green); --good-soft:#E1EFDF;
+  --warn:#875A15; --warn-soft:#F5E7CC;
+  --danger:var(--alert-text); --danger-soft:var(--alert-bg);
   --sky:#3E5A70; --sky-soft:#DEE7EC;
-  --good:#3C7A44; --good-soft:#E1EFDF;
-  --warn:#B5791C; --warn-soft:#F5E7CC;
-  --danger:#A23B2E; --danger-soft:#F4E1DC;
   --shadow:rgba(38,32,25,.09);
 }
+
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/Inter-400.woff2') format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/Inter-500.woff2') format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/Inter-600.woff2') format('woff2');}
+@font-face{font-family:'Roboto Slab';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/RobotoSlab-600.woff2') format('woff2');}
 
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{
-  background:var(--stone); color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg); color:var(--text);
+  font-family:var(--font-sans); font-size:var(--fs-16);
   line-height:1.5; -webkit-font-smoothing:antialiased;
   position:relative;
 }
+button, input, select{font:inherit;}
+:focus-visible{outline:2px solid var(--green-text); outline-offset:2px;}
 /* Jemná textura řádků polí táhnoucí se celou stránkou, ne jen hero —
    sjednocuje vizuální identitu appky s krajinou Polabí. Karty se
    živými daty mají vlastní --surface pozadí, takže zůstávají čisté
@@ -71,7 +120,7 @@ body::before{
   background-image:repeating-linear-gradient(122deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 42px);
   opacity:.22;
 }
-.display{font-family:"Rockwell Nova","Rockwell","Roboto Slab","Zilla Slab",Georgia,serif;}
+.display{font-family:var(--font-display);}
 a{color:inherit;}
 
 .hero{position:relative;overflow:hidden;background:linear-gradient(180deg, var(--spruce-soft), var(--stone) 140%);border-bottom:1px solid var(--line);padding:2.6rem 1.4rem 2rem;}
@@ -83,21 +132,51 @@ a{color:inherit;}
 .hero-motif{position:absolute;right:-.5rem;bottom:-1rem;width:clamp(120px,20vw,210px);height:auto;color:var(--spruce);opacity:.15;pointer-events:none;}
 @media (max-width:640px){.hero-motif{opacity:.1;width:110px;}}
 .hero-inner{max-width:1080px;margin:0 auto;position:relative;z-index:1;}
-.eyebrow{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--spruce);display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;}
+.eyebrow{font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--green-text);display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;}
 .eyebrow .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--spruce);}
 .eyebrow-rule{display:block;width:2.6rem;height:2px;border-radius:2px;background:var(--gold);margin:0 0 1.2rem;}
-h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap:balance;letter-spacing:-.015em;}
+h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;letter-spacing:-.015em;}
+@media (max-width:640px){h1{font-size:var(--fs-32);}}
 .hero-columns{display:flex;flex-wrap:wrap;gap:2rem;align-items:flex-start;}
-.hero-sub{color:var(--ink-soft);font-size:1.02rem;margin:0;flex:1 1 320px;}
+.hero-sub{color:var(--ink-soft);font-size:var(--fs-16);margin:0;flex:1 1 320px;}
 .hero-facts{display:flex;flex-wrap:wrap;gap:1.6rem;flex:1 1 340px;}
 .fact{display:flex;flex-direction:column;max-width:15.5rem;}
-.fact .k{font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);}
-.fact .v{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.15rem;font-weight:600;}
-.fact .ctx{font-size:.72rem;color:var(--ink-soft);line-height:1.35;margin-top:.15rem;}
+.fact .k{font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+.fact .v{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-20);font-weight:600;}
+.fact .ctx{font-size:var(--fs-12);color:var(--ink-soft);line-height:1.35;margin-top:.15rem;}
+
+/* pás "Teď ve Zlonicích" — jen prezentační vrstva nad daty, co už tak jako
+   tak načtou loadWeather/loadAlerts/loadDepartures/loadAirQuality/loadWater
+   pro svoje sekce; žádný nový fetch. */
+.now-wrap{max-width:1080px;margin:0 auto;padding:var(--sp-24) 1.4rem 0;}
+.now-heading{font-family:var(--font-display);font-size:var(--fs-20);margin:0;}
+.now-updated{font-size:var(--fs-14);color:var(--text-3);margin:.3rem 0 var(--sp-12);}
+.now-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--sp-12);margin-bottom:var(--sp-16);}
+@media (max-width:640px){.now-strip{grid-template-columns:repeat(2,1fr);}}
+.now-tile{min-height:96px;padding:var(--sp-16);border-radius:var(--r-card);background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:.2rem;text-decoration:none;color:var(--text);transition:border-color .15s ease;}
+.now-tile:hover{border-color:var(--green);}
+.now-tile-label{font-size:var(--fs-12);color:var(--text-3);}
+.now-tile-value{font-size:var(--fs-20);font-weight:600;font-variant-numeric:tabular-nums;}
+.now-tile-sub{font-size:var(--fs-12);color:var(--text-2);}
+.now-tile-alert .now-tile-value{color:var(--green-text);}
+.now-tile-alert.now-tile--active{grid-column:1/-1;background:var(--alert-bg);border-color:transparent;}
+.now-tile-alert.now-tile--active .now-tile-value, .now-tile-alert.now-tile--active .now-tile-label{color:var(--alert-text);}
+#nowWeather .now-tile-value{font-size:var(--fs-28);}
+.now-dot{display:inline-block;width:.5rem;height:.5rem;border-radius:50%;margin-right:.3rem;background:var(--ink-soft);}
+
+/* jednotná patička sekce (zdroj/živě/čas) + rozbalitelné "jak to funguje" */
+.section-foot{margin-top:1.4rem;padding-top:.9rem;border-top:1px dashed var(--line);font-size:var(--fs-14);color:var(--text-3);}
+.section-foot a{color:inherit;}
+.how-details{margin-top:.5rem;}
+.how-details summary{display:inline-flex;align-items:center;gap:.3rem;font-size:var(--fs-14);color:var(--green-text);cursor:pointer;list-style:none;font-weight:600;}
+.how-details summary::-webkit-details-marker{display:none;}
+.how-details summary::after{content:'▾';font-size:.7em;transition:transform .15s ease;}
+.how-details[open] summary::after{transform:rotate(180deg);}
+.how-details > p{margin:.6rem 0 0;font-size:var(--fs-14);color:var(--text-2);line-height:1.5;max-width:70ch;}
 
 .page{max-width:1080px;margin:0 auto;padding:0 1.4rem 4rem;position:relative;z-index:1;}
-.section, .obec{scroll-margin-top:4.4rem;}
-.section{margin-top:2.2rem;padding-top:1.6rem;border-top:1px solid var(--line);}
+.section{scroll-margin-top:4.4rem;margin-top:var(--sp-64);padding-top:var(--sp-24);border-top:1px solid var(--line);}
+@media (max-width:640px){.section{margin-top:var(--sp-48);}}
 
 /* Rychlá navigace po sekcích — sticky pruh "pilulek", stejné ikony jako
    u nadpisů sekcí (žádné nové kreslení). Na mobilu i webu stejná
@@ -107,19 +186,19 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .section-nav{position:sticky;top:0;z-index:20;background:var(--stone);border-bottom:1px solid var(--line);}
 .section-nav-inner{max-width:1080px;margin:0 auto;display:flex;gap:.45rem;overflow-x:auto;padding:.55rem 1.4rem;scrollbar-width:none;-ms-overflow-style:none;}
 .section-nav-inner::-webkit-scrollbar{display:none;}
-.nav-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:999px;font-size:.82rem;color:var(--ink-soft);text-decoration:none;white-space:nowrap;border:1px solid transparent;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
+.nav-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:999px;font-size:var(--fs-14);color:var(--ink-soft);text-decoration:none;white-space:nowrap;border:1px solid transparent;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
 .nav-pill svg{width:1rem;height:1rem;flex:0 0 auto;color:var(--spruce);}
 .nav-pill:hover{background:var(--surface);}
-.nav-pill.active{background:var(--spruce-soft);color:var(--spruce);border-color:var(--spruce);font-weight:600;}
+.nav-pill.active{background:var(--spruce-soft);color:var(--green-text);border-color:var(--spruce);font-weight:600;}
 .nav-pill.active svg{color:var(--spruce);}
 @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap;}
 .section-title{display:flex;align-items:center;gap:.6rem;}
 .section-icon{width:1.2rem;height:1.2rem;color:var(--spruce);flex:0 0 auto;}
-.section-head h2{font-family:"Rockwell Nova","Rockwell","Roboto Slab",Georgia,serif;font-size:1.25rem;margin:0;}
+.section-head h2{font-family:var(--font-display);font-size:var(--fs-28);margin:0;}
 
-.tag{display:inline-flex;align-items:center;gap:.35rem;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;padding:.22rem .55rem;border-radius:999px;font-family:ui-monospace,monospace;}
-.tag.live{background:var(--good-soft);color:var(--good);}
+.tag{display:inline-flex;align-items:center;gap:.35rem;font-size:var(--fs-12);padding:.22rem .55rem;border-radius:var(--r-btn);font-family:var(--font-sans);}
+.tag.live{background:var(--good-soft);color:var(--green-text);}
 .tag.snapshot{background:var(--sky-soft);color:var(--sky);}
 .tag.soon{background:var(--warn-soft);color:var(--warn);}
 .tag.warn{background:var(--warn-soft);color:var(--warn);}
@@ -128,8 +207,8 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 
 .banner{border-radius:8px;padding:.9rem 1.2rem;display:flex;align-items:center;gap:.8rem;background:var(--good-soft);margin-top:1.6rem;}
 .banner .stripe{width:4px;align-self:stretch;border-radius:3px;background:var(--good);}
-.banner strong{display:block;font-size:.95rem;}
-.banner span{font-size:.82rem;color:var(--ink-soft);}
+.banner strong{display:block;font-size:var(--fs-16);}
+.banner span{font-size:var(--fs-14);color:var(--ink-soft);}
 .banner span a{color:inherit;text-decoration:underline;}
 .banner.warn{background:var(--warn-soft);}
 .banner.warn .stripe{background:var(--warn);}
@@ -140,41 +219,41 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.2rem;box-shadow:0 1px 2px var(--shadow);}
-.card .k{font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem;}
-.card .v{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.9rem;font-weight:600;line-height:1;}
-.card .v small{font-size:1rem;font-weight:500;color:var(--ink-soft);}
-.card .sub{margin-top:.3rem;font-size:.82rem;color:var(--ink-soft);}
+.card .k{font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem;}
+.card .v{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-28);font-weight:600;line-height:1;}
+.card .v small{font-size:var(--fs-16);font-weight:500;color:var(--ink-soft);}
+.card .sub{margin-top:.3rem;font-size:var(--fs-14);color:var(--ink-soft);}
 .card.skel .v, .card.skel .sub{opacity:.35;}
-.card .takeaway{margin-top:.55rem;display:inline-flex;align-items:center;font-size:.72rem;font-family:ui-monospace,monospace;padding:.18rem .55rem;border-radius:999px;cursor:help;}
+.card .takeaway{margin-top:.55rem;display:inline-flex;align-items:center;font-size:var(--fs-12);font-family:var(--font-sans);padding:.18rem .55rem;border-radius:999px;cursor:help;}
 .card .takeaway.good{background:var(--good-soft);color:var(--good);}
 .card .takeaway.warn{background:var(--warn-soft);color:var(--warn);}
 .card .takeaway.danger{background:var(--danger-soft);color:var(--danger);}
-.card .sub-row{margin-top:.65rem;padding-top:.55rem;border-top:1px dashed var(--line);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;font-size:.8rem;color:var(--ink-soft);cursor:help;}
-.card .sub-row b{font-family:ui-monospace,monospace;color:var(--ink);font-weight:600;}
+.card .sub-row{margin-top:.65rem;padding-top:.55rem;border-top:1px dashed var(--line);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;font-size:var(--fs-12);color:var(--ink-soft);cursor:help;}
+.card .sub-row b{font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;}
 .card .sub-row .takeaway{margin-top:0;margin-left:auto;}
 .card .mini-scale{margin-top:.4rem;width:100%;height:6px;border-radius:3px;overflow:hidden;cursor:help;}
 .card .mini-scale-fill{height:100%;border-radius:3px;background:var(--ink);opacity:.55;}
 
 .forecast{display:flex;gap:.7rem;overflow-x:auto;padding-bottom:.3rem;}
 .fday{flex:0 0 auto;width:104px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.85rem .7rem;text-align:center;}
-.fday .d{font-size:.75rem;color:var(--ink-soft);text-transform:capitalize;margin-bottom:.5rem;}
-.fday .icon{font-size:1.5rem;margin-bottom:.4rem;}
-.fday .t{font-family:ui-monospace,monospace;font-size:.92rem;}
+.fday .d{font-size:var(--fs-12);color:var(--ink-soft);text-transform:capitalize;margin-bottom:.5rem;}
+.fday .icon{font-size:var(--fs-20);margin-bottom:.4rem;}
+.fday .t{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-14);}
 .fday .t .max{font-weight:700;}
 .fday .t .min{color:var(--ink-soft);}
-.fday .p{margin-top:.3rem;font-size:.72rem;color:var(--sky);}
+.fday .p{margin-top:.3rem;font-size:var(--fs-12);color:var(--sky);}
 
-.hourly-head{font-size:.78rem;color:var(--ink-soft);margin:1.3rem 0 .5rem;}
+.hourly-head{font-size:var(--fs-12);color:var(--ink-soft);margin:1.3rem 0 .5rem;}
 .hourly-strip{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.4rem;}
 .hour-tile{flex:0 0 auto;width:46px;display:flex;flex-direction:column;align-items:center;gap:.3rem;}
-.hour-tile .h{font-size:.7rem;color:var(--ink-soft);font-family:ui-monospace,monospace;}
-.hour-tile.now .h{color:var(--spruce);font-weight:700;}
-.hour-tile .icon{font-size:.95rem;}
+.hour-tile .h{font-size:var(--fs-12);color:var(--ink-soft);font-family:var(--font-sans);font-variant-numeric:tabular-nums;}
+.hour-tile.now .h{color:var(--green-text);font-weight:700;}
+.hour-tile .icon{font-size:var(--fs-16);}
 .hour-tile .bar-wrap{height:64px;display:flex;align-items:flex-end;}
 .hour-tile .bar{width:9px;border-radius:4px;background:var(--gold);min-height:4px;}
 .hour-tile.now .bar{background:var(--spruce);}
 .hour-tile.night .bar{opacity:.55;}
-.hour-tile .t{font-family:ui-monospace,monospace;font-size:.74rem;font-weight:600;}
+.hour-tile .t{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);font-weight:600;}
 
 /* Na užší obrazovce (mobil) zůstávají oba pruhy vodorovně scrollovatelné
    s pevnou šířkou dlaždic — u 16 hodin/7 dnů najednou by se jinak
@@ -189,7 +268,7 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 }
 
 .today-tips{display:flex;flex-wrap:wrap;gap:.5rem 1.3rem;margin-top:1rem;padding-top:.9rem;border-top:1px dashed var(--line);}
-.today-tip{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--ink-soft);}
+.today-tip{display:inline-flex;align-items:center;gap:.4rem;font-size:var(--fs-12);color:var(--ink-soft);}
 .today-tip svg{width:1rem;height:1rem;flex:0 0 auto;}
 .today-tip.good svg{color:var(--good);}
 .today-tip.warn svg{color:var(--warn);}
@@ -197,170 +276,165 @@ h1{font-weight:700;font-size:clamp(2.1rem,5vw,3.1rem);margin:0 0 .4rem;text-wrap
 .today-tip b{color:var(--ink);font-weight:600;}
 
 /* air quality scale */
-.aqi-card{padding:1.3rem 1.4rem;}
 .aqi-top{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:1.1rem;}
-.aqi-badge{font-family:ui-monospace,monospace;font-size:2rem;font-weight:700;color:#fff;width:4.2rem;height:4.2rem;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.aqi-badge{font-family:var(--font-sans);font-size:var(--fs-28);font-weight:700;width:4.2rem;height:4.2rem;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .aqi-label{}
-.aqi-label .band{font-weight:700;font-size:1.05rem;}
-.aqi-label .desc{font-size:.85rem;color:var(--ink-soft);max-width:44ch;}
+.aqi-label .band{font-weight:700;font-size:var(--fs-16);}
+.aqi-label .desc{font-size:var(--fs-14);color:var(--ink-soft);max-width:44ch;}
 .scale{position:relative;height:14px;border-radius:7px;margin:.6rem 0 .3rem;
-  background:linear-gradient(90deg,#4C9A4C 0%,#8FBF3F 20%,#E8C33D 40%,#E8892F 60%,#D14E3B 80%,#8B2E4A 100%);}
+  background:linear-gradient(90deg,var(--aqi-1) 0%,var(--aqi-2) 20%,var(--aqi-3) 40%,var(--aqi-4) 60%,var(--aqi-5) 80%,var(--aqi-6) 100%);}
 .scale-marker{position:absolute;top:-5px;width:2px;height:24px;background:var(--ink);}
 .scale-marker::after{content:'';position:absolute;top:-6px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--ink);}
-.scale-ticks{display:flex;justify-content:space-between;font-size:.66rem;color:var(--ink-soft);font-family:ui-monospace,monospace;margin-bottom:1rem;}
+.scale-ticks{display:flex;justify-content:space-between;font-size:var(--fs-12);color:var(--ink-soft);font-family:var(--font-sans);font-variant-numeric:tabular-nums;margin-bottom:1rem;}
 .aqi-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.1rem;border-top:1px dashed var(--line);padding-top:1rem;}
-.aqi-metric .lbl{font-size:.78rem;color:var(--ink-soft);}
-.aqi-metric b{display:block;font-family:ui-monospace,monospace;color:var(--ink);font-size:1.1rem;margin:.15rem 0 .45rem;}
-.aqi-metric b small{font-size:.7rem;color:var(--ink-soft);margin-left:.15rem;}
-.aqi-metric p{margin:.45rem 0 0;font-size:.78rem;color:var(--ink-soft);line-height:1.45;}
+.aqi-metric .lbl{font-size:var(--fs-12);color:var(--ink-soft);}
+.aqi-metric b{display:block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ink);font-size:var(--fs-16);margin:.15rem 0 .45rem;}
+.aqi-metric b small{font-size:var(--fs-12);color:var(--ink-soft);margin-left:.15rem;}
+.aqi-metric p{margin:.45rem 0 0;font-size:var(--fs-12);color:var(--ink-soft);line-height:1.45;}
 .aqi-pollen{margin-top:1rem;padding:.85rem 1rem .95rem;border-radius:.7rem;background:var(--gold-soft);}
 .aqi-pollen-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:.15rem .5rem;margin-bottom:.7rem;}
-.aqi-pollen-head b{font-size:.85rem;color:var(--gold);font-weight:700;}
-.aqi-pollen-head span{font-size:.68rem;color:var(--ink-soft);}
-.pollen-ok{font-size:.85rem;color:var(--good);font-weight:600;}
+.aqi-pollen-head b{font-size:var(--fs-14);color:var(--ochre-text);font-weight:700;}
+.aqi-pollen-head span{font-size:var(--fs-12);color:var(--ink-soft);}
+.pollen-ok{font-size:var(--fs-14);color:var(--good);font-weight:600;}
 .pollen-grid{display:flex;flex-wrap:wrap;gap:.7rem 1.2rem;}
 .pollen-chip{min-width:4.8rem;flex:1 0 auto;}
 .pollen-chip-row{display:flex;align-items:baseline;gap:.3rem;margin-bottom:.3rem;white-space:nowrap;}
-.pollen-chip .pollen-icon{font-size:.85rem;}
-.pollen-chip .pollen-label{font-size:.72rem;color:var(--ink-soft);}
-.pollen-chip .pollen-value{font-family:ui-monospace,monospace;font-weight:700;font-size:.85rem;color:var(--ink);margin-left:auto;}
+.pollen-chip .pollen-icon{font-size:var(--fs-14);}
+.pollen-chip .pollen-label{font-size:var(--fs-12);color:var(--ink-soft);}
+.pollen-chip .pollen-value{font-family:var(--font-sans);font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--fs-14);color:var(--ink);margin-left:auto;}
 .pollen-bar{width:100%;height:6px;border-radius:3px;background:var(--line);overflow:hidden;cursor:help;}
 .pollen-bar-fill{height:100%;border-radius:3px;}
 .pollen-bar-fill.good{background:var(--good);}
 .pollen-bar-fill.warn{background:var(--warn);}
 .pollen-bar-fill.danger{background:var(--danger);}
-.pollen-level{margin-top:.3rem;font-size:.68rem;font-family:ui-monospace,monospace;font-weight:600;}
+.pollen-level{margin-top:.3rem;font-size:var(--fs-12);font-family:var(--font-sans);font-weight:600;}
 .pollen-level.good{color:var(--good);}
 .pollen-level.warn{color:var(--warn);}
 .pollen-level.danger{color:var(--danger);}
 
 /* water */
-.water-card{padding:1.3rem 1.4rem;}
 .water-top{margin-bottom:1.3rem;}
-.water-top .stage{font-weight:700;font-size:1.1rem;display:flex;align-items:baseline;gap:.5rem;}
-.water-top .stage .val{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:.85rem;font-weight:500;color:var(--ink-soft);}
-.water-top .desc{margin-top:.15rem;font-size:.85rem;color:var(--ink-soft);}
+.water-top .stage{font-weight:700;font-size:var(--fs-16);display:flex;align-items:baseline;gap:.5rem;}
+.water-top .stage .val{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-14);font-weight:500;color:var(--ink-soft);}
+.water-top .desc{margin-top:.15rem;font-size:var(--fs-14);color:var(--ink-soft);}
 .water-scale{position:relative;height:14px;border-radius:7px;margin:1.6rem 0 .35rem;
-  background:linear-gradient(90deg,#B5791C 0%,#B5791C 20%,#3E5A70 20%,#3E5A70 40%,#E8C33D 40%,#E8C33D 60%,#E8892F 60%,#E8892F 80%,#D14E3B 80%,#D14E3B 100%);}
+  background:linear-gradient(90deg,var(--warn) 0%,var(--warn) 20%,var(--sky) 20%,var(--sky) 40%,var(--aqi-3) 40%,var(--aqi-3) 60%,var(--aqi-4) 60%,var(--aqi-4) 80%,var(--aqi-5) 80%,var(--aqi-5) 100%);}
 .water-marker{position:absolute;top:-5px;width:2px;height:24px;background:var(--ink);}
 .water-marker::after{content:'';position:absolute;top:-6px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--ink);}
 .water-marker .tag{position:absolute;top:-26px;left:50%;transform:translateX(-50%);white-space:nowrap;
-  font-family:ui-monospace,monospace;font-size:.68rem;font-weight:600;background:var(--ink);color:var(--stone);padding:.1rem .4rem;border-radius:4px;}
-.water-ticks{display:flex;font-size:.68rem;color:var(--ink-soft);font-family:ui-monospace,monospace;margin-bottom:1rem;}
-.water-ticks span{width:20%;display:flex;flex-direction:column;gap:.1rem;}
-.water-ticks span:nth-child(1){align-items:flex-start;}
-.water-ticks span:nth-child(5){align-items:flex-end;}
-.water-ticks span:not(:nth-child(1)):not(:nth-child(5)){align-items:center;}
+  font-family:var(--font-sans);font-size:var(--fs-12);font-weight:600;background:var(--ink);font-variant-numeric:tabular-nums;color:var(--stone);padding:.1rem .4rem;border-radius:4px;}
+.water-ticks{display:flex;font-size:var(--fs-12);color:var(--ink-soft);font-family:var(--font-sans);margin-bottom:1rem;}
+.water-ticks > span{width:20%;min-width:0;display:flex;flex-direction:column;gap:.1rem;}
+.water-ticks > span:nth-child(1){align-items:flex-start;}
+.water-ticks > span:nth-child(5){align-items:flex-end;}
+.water-ticks > span:not(:nth-child(1)):not(:nth-child(5)){align-items:center;}
 .water-ticks .name{color:var(--ink);text-transform:none;letter-spacing:0;}
-.water-ticks .range{opacity:.7;font-size:.92em;}
+.water-ticks .range{opacity:.7;}
 .water-extra{display:flex;gap:1.4rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.9rem;}
-.water-extra div{font-size:.82rem;color:var(--ink-soft);}
-.water-extra b{display:block;font-family:ui-monospace,monospace;color:var(--ink);font-size:1rem;font-weight:600;}
+.water-extra div{font-size:var(--fs-14);color:var(--ink-soft);}
+.water-extra b{display:block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ink);font-size:var(--fs-16);font-weight:600;}
 
-.soon-card{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:1.1rem 1.2rem;color:var(--ink-soft);font-size:.9rem;}
+.soon-card{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:1.1rem 1.2rem;color:var(--ink-soft);font-size:var(--fs-14);}
 
 .traffic-banner{margin:0 0 1rem;}
 .traffic-row{padding:.7rem 0;border-bottom:1px dashed var(--line);display:flex;gap:.7rem;align-items:flex-start;}
 .traffic-row:last-child{border-bottom:none;}
-.traffic-row-icon{font-size:1.15rem;line-height:1.5;flex:0 0 auto;}
+.traffic-row-icon{font-size:var(--fs-20);line-height:1.5;flex:0 0 auto;}
 .traffic-row-body{flex:1 1 auto;min-width:0;}
 .traffic-head{display:flex;align-items:center;justify-content:space-between;gap:.7rem;flex-wrap:wrap;}
-.traffic-dist{font-family:ui-monospace,monospace;font-size:.78rem;color:var(--ink-soft);white-space:nowrap;}
-.traffic-comment{margin-top:.4rem;font-size:.88rem;}
-.traffic-time{margin-top:.25rem;font-size:.76rem;color:var(--ink-soft);}
+.traffic-dist{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);color:var(--ink-soft);white-space:nowrap;}
+.traffic-comment{margin-top:.4rem;font-size:var(--fs-14);}
+.traffic-time{margin-top:.25rem;font-size:var(--fs-12);color:var(--ink-soft);}
 
 /* úřední deska */
 .board-list{display:flex;flex-direction:column;gap:.7rem;}
 .board-card{display:flex;gap:.8rem;padding:.9rem 1rem;border-radius:10px;background:var(--stone);border:1px solid var(--line);position:relative;}
 .board-card.featured{background:var(--gold-soft);border-color:transparent;}
-.board-icon{flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.15rem;background:var(--surface);}
+.board-icon{flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--fs-20);background:var(--surface);}
 .board-body{flex:1 1 auto;min-width:0;}
-.board-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;flex-wrap:wrap;}
-.board-title{font-weight:700;font-size:.98rem;line-height:1.3;}
-.board-title a{color:var(--gold);text-decoration:underline;text-underline-offset:2px;}
+.board-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;}
+.board-title{font-weight:600;font-size:var(--fs-16);line-height:1.3;margin:0;min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.board-title a{color:var(--ochre-text);text-decoration:underline;text-underline-offset:2px;}
 .board-title a:hover{color:var(--ink);}
-.board-featured-tag{display:inline-block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);background:var(--surface);border-radius:999px;padding:.15rem .55rem;margin-bottom:.3rem;}
-.board-date{font-size:.76rem;color:var(--ink-soft);white-space:nowrap;padding-top:.15rem;}
-.board-note{margin-top:.45rem;font-size:.87rem;color:var(--ink-soft);line-height:1.5;padding-left:.7rem;border-left:2px solid var(--line);}
+.board-featured-tag{display:inline-block;font-size:var(--fs-12);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ochre-text);background:var(--surface);border-radius:999px;padding:.15rem .55rem;margin-bottom:.3rem;}
+.board-date{font-size:var(--fs-12);color:var(--ink-soft);white-space:nowrap;padding-top:.15rem;}
+.board-note{margin-top:.45rem;font-size:var(--fs-14);color:var(--ink-soft);line-height:1.5;padding-left:.7rem;border-left:2px solid var(--line);}
 .board-chips{margin-top:.5rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
-.board-chip{font-size:.82rem;background:var(--surface);border-radius:8px;padding:.35rem .55rem;min-width:0;}
+.board-chip{font-size:var(--fs-14);background:var(--surface);border-radius:8px;padding:.35rem .55rem;min-width:0;}
 .board-chip-top{display:flex;align-items:center;justify-content:space-between;gap:.4rem;}
 .board-chip-label{font-weight:700;}
-.board-chip-values{margin-top:.1rem;color:var(--ink-soft);font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.board-chip-values{margin-top:.1rem;color:var(--ink-soft);font-size:var(--fs-12);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .board-chip-arrow{color:var(--ink-soft);}
-.board-chip-change{font-weight:700;font-family:ui-monospace,monospace;font-size:.76rem;padding:.05rem .4rem;border-radius:6px;background:var(--good-soft);color:var(--good);white-space:nowrap;}
+.board-chip-change{font-weight:700;font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);padding:.05rem .4rem;border-radius:6px;background:var(--good-soft);color:var(--good);white-space:nowrap;}
 .board-chip-change.down{background:var(--warn-soft);color:var(--warn);}
 @media (max-width:480px){.board-chips{grid-template-columns:1fr;}}
-.board-empty{color:var(--ink-soft);font-size:.9rem;padding:.4rem 0;}
+.board-empty{color:var(--ink-soft);font-size:var(--fs-14);padding:.4rem 0;}
 
 /* autobus */
-.dep-card{padding:1.2rem 1.4rem;}
 .dep-top{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap;}
-.dep-top label{font-size:.78rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
-.stop-select{font-family:ui-monospace,monospace;font-size:.85rem;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);}
+.dep-top label{font-size:var(--fs-12);color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;}
+.stop-select{font-family:var(--font-sans);font-size:var(--fs-14);padding:.4rem .6rem;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);}
 .dep-list{display:flex;flex-direction:column;}
 .dep-row{display:grid;grid-template-columns:2.9rem 1fr auto;gap:.7rem;align-items:center;padding:.5rem 0;border-bottom:1px dashed var(--line);}
 .dep-row:last-child{border-bottom:none;}
-.dep-route{font-family:ui-monospace,monospace;font-weight:700;font-size:.8rem;background:var(--gold-soft);color:var(--gold);border-radius:6px;padding:.2rem 0;text-align:center;}
-.dep-headsign{font-size:.88rem;}
-.dep-time{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-size:.9rem;}
-.dep-time .rel{color:var(--ink-soft);font-size:.76rem;margin-left:.35rem;}
-.dep-delay{display:inline-block;margin-top:.2rem;font-size:.66rem;font-family:ui-monospace,monospace;padding:.06rem .42rem;border-radius:999px;}
+.dep-route{font-family:var(--font-sans);font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--fs-12);background:var(--gold-soft);color:var(--ochre-text);border-radius:6px;padding:.2rem 0;text-align:center;}
+.dep-headsign{font-size:var(--fs-14);}
+.dep-time{font-family:var(--font-sans);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-size:var(--fs-14);}
+.dep-time .rel{color:var(--ink-soft);font-size:var(--fs-12);margin-left:.35rem;}
+.dep-delay{display:inline-block;margin-top:.2rem;font-size:var(--fs-12);font-family:var(--font-sans);padding:.06rem .42rem;border-radius:999px;}
 .dep-delay.good{background:var(--good-soft);color:var(--good);}
 .dep-delay.warn{background:var(--warn-soft);color:var(--warn);}
 .dep-delay.danger{background:var(--danger-soft);color:var(--danger);}
 .dep-delay.muted{background:var(--sky-soft);color:var(--sky);}
-.dep-day-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin:.7rem 0 .3rem;}
-.dep-note{margin:1rem 0 0;font-size:.78rem;color:var(--ink-soft);}
+.dep-day-label{font-size:var(--fs-12);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:.7rem 0 .3rem;}
+.dep-note{margin:1rem 0 0;font-size:var(--fs-12);color:var(--ink-soft);}
 
-.obec{background:var(--spruce-soft); border:1px solid var(--line); border-radius:12px;padding:2rem clamp(1.2rem,4vw,2.6rem); margin-top:2.6rem;}
-.obec h2{font-family:"Rockwell Nova","Rockwell","Roboto Slab",Georgia,serif;font-size:1.5rem;margin:0 0 .3rem;}
-.obec .lede{color:var(--ink-soft);max-width:62ch;margin:0 0 1.6rem;}
+.obec .lede{color:var(--ink-soft);max-width:62ch;margin:0 0 1.2rem;}
 .obec-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:1.8rem;}
 @media (max-width:720px){.obec-grid{grid-template-columns:1fr;}}
 .story p{max-width:58ch;margin:0 0 .9rem;}
-.story .cite{font-size:.78rem;color:var(--ink-soft);font-style:italic;}
-.dateline{display:inline-block;font-family:ui-monospace,monospace;font-size:.74rem;font-weight:600;letter-spacing:.02em;background:var(--gold-soft);color:var(--gold);border-radius:5px;padding:.05rem .4rem;margin:0 .1rem;white-space:nowrap;}
+.story .cite{font-size:var(--fs-12);color:var(--ink-soft);font-style:italic;}
+.dateline{display:inline-block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);font-weight:600;letter-spacing:.02em;background:var(--gold-soft);color:var(--ochre-text);border-radius:5px;padding:.05rem .4rem;margin:0 .1rem;white-space:nowrap;}
 .obec-data-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.2rem;}
 .bars{display:flex;flex-direction:column;gap:.5rem;}
 .bar-row{display:grid;grid-template-columns:8.5rem 1fr 2.2rem;align-items:center;gap:.6rem;}
-.bar-row .lbl{font-size:.85rem;}
+.bar-row .lbl{font-size:var(--fs-14);}
 .bar-track{height:9px;background:var(--surface);border:1px solid var(--line);border-radius:5px;overflow:hidden;}
 .bar-fill{display:block;height:100%;background:var(--gold);}
-.bar-row .n{font-family:ui-monospace,monospace;font-size:.82rem;text-align:right;color:var(--ink-soft);}
+.bar-row .n{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-14);text-align:right;color:var(--ink-soft);}
 .ares-count{margin-top:1.2rem;}
-.ares-count .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
-.ares-count .v{display:block;font-family:ui-monospace,monospace;font-size:2.1rem;font-weight:700;color:var(--ink);line-height:1.1;margin:.15rem 0 .35rem;}
-.ares-count .ctx{font-size:.78rem;color:var(--ink-soft);line-height:1.45;max-width:36ch;}
+.ares-count .k{font-size:var(--fs-12);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);}
+.ares-count .v{display:block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-28);font-weight:700;color:var(--ink);line-height:1.1;margin:.15rem 0 .35rem;}
+.ares-count .ctx{font-size:var(--fs-12);color:var(--ink-soft);line-height:1.45;max-width:36ch;}
 .ares-history{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1.2rem;margin-top:1.1rem;padding-top:.9rem;border-top:1px dashed var(--line);}
-.ares-history .stat .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
-.ares-history .stat .v{font-family:ui-monospace,monospace;font-size:.86rem;font-weight:600;margin-top:.2rem;line-height:1.35;}
+.ares-history .stat .k{font-size:var(--fs-12);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);}
+.ares-history .stat .v{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-14);font-weight:600;margin-top:.2rem;line-height:1.35;}
 @media (max-width:420px){
   .ares-history{grid-template-columns:1fr;}
 }
 
 /* řemeslníci */
 .trade-filters{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0 1.2rem;}
-.trade-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .7rem;border-radius:999px;font-size:.8rem;background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
-.trade-chip .n{font-family:ui-monospace,monospace;font-size:.72rem;opacity:.75;}
+.trade-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .7rem;border-radius:999px;font-size:var(--fs-12);background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
+.trade-chip .n{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);opacity:.75;}
 .trade-chip:hover{border-color:var(--spruce);}
-.trade-chip.active{background:var(--spruce-soft);color:var(--spruce);border-color:var(--spruce);font-weight:600;}
+.trade-chip.active{background:var(--spruce-soft);color:var(--green-text);border-color:var(--spruce);font-weight:600;}
 .trade-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.8rem;}
 .trade-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.9rem 1rem;}
 .trade-card-head{display:flex;align-items:flex-start;gap:.6rem;}
-.trade-card-head .icon{font-size:1.25rem;line-height:1.3;flex:0 0 auto;}
-.trade-card-head strong{display:block;font-size:.92rem;line-height:1.3;}
-.trade-cats{font-size:.76rem;color:var(--ink-soft);margin-top:.1rem;}
-.trade-meta{margin-top:.55rem;font-size:.78rem;color:var(--ink-soft);}
+.trade-card-head .icon{font-size:var(--fs-20);line-height:1.3;flex:0 0 auto;}
+.trade-card-head h3{display:block;font-size:var(--fs-16);font-weight:600;margin:0;line-height:1.3;}
+.trade-cats{font-size:var(--fs-12);color:var(--ink-soft);margin-top:.1rem;}
+.trade-meta{margin-top:.55rem;font-size:var(--fs-12);color:var(--ink-soft);}
 .trade-contact{margin-top:.6rem;padding-top:.55rem;border-top:1px dashed var(--line);}
-.trade-phone{display:inline-flex;align-items:center;gap:.3rem;font-size:.84rem;font-weight:600;color:var(--good);text-decoration:none;}
-.trade-find{font-size:.8rem;color:var(--sky);text-decoration:underline;}
+.trade-phone{display:inline-flex;align-items:center;gap:.3rem;font-size:var(--fs-14);font-weight:600;color:var(--good);text-decoration:none;}
+.trade-find{font-size:var(--fs-12);color:var(--sky);text-decoration:underline;}
 .trade-empty{grid-column:1/-1;}
-.trade-more{grid-column:1/-1;padding:.7rem;border-radius:8px;background:var(--surface);border:1px dashed var(--line);color:var(--spruce);font-weight:600;font-size:.85rem;cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
+.trade-more{grid-column:1/-1;padding:.7rem;border-radius:8px;background:var(--surface);border:1px dashed var(--line);color:var(--green-text);font-weight:600;font-size:var(--fs-14);cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
 .trade-more:hover{border-color:var(--spruce);background:var(--spruce-soft);}
 
-footer{max-width:1080px;margin:2.6rem auto 0;padding:1.6rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.78rem;}
-footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--spruce);margin-bottom:.9rem;}
+footer{max-width:1080px;margin:2.6rem auto 0;padding:1.6rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:var(--fs-12);}
+footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--green-text);margin-bottom:.9rem;}
 footer .foot-brand svg{width:1rem;height:1rem;}
 footer p{margin:.3rem 0;}
 footer a{text-decoration:underline;}
@@ -394,51 +468,53 @@ footer a{text-decoration:underline;}
     <span class="eyebrow"><span class="dot"></span>obecní přehled — neoficiální, komunitní projekt</span>
     <span class="eyebrow-rule"></span>
     <h1 class="display">Ve Zlonicích</h1>
-    <div class="hero-columns">
-      <p class="hero-sub">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
-      <div class="hero-facts">
-        <div class="fact">
-          <span class="k">obyvatel</span><span class="v">2 294</span>
-          <span class="ctx">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
-        </div>
-        <div class="fact">
-          <span class="k">nadmořská výška</span><span class="v">223 m</span>
-          <span class="ctx">nížina — skoro o polovinu níž než český průměr (~450 m)</span>
-        </div>
-        <div class="fact"><span class="k">aktualizováno</span><span class="v" id="clock" style="font-size:1rem;">—</span></div>
-      </div>
-    </div>
+    <p class="hero-sub">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
   </div>
 </header>
 
+<div class="now-wrap">
+  <h2 class="now-heading">Teď ve Zlonicích</h2>
+  <p class="now-updated">Aktualizováno <time id="clock">—</time></p>
+  <div class="now-strip" id="nowStrip">
+    <a href="#weather" class="now-tile now-tile-alert" id="nowAlert">
+      <span class="now-tile-label">Výstrahy</span>
+      <span class="now-tile-value" id="nowAlertValue">—</span>
+    </a>
+    <a href="#weather" class="now-tile" id="nowWeather">
+      <span class="now-tile-label">Počasí</span>
+      <span class="now-tile-value" id="nowWeatherValue">—</span>
+      <span class="now-tile-sub" id="nowWeatherSub"></span>
+    </a>
+    <a href="#bus" class="now-tile" id="nowBus">
+      <span class="now-tile-label">Autobus</span>
+      <span class="now-tile-value" id="nowBusValue">—</span>
+      <span class="now-tile-sub" id="nowBusSub"></span>
+    </a>
+    <a href="#air" class="now-tile" id="nowAir">
+      <span class="now-tile-label">Ovzduší</span>
+      <span class="now-tile-value"><span class="now-dot" id="nowAirDot"></span><span id="nowAirValue">—</span></span>
+    </a>
+    <a href="#water" class="now-tile" id="nowWater">
+      <span class="now-tile-label">Voda</span>
+      <span class="now-tile-value" id="nowWaterValue">—</span>
+    </a>
+  </div>
+</div>
+
 <nav class="section-nav" id="sectionNav" aria-label="Rychlá navigace po sekcích">
   <div class="section-nav-inner">
-    <a href="#board" class="nav-pill" data-target="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span>Úřední deska</span></a>
     <a href="#weather" class="nav-pill" data-target="weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg><span>Počasí</span></a>
-    <a href="#air" class="nav-pill" data-target="air"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg><span>Ovzduší</span></a>
-    <a href="#water" class="nav-pill" data-target="water"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg><span>Voda</span></a>
     <a href="#bus" class="nav-pill" data-target="bus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg><span>Autobus</span></a>
     <a href="#traffic" class="nav-pill" data-target="traffic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg><span>Doprava</span></a>
+    <a href="#board" class="nav-pill" data-target="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span>Úřední deska</span></a>
+    <a href="#air" class="nav-pill" data-target="air"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg><span>Ovzduší</span></a>
+    <a href="#water" class="nav-pill" data-target="water"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg><span>Voda</span></a>
     <a href="#obec" class="nav-pill" data-target="obec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg><span>Obec</span></a>
     <a href="#tradespeople" class="nav-pill" data-target="tradespeople"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg><span>Řemeslníci</span></a>
   </div>
 </nav>
 
 <main class="page">
-
-  <section class="section board-section" id="board">
-    <div class="section-head">
-      <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>
-        <h2>Úřední deska</h2>
-      </div>
-      <span class="tag soon" id="boardTag"><span class="dot"></span>načítám…</span>
-    </div>
-    <div class="card" id="boardCard">
-      <div id="boardList"><div class="sub">načítám…</div></div>
-      <p class="dep-note">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS), poslední 3 zprávy. U rozpočtových opatření appka automaticky přečte přiloženou PDF přílohu a spočítá rozdíl v příjmech/výdajích — u ostatních dokumentů ukazuje krátký úryvek textu (RSS popis, nebo náhled přílohy). Appka si nic nevymýšlí — jen ukazuje, co skutečně stojí ve zdroji.</p>
-    </div>
-  </section>
 
   <section class="section" id="weather">
     <div class="section-head">
@@ -468,6 +544,74 @@ footer a{text-decoration:underline;}
     <div class="today-tips" id="todayTips"></div>
   </section>
 
+  <section class="section" id="bus">
+    <div class="section-head">
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg>
+        <h2>Autobus</h2>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <span class="tag snapshot"><span class="dot"></span>jízdní řád · denně</span>
+        <span class="tag live"><span class="dot"></span>zpoždění živě · Golemio</span>
+      </div>
+    </div>
+    <div class="dep-card" id="depCard">
+      <div class="dep-top">
+        <label for="depStopSelect">Zastávka</label>
+        <select id="depStopSelect" class="stop-select"></select>
+      </div>
+      <div class="dep-list" id="depList"><div class="sub">načítám…</div></div>
+      <p class="section-foot">Zdroj: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a> · živě</p>
+      <details class="how-details">
+        <summary>Jak to funguje</summary>
+        <p>Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "žádná data o zpoždění" znamená, že live zpoždění teď appce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky appka neukazuje.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="section" id="traffic">
+    <div class="section-head">
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg>
+        <h2>Doprava v okolí</h2>
+      </div>
+      <span class="tag soon" id="trafficTag"><span class="dot"></span>načítám…</span>
+    </div>
+    <div id="trafficCard">
+      <div class="banner traffic-banner" id="trafficBanner">
+        <div class="stripe"></div>
+        <div>
+          <strong id="trafficHeadline">Kontroluji dopravní situaci…</strong>
+          <span id="trafficDetail">Načítám data ŘSD/NDIC.</span>
+        </div>
+      </div>
+      <div id="trafficList"></div>
+      <p class="section-foot">Zdroj: <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> · živě</p>
+      <details class="how-details">
+        <summary>Jak to funguje</summary>
+        <p>Zdroj: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Appka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="section board-section" id="board">
+    <div class="section-head">
+      <div class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>
+        <h2>Úřední deska</h2>
+      </div>
+      <span class="tag soon" id="boardTag"><span class="dot"></span>načítám…</span>
+    </div>
+    <div id="boardCard">
+      <div id="boardList"><div class="sub">načítám…</div></div>
+      <p class="section-foot">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> · živě</p>
+      <details class="how-details">
+        <summary>Jak to funguje</summary>
+        <p>Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS), poslední 3 zprávy. U rozpočtových opatření appka automaticky přečte přiloženou PDF přílohu a spočítá rozdíl v příjmech/výdajích — u ostatních dokumentů ukazuje krátký úryvek textu (RSS popis, nebo náhled přílohy). Appka si nic nevymýšlí — jen ukazuje, co skutečně stojí ve zdroji.</p>
+      </details>
+    </div>
+  </section>
+
   <section class="section" id="air">
     <div class="section-head">
       <div class="section-title">
@@ -476,7 +620,7 @@ footer a{text-decoration:underline;}
       </div>
       <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
     </div>
-    <div class="card aqi-card" id="aqiCard">
+    <div class="aqi-card" id="aqiCard">
       <div class="aqi-top">
         <div class="aqi-badge" id="aqiBadge" style="background:var(--ink-soft);">—</div>
         <div class="aqi-label">
@@ -499,7 +643,7 @@ footer a{text-decoration:underline;}
       </div>
       <span class="tag soon" id="waterTag"><span class="dot"></span>načítám</span>
     </div>
-    <div class="card water-card" id="waterCard">
+    <div class="water-card" id="waterCard">
       <div class="water-top">
         <div class="stage" id="waterStage" style="color:var(--ink-soft);">Načítám…</div>
         <div class="desc" id="waterDesc"></div>
@@ -513,59 +657,28 @@ footer a{text-decoration:underline;}
         <span><span class="name">3. ohrožení</span><span class="range">&gt; 175</span></span>
       </div>
       <div class="water-extra" id="waterExtra"></div>
-      <p style="margin:1rem 0 0;font-size:.78rem;color:var(--ink-soft);" id="waterFooter">Stanice Velvary, tok Bakovský potok — nejbližší reálná stanice ČHMÚ, 16 km po proudu od Zlonic.</p>
+      <p class="section-foot" id="waterFooter">Stanice Velvary, tok Bakovský potok — nejbližší reálná stanice ČHMÚ, 16 km po proudu od Zlonic.</p>
     </div>
   </section>
 
-  <section class="section" id="bus">
+  <section class="section obec" id="obec">
     <div class="section-head">
       <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg>
-        <h2>Autobus</h2>
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg>
+        <h2 class="display">O Zlonicích</h2>
       </div>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <span class="tag snapshot"><span class="dot"></span>jízdní řád · denně</span>
-        <span class="tag live"><span class="dot"></span>zpoždění živě · Golemio</span>
-      </div>
-    </div>
-    <div class="card dep-card" id="depCard">
-      <div class="dep-top">
-        <label for="depStopSelect">Zastávka</label>
-        <select id="depStopSelect" class="stop-select"></select>
-      </div>
-      <div class="dep-list" id="depList"><div class="sub">načítám…</div></div>
-      <p class="dep-note">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "žádná data o zpoždění" znamená, že live zpoždění teď appce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky appka neukazuje. Zdroje: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a>.</p>
-    </div>
-  </section>
-
-  <section class="section" id="traffic">
-    <div class="section-head">
-      <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg>
-        <h2>Doprava v okolí</h2>
-      </div>
-      <span class="tag soon" id="trafficTag"><span class="dot"></span>načítám…</span>
-    </div>
-    <div class="card" id="trafficCard">
-      <div class="banner traffic-banner" id="trafficBanner">
-        <div class="stripe"></div>
-        <div>
-          <strong id="trafficHeadline">Kontroluji dopravní situaci…</strong>
-          <span id="trafficDetail">Načítám data ŘSD/NDIC.</span>
-        </div>
-      </div>
-      <div id="trafficList"></div>
-      <p class="dep-note">Zdroj: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Appka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení.</p>
-    </div>
-  </section>
-
-  <div class="obec" id="obec">
-    <span class="eyebrow-rule"></span>
-    <div class="section-title">
-      <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg>
-      <h2 class="display">O Zlonicích</h2>
     </div>
     <p class="lede">Malá obec ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
+    <div class="hero-facts">
+      <div class="fact">
+        <span class="k">obyvatel</span><span class="v">2 294</span>
+        <span class="ctx">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
+      </div>
+      <div class="fact">
+        <span class="k">nadmořská výška</span><span class="v">223 m</span>
+        <span class="ctx">nížina — skoro o polovinu níž než český průměr (~450 m)</span>
+      </div>
+    </div>
     <div class="obec-grid">
       <div class="story">
         <p>Zlonický zámek, chráněný jako kulturní památka od roku 1978, je spjatý s Antonínem Dvořákem — v letech <span class="dateline">1853–1856</span> se tu mladý skladatel za vedení kantora Antonína Liehmanna učil hrát na housle a klavír. Bývalý zámecký chudobinec dnes hostí Památník Antonína Dvořáka.</p>
@@ -573,7 +686,7 @@ footer a{text-decoration:underline;}
       </div>
       <div class="obec-data-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;">
-          <strong style="font-size:.92rem;">Místní firmy podle oboru</strong>
+          <strong style="font-size:var(--fs-16);">Místní firmy podle oboru</strong>
           <span class="tag live"><span class="dot"></span>živě · ARES</span>
         </div>
         <div class="bars" id="aresBars">
@@ -582,7 +695,7 @@ footer a{text-decoration:underline;}
         <div id="aresStats"></div>
       </div>
     </div>
-  </div>
+  </section>
 
   <section class="section" id="tradespeople">
     <div class="section-head">
@@ -592,10 +705,14 @@ footer a{text-decoration:underline;}
       </div>
       <span class="tag soon" id="tradeTag"><span class="dot"></span>načítám…</span>
     </div>
-    <div class="card" id="tradeCard">
-      <p class="dep-note" style="margin-top:0;">Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web appka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt".</p>
+    <div id="tradeCard">
       <div class="trade-filters" id="tradeFilters"></div>
       <div class="trade-grid" id="tradeGrid"></div>
+      <p class="section-foot">Zdroj: <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> · aktualizace týdně</p>
+      <details class="how-details">
+        <summary>Jak to funguje</summary>
+        <p>Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web appka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt".</p>
+      </details>
     </div>
   </section>
 
@@ -837,6 +954,8 @@ async function loadWeather(){
       <div class="card"><div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div><div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h</div><div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force}° Bft · ${wBand.name}</div></div>
       <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div></div>
     `;
+    document.getElementById('nowWeatherValue').textContent = `${c.temperature_2m.toFixed(1)}°`;
+    document.getElementById('nowWeatherSub').textContent = `pocitově ${c.apparent_temperature.toFixed(1)} °C`;
   }catch(e){
     document.getElementById('weatherCards').innerHTML = `<div class="soon-card">Počasí se nepodařilo zobrazit (${e.message}).</div>`;
   }
@@ -901,13 +1020,16 @@ async function loadWeather(){
   }
 }
 
+// textColor: #262019 (tmavý) na světlejších stupních škály (zelená/žlutá/
+// oranžová), bílá jen na červené a fialové — jinak by na světlém podkladu
+// nebyl dost čitelný kontrast.
 const EAQI_BANDS = [
-  {max:20, name:'Dobrá', color:'#4C9A4C', desc:'Kvalita ovzduší je vynikající, žádná omezení.'},
-  {max:40, name:'Uspokojivá', color:'#8FBF3F', desc:'Kvalita ovzduší je přijatelná pro naprostou většinu lidí.'},
-  {max:60, name:'Střední', color:'#E8C33D', desc:'Citlivější lidé (astmatici, senioři, děti) mohou pociťovat mírné projevy — omezit delší pobyt venku.'},
-  {max:80, name:'Špatná', color:'#E8892F', desc:'Zvýšené riziko pro citlivé skupiny, doporučeno omezit venkovní aktivity.'},
-  {max:100, name:'Velmi špatná', color:'#D14E3B', desc:'Riziko zdravotních projevů i u zdravých lidí při delším pobytu venku.'},
-  {max:Infinity, name:'Extrémně špatná', color:'#8B2E4A', desc:'Vážné zdravotní riziko — omezte pobyt venku na nutné minimum.'},
+  {max:20, name:'Dobrá', color:'var(--aqi-1)', textColor:'#262019', desc:'Kvalita ovzduší je vynikající, žádná omezení.'},
+  {max:40, name:'Uspokojivá', color:'var(--aqi-2)', textColor:'#262019', desc:'Kvalita ovzduší je přijatelná pro naprostou většinu lidí.'},
+  {max:60, name:'Střední', color:'var(--aqi-3)', textColor:'#262019', desc:'Citlivější lidé (astmatici, senioři, děti) mohou pociťovat mírné projevy — omezit delší pobyt venku.'},
+  {max:80, name:'Špatná', color:'var(--aqi-4)', textColor:'#262019', desc:'Zvýšené riziko pro citlivé skupiny, doporučeno omezit venkovní aktivity.'},
+  {max:100, name:'Velmi špatná', color:'var(--aqi-5)', textColor:'#fff', desc:'Riziko zdravotních projevů i u zdravých lidí při delším pobytu venku.'},
+  {max:Infinity, name:'Extrémně špatná', color:'var(--aqi-6)', textColor:'#fff', desc:'Vážné zdravotní riziko — omezte pobyt venku na nutné minimum.'},
 ];
 function bandFor(v){ return EAQI_BANDS.find(b => v <= b.max); }
 
@@ -1050,6 +1172,9 @@ async function loadAirQuality(){
 
     document.getElementById('aqiBadge').textContent = eaqi;
     document.getElementById('aqiBadge').style.background = band.color;
+    document.getElementById('aqiBadge').style.color = band.textColor;
+    document.getElementById('nowAirDot').style.background = band.color;
+    document.getElementById('nowAirValue').textContent = `${eaqi} · ${band.name}`;
     document.getElementById('aqiBand').textContent = band.name + ' — evropský index kvality ovzduší (EAQI)';
     document.getElementById('aqiDesc').textContent = band.desc;
     document.getElementById('aqiMarker').style.left = Math.min(100, eaqi) + '%';
@@ -1205,12 +1330,22 @@ function setAlertBanner(cls, tagCls, tagText, headline, detailHtml){
   tag.innerHTML = `<span class="dot"></span>${tagText}`;
 }
 
+// Dlaždice "Výstrahy" v pásu Teď ve Zlonicích — stejná data jako banner výš,
+// jen jiná prezentace (viz loadAlerts). active=true → dlaždice přes celou
+// šířku v --alert-bg, jinak normální dlaždice (zeleně "Bez výstrah", nebo
+// neutrálně "—" když se stav nepodařilo ověřit).
+function setNowAlert(active, text){
+  document.getElementById('nowAlertValue').textContent = text;
+  document.getElementById('nowAlert').classList.toggle('now-tile--active', active);
+}
+
 const SEVERITY_CS = {Extreme:'extrémní', Severe:'vysoká', Moderate:'střední', Minor:'nízká', Unknown:'neznámá'};
 
 function unknownAlertState(reason){
   setAlertBanner('unknown', 'warn', 'nelze ověřit',
     'Aktuální výstrahy nelze ověřit',
     `${escapeHtml(reason)} Zkontroluj prosím oficiální zdroj přímo: <a href="https://vystrahy-cr.chmi.cz/" target="_blank" rel="noopener">vystrahy-cr.chmi.cz</a>.`);
+  setNowAlert(false, '—');
 }
 
 async function loadAlerts(){
@@ -1230,6 +1365,7 @@ async function loadAlerts(){
       setAlertBanner('', 'live', 'ověřeno',
         'Beze zvláštních výstrah',
         `ČHMÚ pro Zlonice (ORP Slaný) aktuálně nehlásí žádnou výstrahu. Ověřeno ${checked}.`);
+      setNowAlert(false, 'Bez výstrah');
       return;
     }
 
@@ -1252,6 +1388,7 @@ async function loadAlerts(){
     }
     const detail = `${context} — <a href="${worst.web}" target="_blank" rel="noopener">více info</a>`;
     setAlertBanner(cls, cls, data.alerts.length > 1 ? `${data.alerts.length} výstrahy` : 'výstraha', names, detail);
+    setNowAlert(true, names);
   }catch(e){
     unknownAlertState(`Nepodařilo se načíst data o výstrahách (${e.message}).`);
   }
@@ -1500,6 +1637,21 @@ async function loadDepartures(){
     select.value = stopNames.includes('Zlonice') ? 'Zlonice' : stopNames[0];
     select.addEventListener('change', () => renderDepartures(data, select.value));
     renderDepartures(data, select.value);
+
+    try{
+      const next = upcomingDepartures(data, select.value, 1)[0];
+      if (next){
+        const h = String(Math.floor(next.minutes/60)).padStart(2,'0');
+        const m = String(next.minutes%60).padStart(2,'0');
+        document.getElementById('nowBusValue').textContent = `${next.route} → ${next.headsign} · ${h}:${m}`;
+        if (next.dayOffset === 0){
+          const inMin = next.minutes - (new Date().getHours()*60 + new Date().getMinutes());
+          document.getElementById('nowBusSub').textContent = inMin <= 0 ? 'teď' : `za ${inMin} min`;
+        } else {
+          document.getElementById('nowBusSub').textContent = 'zítra';
+        }
+      }
+    }catch(e){ /* dlaždice zůstane na výchozí "—" */ }
   }catch(e){
     card.innerHTML = `<div class="soon-card">Jízdní řád se nepodařilo načíst (${e.message}).</div>`;
   }
@@ -1583,6 +1735,7 @@ async function loadWater(){
     marker.style.display = '';
     marker.style.left = stage.pct + '%';
     document.getElementById('waterMarkerTag').textContent = `${level} cm`;
+    document.getElementById('nowWaterValue').textContent = `${stage.name} · ${level} cm`;
 
     const extra = document.getElementById('waterExtra');
     const parts = [];
@@ -1641,7 +1794,7 @@ function tradeCardHtml(p, categories){
       <div class="trade-card-head">
         <span class="icon">${icon}</span>
         <div>
-          <strong>${escapeHtml(p.name)}</strong>
+          <h3>${escapeHtml(p.name)}</h3>
           <div class="trade-cats">${escapeHtml(catLabels.join(' · '))}</div>
         </div>
       </div>
@@ -1789,13 +1942,13 @@ async function loadUredniDeska(){
       const featured = i === 0;
       const body = (item.type === 'rozpocet' && item.summary)
         ? `<div class="board-chips">${boardChip('Příjmy', item.summary.prijmy)}${boardChip('Výdaje', item.summary.vydaje)}</div>`
-        : (item.note ? `<div class="board-note">${escapeHtml(item.note)}</div>` : '');
+        : (item.note ? `<details class="how-details"><summary>Zobrazit úryvek</summary><div class="board-note">${escapeHtml(item.note)}</div></details>` : '');
       return `<div class="board-card${featured ? ' featured' : ''}">
         <div class="board-icon">${boardCategoryIcon(item.title)}</div>
         <div class="board-body">
           ${featured ? '<span class="board-featured-tag">Nejnovější</span>' : ''}
           <div class="board-head">
-            <span class="board-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></span>
+            <h3 class="board-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a></h3>
             <span class="board-date">${date}</span>
           </div>
           ${body}
