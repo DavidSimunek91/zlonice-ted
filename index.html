@@ -83,6 +83,14 @@
      se mezi režimy liší */
   --footer-bg:#262019; --footer-text:#ECE7DA; --footer-text-2:#AFA894; --footer-link:#8FB37E;
 
+  /* focus ring (kolo 4) — samostatný token, ne var(--green-text): světlá
+     hodnota je sice shodná, ale tmavá má mířit na var(--green) (tmavý
+     fokus musí být vidět na tmavém pozadí stránky, ne laděný jako text) */
+  --focus-ring:#2F6B38;
+  /* silnější stín pro hover nadzvednutí panelů/dlaždic (jen při
+     prefers-reduced-motion:no-preference, viz níž) */
+  --shadow-panel-hover:0 4px 10px rgba(38,32,25,.12), 0 12px 28px rgba(38,32,25,.12);
+
   /* písma (self-hosted, viz @font-face níž) */
   --font-sans:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --font-display:'Roboto Slab',"Rockwell Nova","Rockwell",Georgia,serif;
@@ -90,7 +98,7 @@
 @media (prefers-color-scheme: dark){
   :root{
     --bg:#171B15; --surface:rgba(255,255,255,.05); --line:#333A2B;
-    --text:#ECE7DA; --text-2:#AFA894; --text-3:#8C8672;
+    --text:#ECE7DA; --text-2:#AFA894; --text-3:#9A947F;
     --green:#6FAE6F; --green-text:#8FB37E;
     --ochre:#C79A42; --ochre-text:#D6A94A;
     --alert-text:#D97A6A; --alert-bg:#33201B;
@@ -107,11 +115,14 @@
     --bg-page:#13170F; --panel:#1D2219; --panel-border:#333A2B;
     --shadow-panel:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
     --footer-bg:#0E110B;
+
+    --focus-ring:#6FAE6F;
+    --shadow-panel-hover:0 4px 10px rgba(0,0,0,.45), 0 12px 28px rgba(0,0,0,.4);
   }
 }
 :root[data-theme="dark"]{
   --bg:#171B15; --surface:rgba(255,255,255,.05); --line:#333A2B;
-  --text:#ECE7DA; --text-2:#AFA894; --text-3:#8C8672;
+  --text:#ECE7DA; --text-2:#AFA894; --text-3:#9A947F;
   --green:#6FAE6F; --green-text:#8FB37E;
   --ochre:#C79A42; --ochre-text:#D6A94A;
   --alert-text:#D97A6A; --alert-bg:#33201B;
@@ -128,6 +139,9 @@
   --bg-page:#13170F; --panel:#1D2219; --panel-border:#333A2B;
   --shadow-panel:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
   --footer-bg:#0E110B;
+
+  --focus-ring:#6FAE6F;
+  --shadow-panel-hover:0 4px 10px rgba(0,0,0,.45), 0 12px 28px rgba(0,0,0,.4);
 }
 :root[data-theme="light"]{
   --bg:#F7F5EE; --surface:rgba(255,255,255,.6); --line:#E2DCCB;
@@ -148,6 +162,9 @@
   --bg-page:#F2EEE3; --panel:#FBF9F3; --panel-border:var(--line);
   --shadow-panel:0 1px 2px rgba(38,32,25,.06), 0 8px 24px rgba(38,32,25,.08);
   --footer-bg:#262019;
+
+  --focus-ring:#2F6B38;
+  --shadow-panel-hover:0 4px 10px rgba(38,32,25,.12), 0 12px 28px rgba(38,32,25,.12);
 }
 
 @font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/Inter-400.woff2') format('woff2');}
@@ -165,7 +182,8 @@ body{
   position:relative;
 }
 button, input, select{font:inherit;}
-:focus-visible{outline:2px solid var(--green-text); outline-offset:2px;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+:focus-visible{outline:2px solid var(--focus-ring); outline-offset:2px;}
 /* Jemná textura řádků polí táhnoucí se celou stránkou, ne jen hero —
    sjednocuje vizuální identitu stránky s krajinou Polabí. Karty se
    živými daty mají vlastní --surface pozadí, takže zůstávají čisté
@@ -188,6 +206,12 @@ a{color:inherit;}
 @media (max-width:640px){.hero-motif{opacity:.1;width:110px;}}
 .hero-inner{max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter);position:relative;z-index:1;}
 @media (min-width:1024px){.hero-inner{display:grid;grid-template-columns:7fr 5fr;gap:2.4rem;align-items:center;}}
+/* přepínač tmavého režimu — 40×40px vpravo nahoře v hero (kolo 4);
+   data-theme se nastavuje na <html>, viz předběžný skript hned po
+   otevření <body> a propojení tlačítka na konci hlavního skriptu */
+.theme-toggle{position:absolute;top:var(--gutter);right:var(--gutter);z-index:2;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);color:var(--spruce);cursor:pointer;}
+.theme-toggle:hover{border-color:var(--green);}
+.theme-toggle svg{width:1.25rem;height:1.25rem;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
 .hero-text{min-width:0;}
 .eyebrow{font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--green-text);display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;}
 .eyebrow .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--spruce);}
@@ -214,7 +238,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
    vzhled a záporný margin-top pro přesah */
 .now-wrap{max-width:var(--container);margin:-40px auto 0;position:relative;z-index:2;padding:var(--sp-24) var(--gutter);background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--r-panel);box-shadow:var(--shadow-panel);}
 .now-heading{font-family:var(--font-display);font-size:var(--fs-20);margin:0;}
-.now-updated{font-size:var(--fs-14);color:var(--text-3);margin:.3rem 0 var(--sp-12);}
+.now-updated{font-size:var(--fs-14);color:var(--text-3);margin:.3rem 0 var(--sp-12);font-variant-numeric:tabular-nums;}
 .now-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--sp-12);margin-bottom:0;}
 @media (max-width:640px){
   .now-strip{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -250,7 +274,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 /* panel sekce (kolo 2) — nahrazuje dřívější 1px border-top + 64px mezeru;
    oddělení teď dělá vlastní ohraničený/stínovaný panel, ne jen linka */
 .section{scroll-margin-top:4.4rem;margin-top:var(--sp-32);background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--r-panel);box-shadow:var(--shadow-panel);padding:var(--sp-28) var(--sp-32);}
-@media (max-width:640px){.section{margin-top:var(--sp-24);padding:var(--sp-20) var(--sp-16);}}
+@media (max-width:640px){.section{margin-top:var(--sp-16);padding:var(--sp-16);}}
 
 /* 12sloupcová mřížka od 1024 px — pořadí DOM se nemění, sekce jen dostanou
    explicitní šířku (grid-column), takže #bus+#traffic a #air+#water padnou
@@ -283,11 +307,22 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .section-nav-inner{max-width:var(--container);margin-inline:auto;display:flex;gap:.45rem;overflow-x:auto;padding:.3rem var(--gutter);scrollbar-width:none;-ms-overflow-style:none;}
 .section-nav-inner::-webkit-scrollbar{display:none;}
 .nav-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4rem;min-height:44px;padding:.4rem .8rem;border-radius:999px;font-size:var(--fs-14);color:var(--ink-soft);text-decoration:none;white-space:nowrap;border:1px solid transparent;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
-.nav-pill svg{width:1rem;height:1rem;flex:0 0 auto;color:var(--spruce);}
+.nav-pill svg{width:1.25rem;height:1.25rem;flex:0 0 auto;color:var(--spruce);}
 .nav-pill:hover{background:var(--surface);}
 .nav-pill.active{background:var(--nav-active-bg);color:#fff;border-color:var(--nav-active-bg);font-weight:600;}
 .nav-pill.active svg{color:#fff;}
 @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+/* mikrointerakce (kolo 4) — jen když si je uživatel výslovně nevypnul
+   v systému (prefers-reduced-motion: no-preference), nikdy jako výchozí */
+@media (prefers-reduced-motion: no-preference){
+  .section, .now-tile{transition:transform .15s ease-out, box-shadow .15s ease-out;}
+  .section:hover{transform:translateY(-1px);box-shadow:var(--shadow-panel-hover);}
+  .now-tile:hover{transform:translateY(-1px);box-shadow:var(--shadow-panel-hover);}
+  .tag.live .dot{animation:livePulse 2s ease-in-out infinite;}
+  @keyframes livePulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .value-refresh{animation:valueFadeIn .2s ease-out;}
+  @keyframes valueFadeIn{from{opacity:0;}to{opacity:1;}}
+}
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap;}
 .section-title{display:flex;align-items:center;gap:.6rem;}
 /* číslo sekce — čistě dekorativní CSS counter, žádný nový text v DOM;
@@ -295,7 +330,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
    nedotkne vpravo zarovnaného tagu v .section-head (viz PRAVIDLA kolo 2) */
 .section-title::before{counter-increment:section;content:counter(section, decimal-leading-zero);font-family:var(--font-sans);font-size:var(--fs-12);font-weight:600;letter-spacing:.08em;color:var(--ochre-text);flex:0 0 auto;}
 .section-icon-box{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:var(--spruce-soft);}
-.section-icon{width:1.2rem;height:1.2rem;color:var(--spruce);flex:0 0 auto;}
+.section-icon{width:1.25rem;height:1.25rem;color:var(--spruce);flex:0 0 auto;}
 .section-head h2{font-family:var(--font-display);font-size:var(--fs-28);margin:0;}
 
 /* barevné skupiny sekcí (kolo 2) — 3px akcent nahoře panelu + tónování
@@ -336,6 +371,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .banner.unknown .stripe{background:var(--ink-soft);}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;}
+@media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr);}}
 .card{background:var(--bg-page);border:none;border-radius:var(--r-card);padding:1.1rem 1.2rem;}
 .card .k{font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem;}
 .card .v{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-28);font-weight:600;line-height:1;}
@@ -343,7 +379,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .card .sub{margin-top:.3rem;font-size:var(--fs-14);color:var(--ink-soft);}
 .card.skel .v, .card.skel .sub{color:var(--text-3);}
 .card .takeaway{margin-top:.55rem;display:inline-flex;align-items:center;font-size:var(--fs-12);font-family:var(--font-sans);padding:.18rem .55rem;border-radius:999px;cursor:help;}
-.card .takeaway.good{background:var(--good-soft);color:var(--good);}
+.card .takeaway.good{background:var(--good-soft);color:var(--green-text);}
 .card .takeaway.warn{background:var(--warn-soft);color:var(--warn);}
 .card .takeaway.danger{background:var(--danger-soft);color:var(--danger);}
 .card .sub-row{margin-top:.65rem;padding-top:.55rem;border-top:1px dashed var(--line);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;font-size:var(--fs-12);color:var(--ink-soft);cursor:help;}
@@ -360,37 +396,38 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .fday .t .max{font-weight:700;}
 .fday .t .min{color:var(--ink-soft);}
 .fday .p{margin-top:.3rem;font-size:var(--fs-12);color:var(--sky);}
+/* rozsah teplot dne v kontextu celého týdne (kolo 4) — škálováno na
+   sdílené min/max všech 7 dnů, ne jen na daný den */
+.fday-range{position:relative;height:6px;border-radius:3px;background:var(--line);margin:.5rem 0;overflow:hidden;}
+.fday-range-fill{position:absolute;top:0;height:100%;border-radius:3px;background:linear-gradient(90deg, var(--sky), var(--ochre));}
 
 .hourly-head{font-size:var(--fs-12);color:var(--ink-soft);margin:1.3rem 0 .5rem;}
-.hourly-strip{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.4rem;}
-.hour-tile{flex:0 0 auto;width:46px;display:flex;flex-direction:column;align-items:center;gap:.3rem;}
-.hour-tile .h{font-size:var(--fs-12);color:var(--ink-soft);font-family:var(--font-sans);font-variant-numeric:tabular-nums;}
-.hour-tile.now .h{color:var(--green-text);font-weight:700;}
-.hour-tile .icon{display:flex;}
-.hour-tile.day-start{border-left:1px solid var(--line);padding-left:.3rem;margin-left:.1rem;}
-.hour-tile .bar-wrap{height:64px;display:flex;align-items:flex-end;}
-.hour-tile .bar{width:9px;border-radius:4px;min-height:4px;}
-.hour-tile.night .bar{opacity:.55;}
-.hour-tile .t{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);font-weight:600;}
-.wicon{width:1.5rem;height:1.5rem;color:var(--text-2);fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;}
-.hourly-legend{display:flex;gap:1.1rem;align-items:center;margin-top:.5rem;font-size:var(--fs-12);color:var(--text-3);}
-.hourly-legend .dot{display:inline-block;width:.55rem;height:.55rem;border-radius:50%;margin-right:.3rem;}
-
-/* Na užší obrazovce (mobil) zůstávají oba pruhy vodorovně scrollovatelné
-   s pevnou šířkou dlaždic — u 16 hodin/7 dnů najednou by se jinak
-   nepřiměřeně zmenšily. Od téhle šířky nahoru je ale místa vždycky dost,
-   takže dlaždice rovnoměrně roztáhneme přes celou šířku karty místo
-   necháváme prázdné místo vpravo. */
+.wicon{width:1.25rem;height:1.25rem;color:var(--text-2);fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;}
+/* hodinový graf (kolo 4) — nahrazuje dřívější sloupcové dlaždice jedním
+   inline SVG spojnicovým grafem teploty (plocha pod čarou) se sloupci
+   pravděpodobnosti srážek na pozadí; stejná data jako dřív (hourly.*),
+   jen jiné vykreslení. */
+.hourly-chart{display:flex;flex-direction:column;gap:.4rem;}
+.hourly-svg{display:block;width:100%;height:110px;overflow:visible;}
+.hourly-precip rect{fill:var(--sky);opacity:.4;}
+.hourly-axis{display:flex;}
+.hourly-axis .h-label{flex:1 1 0;min-width:0;text-align:center;font-size:var(--fs-12);color:var(--ink-soft);font-family:var(--font-sans);font-variant-numeric:tabular-nums;}
+.hourly-axis .h-label.now{color:var(--green-text);font-weight:700;}
+@media (max-width:640px){
+  .hourly-axis .h-label:not(:nth-child(3n+1)){visibility:hidden;}
+}
+/* Na užší obrazovce (mobil) zůstává 7denní pruh vodorovně scrollovatelný
+   s pevnou šířkou dlaždic — u 7 dnů najednou by se jinak nepřiměřeně
+   zmenšily. Od téhle šířky nahoru je ale místa vždycky dost, takže
+   dlaždice rovnoměrně roztáhneme přes celou šířku karty. */
 @media (min-width:640px){
   .forecast{overflow-x:visible;}
   .fday{flex:1 1 0;width:auto;min-width:0;}
-  .hourly-strip{overflow-x:visible;}
-  .hour-tile{flex:1 1 0;width:auto;min-width:0;}
 }
 
 .today-tips{display:flex;flex-wrap:wrap;gap:.5rem 1.3rem;margin-top:1rem;padding-top:.9rem;border-top:1px dashed var(--line);}
 .today-tip{display:inline-flex;align-items:center;gap:.4rem;font-size:var(--fs-12);color:var(--ink-soft);}
-.today-tip svg{width:1rem;height:1rem;flex:0 0 auto;}
+.today-tip svg{width:1.25rem;height:1.25rem;flex:0 0 auto;}
 .today-tip.good svg{color:var(--good);}
 .today-tip.warn svg{color:var(--warn);}
 .today-tip.danger svg{color:var(--danger);}
@@ -398,7 +435,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 
 /* air quality scale */
 .aqi-top{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:1.1rem;}
-.aqi-badge{font-family:var(--font-sans);font-size:var(--fs-28);font-weight:700;width:4.2rem;height:4.2rem;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.aqi-badge{font-family:var(--font-sans);font-size:var(--fs-28);font-weight:700;font-variant-numeric:tabular-nums;width:4.2rem;height:4.2rem;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .aqi-label{}
 .aqi-label .band{font-weight:700;font-size:var(--fs-16);}
 .aqi-label .desc{font-size:var(--fs-14);color:var(--ink-soft);max-width:44ch;}
@@ -408,6 +445,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .scale-marker::after{content:'';position:absolute;top:-6px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--ink);}
 .scale-ticks{display:flex;justify-content:space-between;font-size:var(--fs-12);color:var(--ink-soft);font-family:var(--font-sans);font-variant-numeric:tabular-nums;margin-bottom:1rem;}
 .aqi-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.1rem;border-top:1px dashed var(--line);padding-top:1rem;}
+@media (max-width:640px){.aqi-metrics{grid-template-columns:repeat(2,1fr);gap:.9rem 1rem;}}
 .aqi-metric .lbl{font-size:var(--fs-12);color:var(--ink-soft);}
 .aqi-metric b{display:block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ink);font-size:var(--fs-16);margin:.15rem 0 .45rem;}
 .aqi-metric b small{font-size:var(--fs-12);color:var(--ink-soft);margin-left:.15rem;}
@@ -416,7 +454,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .aqi-pollen-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:.15rem .5rem;margin-bottom:.7rem;}
 .aqi-pollen-head b{font-size:var(--fs-14);color:var(--ochre-text);font-weight:700;}
 .aqi-pollen-head span{font-size:var(--fs-12);color:var(--ink-soft);}
-.pollen-ok{font-size:var(--fs-14);color:var(--good);font-weight:600;}
+.pollen-ok{font-size:var(--fs-14);color:var(--green-text);font-weight:600;}
 .pollen-grid{display:flex;flex-wrap:wrap;gap:.7rem 1.2rem;}
 .pollen-chip{min-width:4.8rem;flex:1 0 auto;}
 .pollen-chip-row{display:flex;align-items:baseline;gap:.3rem;margin-bottom:.3rem;white-space:nowrap;}
@@ -429,7 +467,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .pollen-bar-fill.warn{background:var(--warn);}
 .pollen-bar-fill.danger{background:var(--danger);}
 .pollen-level{margin-top:.3rem;font-size:var(--fs-12);font-family:var(--font-sans);font-weight:600;}
-.pollen-level.good{color:var(--good);}
+.pollen-level.good{color:var(--green-text);}
 .pollen-level.warn{color:var(--warn);}
 .pollen-level.danger{color:var(--danger);}
 
@@ -450,7 +488,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .water-ticks > span:nth-child(5){align-items:flex-end;}
 .water-ticks > span:not(:nth-child(1)):not(:nth-child(5)){align-items:center;}
 .water-ticks .name{color:var(--ink);text-transform:none;letter-spacing:0;}
-.water-ticks .range{color:var(--text-3);}
+.water-ticks .range{color:var(--text-3);font-variant-numeric:tabular-nums;}
 .water-extra{display:flex;gap:1.4rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.9rem;}
 .water-extra div{font-size:var(--fs-14);color:var(--ink-soft);}
 .water-extra b{display:block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ink);font-size:var(--fs-16);font-weight:600;}
@@ -475,6 +513,12 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .board-body{flex:1 1 auto;min-width:0;}
 .board-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;}
 .board-title{font-weight:600;font-size:var(--fs-16);line-height:1.3;margin:0;min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* na mobilu ellipsis na jednom řádku zbytečně uřízne i krátké názvy —
+   2 řádky s line-clamp ukážou víc textu v rámci stejného kompaktního
+   prostoru */
+@media (max-width:640px){
+  .board-title{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+}
 .board-title a{color:var(--ochre-text);text-decoration:underline;text-underline-offset:2px;}
 .board-title a:hover{color:var(--ink);}
 .board-featured-tag{display:inline-block;font-size:var(--fs-12);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ochre-text);background:var(--surface);border-radius:999px;padding:.15rem .55rem;margin-bottom:.3rem;}
@@ -486,7 +530,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .board-chip-label{font-weight:700;}
 .board-chip-values{margin-top:.1rem;color:var(--ink-soft);font-size:var(--fs-12);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .board-chip-arrow{color:var(--ink-soft);}
-.board-chip-change{font-weight:700;font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);padding:.05rem .4rem;border-radius:6px;background:var(--good-soft);color:var(--good);white-space:nowrap;}
+.board-chip-change{font-weight:700;font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);padding:.05rem .4rem;border-radius:6px;background:var(--good-soft);color:var(--green-text);white-space:nowrap;}
 .board-chip-change.down{background:var(--warn-soft);color:var(--warn);}
 @media (max-width:480px){.board-chips{grid-template-columns:1fr;}}
 .board-empty{color:var(--ink-soft);font-size:var(--fs-14);padding:.4rem 0;}
@@ -518,7 +562,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .dep-table-row .dep-route{font-family:var(--font-sans);font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--fs-12);background:var(--gold-soft);color:var(--ochre-text);border-radius:6px;padding:.2rem 0;text-align:center;}
 .dep-table-row .dep-headsign{font-size:var(--fs-14);}
 .dep-delay{margin-left:.5rem;font-size:var(--fs-12);font-family:var(--font-sans);padding:.06rem .42rem;border-radius:var(--r-btn);}
-.dep-delay.good{background:var(--good-soft);color:var(--good);}
+.dep-delay.good{background:var(--good-soft);color:var(--green-text);}
 .dep-delay.warn{background:var(--warn-soft);color:var(--warn);}
 .dep-delay.danger{background:var(--danger-soft);color:var(--danger);}
 .dep-day-label{font-size:var(--fs-12);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:.7rem 0 .3rem;}
@@ -563,9 +607,14 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .trade-more-list{position:absolute;z-index:5;top:calc(100% + .4rem);left:0;display:flex;flex-direction:column;gap:.3rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:.5rem;min-width:210px;box-shadow:0 4px 14px var(--shadow);}
 .trade-more-list .trade-chip{width:100%;justify-content:space-between;}
 .trade-list{display:flex;flex-direction:column;}
-.trade-row{display:flex;align-items:center;gap:.8rem;padding:.7rem 0;border-bottom:1px dashed var(--line);min-height:44px;min-width:0;}
+.trade-row{display:flex;align-items:center;gap:.8rem;padding:.7rem .6rem;margin:0 -.6rem;border-radius:var(--r-btn);border-bottom:1px dashed var(--line);min-height:44px;min-width:0;}
 .trade-row:last-child{border-bottom:none;}
-.trade-row-icon{font-size:var(--fs-20);flex:0 0 auto;width:20px;display:flex;justify-content:center;}
+.trade-row:hover{background:var(--bg-page);}
+/* 36×36 čtverec místo samostatného emoji — stejný tón jako --gold-soft
+   (kolo 4); když kategorie nemá ikonu, zobrazí iniciály místo výchozí
+   univerzální emoji */
+.trade-icon-box{font-size:var(--fs-20);flex:0 0 auto;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--gold-soft);}
+.trade-icon-initials{font-size:var(--fs-12);font-weight:600;font-family:var(--font-sans);color:var(--ochre-text);}
 .trade-row-body{flex:1 1 auto;min-width:0;}
 .trade-row-name{font-size:var(--fs-16);font-weight:600;margin:0;line-height:1.3;}
 .trade-row-meta{font-size:var(--fs-14);color:var(--ink-soft);margin-top:.1rem;}
@@ -580,12 +629,23 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 footer{margin-top:2.6rem;background:var(--footer-bg);color:var(--footer-text-2);font-size:var(--fs-12);}
 .footer-inner{max-width:var(--container);margin-inline:auto;padding:1.6rem var(--gutter) 1.8rem;}
 footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--footer-text);margin-bottom:.9rem;}
-footer .foot-brand svg{width:1rem;height:1rem;}
+footer .foot-brand svg{width:1.25rem;height:1.25rem;}
 footer p{margin:.3rem 0;}
 footer a{color:var(--footer-link);text-decoration:underline;}
 </style>
 </head>
 <body>
+<script>
+// Nastavit data-theme co nejdřív (před vykreslením), ať nebliká špatný
+// režim — zbytek logiky přepínače je až v hlavním skriptu na konci body.
+(function(){
+  try{
+    var t = localStorage.getItem('theme');
+    if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  }catch(e){}
+})();
+</script>
 <svg class="icon-sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></symbol>
   <symbol id="i-cloud-sun" viewBox="0 0 24 24"><path d="M12 2v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="M20 12h2" /><path d="m19.07 4.93-1.41 1.41" /><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128" /><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z" /></symbol>
@@ -596,6 +656,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   <symbol id="i-cloud-snow" viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="M8 15h.01" /><path d="M8 19h.01" /><path d="M12 17h.01" /><path d="M12 21h.01" /><path d="M16 15h.01" /><path d="M16 19h.01" /></symbol>
   <symbol id="i-cloud-lightning" viewBox="0 0 24 24"><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973" /><path d="m13 12-3 5h4l-3 5" /></symbol>
   <symbol id="i-cloud-sun-rain" viewBox="0 0 24 24"><path d="M12 2v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="M20 12h2" /><path d="m19.07 4.93-1.41 1.41" /><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128" /><path d="M3 20a5 5 0 1 1 8.9-4H13a3 3 0 0 1 2 5.24" /><path d="M11 20v2" /><path d="M7 19v2" /></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" /></symbol>
 </svg>
 
 <header class="hero">
@@ -620,6 +681,9 @@ footer a{color:var(--footer-link);text-decoration:underline;}
       <ellipse cx="125" cy="88" rx="7" ry="13" transform="rotate(20 125 88)"/>
     </g>
   </svg>
+  <button type="button" id="themeToggle" class="theme-toggle" aria-label="Přepnout tmavý režim">
+    <svg aria-hidden="true"><use id="themeToggleIcon" href="#i-moon"/></svg>
+  </button>
   <div class="hero-inner">
     <div class="hero-text">
       <span class="eyebrow"><span class="dot"></span>obecní přehled — neoficiální, komunitní projekt</span>
@@ -670,14 +734,14 @@ footer a{color:var(--footer-link);text-decoration:underline;}
 
 <nav class="section-nav" id="sectionNav" aria-label="Rychlá navigace po sekcích">
   <div class="section-nav-inner">
-    <a href="#weather" class="nav-pill" data-target="weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg><span>Počasí</span></a>
-    <a href="#bus" class="nav-pill" data-target="bus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg><span>Autobus</span></a>
-    <a href="#traffic" class="nav-pill" data-target="traffic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg><span>Doprava</span></a>
-    <a href="#board" class="nav-pill" data-target="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span>Úřední deska</span></a>
-    <a href="#air" class="nav-pill" data-target="air"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg><span>Ovzduší</span></a>
-    <a href="#water" class="nav-pill" data-target="water"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg><span>Voda</span></a>
-    <a href="#obec" class="nav-pill" data-target="obec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg><span>Obec</span></a>
-    <a href="#tradespeople" class="nav-pill" data-target="tradespeople"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg><span>Řemeslníci</span></a>
+    <a href="#weather" class="nav-pill" data-target="weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg><span>Počasí</span></a>
+    <a href="#bus" class="nav-pill" data-target="bus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg><span>Autobus</span></a>
+    <a href="#traffic" class="nav-pill" data-target="traffic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg><span>Doprava</span></a>
+    <a href="#board" class="nav-pill" data-target="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span>Úřední deska</span></a>
+    <a href="#air" class="nav-pill" data-target="air"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg><span>Ovzduší</span></a>
+    <a href="#water" class="nav-pill" data-target="water"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg><span>Voda</span></a>
+    <a href="#obec" class="nav-pill" data-target="obec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg><span>Obec</span></a>
+    <a href="#tradespeople" class="nav-pill" data-target="tradespeople"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg><span>Řemeslníci</span></a>
   </div>
 </nav>
 
@@ -686,7 +750,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   <section class="section" id="weather">
     <div class="section-head">
       <div class="section-title">
-        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg></span>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg></span>
         <h2>Počasí</h2>
       </div>
       <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
@@ -708,14 +772,13 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="forecast" id="forecastRow" style="margin-top:1rem;"></div>
     <div class="hourly-head">Dnes po hodinách</div>
     <div class="hourly-strip" id="hourlyStrip"><div class="sub">načítám…</div></div>
-    <div class="hourly-legend" id="hourlyLegend"></div>
     <div class="today-tips" id="todayTips"></div>
   </section>
 
   <section class="section" id="bus">
     <div class="section-head">
       <div class="section-title">
-        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg></span>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg></span>
         <h2>Autobus</h2>
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
@@ -743,7 +806,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   <section class="section" id="traffic">
     <div class="section-head">
       <div class="section-title">
-        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg></span>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg></span>
         <h2>Doprava v okolí</h2>
       </div>
       <span class="tag soon" id="trafficTag"><span class="dot"></span>načítám…</span>
@@ -768,7 +831,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   <section class="section board-section" id="board">
     <div class="section-head">
       <div class="section-title">
-        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></span>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></span>
         <h2>Úřední deska</h2>
       </div>
       <span class="tag soon" id="boardTag"><span class="dot"></span>načítám…</span>
@@ -786,7 +849,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   <section class="section" id="air">
     <div class="section-head">
       <div class="section-title">
-        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg></span>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg></span>
         <h2>Kvalita ovzduší</h2>
       </div>
       <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
@@ -809,7 +872,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   <section class="section" id="water">
     <div class="section-head">
       <div class="section-title">
-        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg></span>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg></span>
         <h2>Voda</h2>
       </div>
       <span class="tag soon" id="waterTag"><span class="dot"></span>načítám</span>
@@ -835,7 +898,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   <section class="section obec" id="obec">
     <div class="section-head">
       <div class="section-title">
-        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg></span>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg></span>
         <h2 class="display">O Zlonicích</h2>
       </div>
     </div>
@@ -873,7 +936,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   <section class="section" id="tradespeople">
     <div class="section-head">
       <div class="section-title">
-        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg></span>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg></span>
         <h2>Řemeslníci a služby</h2>
       </div>
       <span class="tag soon" id="tradeTag"><span class="dot"></span>načítám…</span>
@@ -895,7 +958,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
 <footer>
   <div class="footer-inner">
     <div class="foot-brand">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20 6 8M12 20 12 4M18 20 18 8"/><ellipse cx="4.5" cy="9.5" rx="1.6" ry="2.7" transform="rotate(-25 4.5 9.5)" fill="currentColor" stroke="none"/><ellipse cx="7.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 7.5 7.5)" fill="currentColor" stroke="none"/><ellipse cx="10.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 10.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="13.5" cy="4" rx="1.6" ry="2.7" transform="rotate(20 13.5 4)" fill="currentColor" stroke="none"/><ellipse cx="16.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 16.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="19.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 19.5 7.5)" fill="currentColor" stroke="none"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20 6 8M12 20 12 4M18 20 18 8"/><ellipse cx="4.5" cy="9.5" rx="1.6" ry="2.7" transform="rotate(-25 4.5 9.5)" fill="currentColor" stroke="none"/><ellipse cx="7.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 7.5 7.5)" fill="currentColor" stroke="none"/><ellipse cx="10.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 10.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="13.5" cy="4" rx="1.6" ry="2.7" transform="rotate(20 13.5 4)" fill="currentColor" stroke="none"/><ellipse cx="16.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 16.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="19.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 19.5 7.5)" fill="currentColor" stroke="none"/></svg>
       ve zlonicích · vezlonicich.cz
     </div>
     <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (aktualizace jednou denně). Řemeslníci a služby — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES / živnostenský rejstřík</a> a <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> (aktualizace jednou týdně). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní situace — <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (kontrola na pozadí každých 15 minut).</p>
@@ -906,6 +969,17 @@ footer a{color:var(--footer-link);text-decoration:underline;}
 
 <script>
 const LAT = 50.2875, LON = 14.0922;
+
+// Jemné prolnutí, když se "načítám…" nahradí skutečnou hodnotou (viz
+// @keyframes valueFadeIn, jen při prefers-reduced-motion:no-preference) —
+// restart animace na stejném prvku vyžaduje odebrat a zpátky přidat třídu.
+function markRefreshed(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('value-refresh');
+  void el.offsetWidth;
+  el.classList.add('value-refresh');
+}
 
 document.getElementById('clock').textContent = new Date().toLocaleString('cs-CZ', {
   day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'
@@ -1125,7 +1199,7 @@ function renderTodayTips(c, hourly, startIdx){
     chips.push({icon: FROST_ICON, label:'Mráz', when: minNext <= 0 ? 'hrozí do rána' : 'možný do rána', level: minNext <= 0 ? 'danger' : 'warn'});
   }
 
-  return chips.map(ch => `<span class="today-tip ${ch.level}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ch.icon}</svg>${ch.label}: <b>${ch.when}</b></span>`).join('');
+  return chips.map(ch => `<span class="today-tip ${ch.level}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ch.icon}</svg>${ch.label}: <b>${ch.when}</b></span>`).join('');
 }
 
 async function loadWeather(){
@@ -1166,24 +1240,36 @@ async function loadWeather(){
     `;
     document.getElementById('nowWeatherValue').textContent = `${c.temperature_2m.toFixed(1)}°`;
     document.getElementById('nowWeatherSub').textContent = `pocitově ${c.apparent_temperature.toFixed(1)} °C`;
+    markRefreshed('weatherCards');
   }catch(e){
     document.getElementById('weatherCards').innerHTML = `<div class="soon-card">Počasí se nepodařilo zobrazit (${e.message}).</div>`;
   }
 
   try{
     const days = data.daily.time;
+    // Rozsah teplot dne se škáluje na sdílené min/max celého týdne, ne
+    // jen na daný den — ať je vidět, jak je ten den chladný/teplý v
+    // kontextu zbytku týdne, ne jen samostatně.
+    const weekMin = Math.min(...data.daily.temperature_2m_min);
+    const weekMax = Math.max(...data.daily.temperature_2m_max);
+    const weekRange = Math.max(weekMax - weekMin, 1);
     const rows = days.map((iso, i) => {
       const d = new Date(iso + 'T12:00:00');
       const label = i === 0 ? 'dnes' : DAYS[d.getDay()];
       const code = effectiveWeatherCode(data.daily.weather_code[i], data.daily.precipitation_probability_max[i]);
+      const dayMin = data.daily.temperature_2m_min[i], dayMax = data.daily.temperature_2m_max[i];
+      const leftPct = ((dayMin - weekMin) / weekRange) * 100;
+      const widthPct = Math.max(6, ((dayMax - dayMin) / weekRange) * 100);
       return `<div class="fday">
         <div class="d">${label}</div>
         <div class="icon">${weatherIconHtml(code)}</div>
-        <div class="t"><span class="max">${Math.round(data.daily.temperature_2m_max[i])}°</span> <span class="min">${Math.round(data.daily.temperature_2m_min[i])}°</span></div>
+        <div class="t"><span class="max">${Math.round(dayMax)}°</span> <span class="min">${Math.round(dayMin)}°</span></div>
+        <div class="fday-range"><div class="fday-range-fill" style="left:${leftPct}%;width:${widthPct}%"></div></div>
         <div class="p">${data.daily.precipitation_probability_max[i]} % srážky</div>
       </div>`;
     }).join('');
     document.getElementById('forecastRow').innerHTML = rows;
+    markRefreshed('forecastRow');
   }catch(e){
     document.getElementById('forecastRow').innerHTML = `<div class="sub">Předpověď na dny se nepodařilo zobrazit.</div>`;
   }
@@ -1202,32 +1288,59 @@ async function loadWeather(){
     const H = data.hourly;
     const hrs = [];
     for (let i = startIdx; i < Math.min(startIdx + 16, H.time.length); i++){
-      hrs.push({ time: new Date(H.time[i]), temp: H.temperature_2m[i], code: H.weather_code[i], isDay: H.is_day[i] });
+      hrs.push({ time: new Date(H.time[i]), temp: H.temperature_2m[i], prob: H.precipitation_probability[i] ?? 0 });
     }
+    const n = hrs.length;
     const temps = hrs.map(h => h.temp);
     const min = Math.min(...temps), max = Math.max(...temps);
     const range = Math.max(max - min, 2);
-    const COLD_COLOR = '#8BA3B0', WARM_COLOR = '#C29A4A', TEMP_SPLIT_C = 10;
+    const padTop = 10, padBottom = 10, chartH = 100 - padTop - padBottom;
+    const xAt = i => i + 0.5;
+    const yAt = temp => padTop + (1 - (temp - min) / range) * chartH;
+
+    const linePoints = hrs.map((h, i) => `${xAt(i)},${yAt(h.temp).toFixed(1)}`).join(' L ');
+    const linePath = `M ${linePoints}`;
+    const areaPath = `M ${xAt(0)},100 L ${linePoints} L ${xAt(n - 1)},100 Z`;
+    const precipBars = hrs.map((h, i) => {
+      const barH = Math.max(0, (h.prob / 100) * chartH);
+      return `<rect x="${(xAt(i) - 0.32).toFixed(2)}" y="${(100 - padBottom - barH).toFixed(1)}" width="0.64" height="${barH.toFixed(1)}" />`;
+    }).join('');
+
+    // Přechod přes půlnoc — popisek "zítra" místo hodiny na ose, ať je
+    // jasně vidět hranice mezi dny i bez svislé čáry mezi dlaždicemi
+    // (ty v grafu, na rozdíl od dřívějších dlaždic, už nejsou).
     let lastDate = hrs.length ? hrs[0].time.getDate() : null;
-    const tiles = hrs.map((h, i) => {
-      const pct = Math.max(6, Math.round(((h.temp - min) / range) * 100));
-      // Přechod přes půlnoc — svislá čára + popisek "zítra" místo hodiny,
-      // ať je na ose jasně vidět hranice mezi dny.
+    const labels = hrs.map((h, i) => {
       const dayStart = h.time.getDate() !== lastDate;
       if (dayStart) lastDate = h.time.getDate();
-      const label = i === 0 ? 'teď' : (dayStart ? 'zítra' : String(h.time.getHours()).padStart(2, '0') + 'h');
-      const barColor = h.temp < TEMP_SPLIT_C ? COLD_COLOR : WARM_COLOR;
-      return `<div class="hour-tile${i === 0 ? ' now' : ''}${h.isDay === 0 ? ' night' : ''}${dayStart ? ' day-start' : ''}">
-        <div class="h">${label}</div>
-        <div class="icon">${weatherIconHtml(h.code)}</div>
-        <div class="bar-wrap"><div class="bar" style="height:${pct}%;background:${barColor};"></div></div>
-        <div class="t">${Math.round(h.temp)}°</div>
-      </div>`;
+      const text = i === 0 ? 'teď' : (dayStart ? 'zítra' : String(h.time.getHours()).padStart(2, '0') + 'h');
+      return `<span class="h-label${i === 0 ? ' now' : ''}">${text}</span>`;
     }).join('');
-    document.getElementById('hourlyStrip').innerHTML = tiles;
-    document.getElementById('hourlyLegend').innerHTML =
-      `<span><span class="dot" style="background:${COLD_COLOR}"></span>pod ${TEMP_SPLIT_C} °C</span>` +
-      `<span><span class="dot" style="background:${WARM_COLOR}"></span>od ${TEMP_SPLIT_C} °C</span>`;
+    // Skrytý textový ekvivalent grafu pro čtečky obrazovky — graf sám je
+    // aria-hidden, ať se nečte bod po bodu, ale stejná data (teplota,
+    // pravděpodobnost srážek) musí zůstat dostupná jako text.
+    const srList = hrs.map(h =>
+      `${h.time.toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'})}: ${Math.round(h.temp)} °C, srážky ${Math.round(h.prob)} %`
+    ).join('; ');
+
+    document.getElementById('hourlyStrip').innerHTML = `
+      <div class="hourly-chart">
+        <svg class="hourly-svg" viewBox="0 0 ${n} 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="hourlyTempFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#A8791F" stop-opacity=".35"/>
+              <stop offset="100%" stop-color="#A8791F" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <g class="hourly-precip">${precipBars}</g>
+          <path class="hourly-area" d="${areaPath}" fill="url(#hourlyTempFill)" stroke="none"/>
+          <path class="hourly-line" d="${linePath}" fill="none" stroke="#A8791F" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+        <div class="hourly-axis">${labels}</div>
+      </div>
+      <p class="sr-only">Hodinový průběh teploty a pravděpodobnosti srážek: ${escapeHtml(srList)}.</p>
+    `;
+    markRefreshed('hourlyStrip');
   }catch(e){
     document.getElementById('hourlyStrip').innerHTML = `<div class="sub">Hodinový průběh se nepodařilo zobrazit.</div>`;
   }
@@ -1410,6 +1523,7 @@ async function loadAirQuality(){
       metric('Ozon (O₃)', c.ozone.toFixed(0), ' µg/m³', o3Band) +
       metric('Oxid dusičitý (NO₂)', c.nitrogen_dioxide.toFixed(1), ' µg/m³', no2Band);
     renderPollen(c);
+    markRefreshed('aqiCard');
   }catch(e){
     document.getElementById('aqiCard').innerHTML = `<div class="soon-card">Kvalitu ovzduší se nepodařilo načíst (${e.message}).</div>`;
   }
@@ -1526,6 +1640,7 @@ async function loadAres(){
       return `<div class="bar-row"><span class="lbl">${label}</span><span class="bar-track"><span class="bar-fill" style="width:${(n/maxN*100).toFixed(0)}%;"></span></span><span class="n">${n}</span></div>`;
     }).join('');
     document.getElementById('aresBars').innerHTML = rows || '<div class="soon-card">Pro Zlonice se nepodařilo najít žádný obor s firmami.</div>';
+    markRefreshed('aresBars');
   }catch(e){
     document.getElementById('aresBars').innerHTML = `<div class="soon-card">Data z ARESu se nepodařilo zpracovat (${e.message}).</div>`;
   }
@@ -1886,6 +2001,7 @@ function renderDepartures(depData, stopName){
     </div>`;
   }).join('');
   list.innerHTML = rows;
+  markRefreshed('depCard');
 }
 
 async function loadDepartures(){
@@ -1928,7 +2044,7 @@ async function loadDepartures(){
         const h = String(Math.floor(next.minutes/60)).padStart(2,'0');
         const m = String(next.minutes%60).padStart(2,'0');
         document.getElementById('nowBusValue').textContent = `${next.route} · ${h}:${m}`;
-        document.getElementById('nowBusDest').textContent = next.headsign;
+        document.getElementById('nowBusDest').textContent = fixStopName(next.headsign);
         if (next.dayOffset === 0){
           const inMin = next.minutes - (new Date().getHours()*60 + new Date().getMinutes());
           document.getElementById('nowBusSub').textContent = inMin <= 0 ? 'teď' : `za ${inMin} min`;
@@ -2040,6 +2156,7 @@ async function loadWater(){
 
     const observed = new Date(data.level.observedAt).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
     document.getElementById('waterFooter').textContent = `Stanice ${data.station}, tok ${data.stream} — nejbližší reálná stanice ČHMÚ, 16 km po proudu od Zlonic. Naměřeno ${observed}.`;
+    markRefreshed('waterCard');
   }catch(e){
     tag.className = 'tag warn';
     tag.innerHTML = '<span class="dot"></span>nelze ověřit';
@@ -2073,12 +2190,21 @@ function tradeContactHtml(person, categoryLabel){
   return `<a class="trade-contact-btn" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Kontakt</a>`;
 }
 
+// Čtverec s ikonou kategorie; když kategorie žádnou ikonu nemá, iniciály
+// z jejího názvu místo univerzálního výchozího symbolu.
+function tradeIconHtml(categories, catId, fallbackLabel){
+  const icon = categories[catId]?.icon;
+  if (icon) return `<span class="trade-icon-box" aria-hidden="true">${icon}</span>`;
+  const initials = (fallbackLabel || '').trim().slice(0, 2).toUpperCase() || '··';
+  return `<span class="trade-icon-box trade-icon-initials" aria-hidden="true">${escapeHtml(initials)}</span>`;
+}
+
 function tradeRowHtml(p, categories){
   const catLabels = p.categories.map(id => categories[id]?.label).filter(Boolean);
-  const icon = categories[p.categories[0]]?.icon || '🛠️';
+  const iconHtml = tradeIconHtml(categories, p.categories[0], catLabels[0]);
   const meta = [catLabels.join(', '), p.village].filter(Boolean).join(' · ');
   return `<div class="trade-row">
-    <span class="trade-row-icon">${icon}</span>
+    ${iconHtml}
     <div class="trade-row-body">
       <h3 class="trade-row-name">${escapeHtml(p.name)}</h3>
       <div class="trade-row-meta">${escapeHtml(meta)}</div>
@@ -2114,6 +2240,7 @@ function renderTradeGrid(people, categories){
     ? `<button type="button" class="trade-more" id="tradeShowAllBtn">Zobrazit dalších ${filtered.length - TRADE_DEFAULT_CAP} →</button>`
     : '';
   grid.innerHTML = rows + moreBtn;
+  markRefreshed('tradeGrid');
   if (capped){
     document.getElementById('tradeShowAllBtn').addEventListener('click', () => {
       tradeShowAll = true;
@@ -2280,6 +2407,7 @@ async function loadUredniDeska(){
         </div>
       </div>`;
     }).join('');
+    markRefreshed('boardList');
   }catch(e){
     tag.className = 'tag warn';
     tag.innerHTML = '<span class="dot"></span>nelze ověřit';
@@ -2296,6 +2424,24 @@ loadDepartures();
 loadTraffic();
 loadTradespeople();
 loadUredniDeska();
+
+// Přepínač tmavého režimu — data-theme na <html> už nastavil předběžný
+// skript hned po otevření <body> (kvůli blikání), tady se jen propojí
+// tlačítko a ikona se sladí se stavem, který je právě aplikovaný.
+(function(){
+  const toggle = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeToggleIcon');
+  function syncIcon(theme){
+    icon.setAttribute('href', theme === 'dark' ? '#i-sun' : '#i-moon');
+  }
+  syncIcon(document.documentElement.getAttribute('data-theme') || 'light');
+  toggle.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try{ localStorage.setItem('theme', next); }catch(e){}
+    syncIcon(next);
+  });
+})();
 
 // Anonymní počítadlo návštěv — jen IP adresa a čas návštěvy, žádné
 // cookies, žádné trackování mezi weby, žádný vliv na běh stránky (tichý
