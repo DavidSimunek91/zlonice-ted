@@ -55,8 +55,9 @@
      škály — mobilní velikost H1 podle hierarchie v kole 1c */
   --fs-12:.75rem; --fs-14:.875rem; --fs-16:1rem; --fs-20:1.25rem; --fs-28:1.75rem; --fs-32:2rem; --fs-40:2.5rem;
 
-  /* mezery (4/8/12/16/24/32/48/64 px) */
-  --sp-4:.25rem; --sp-8:.5rem; --sp-12:.75rem; --sp-16:1rem; --sp-24:1.5rem; --sp-32:2rem; --sp-48:3rem; --sp-64:4rem;
+  /* mezery (4/8/12/16/20/24/28/32/48/64 px); 20/28 doplněny v kole 2 pro
+     vnitřní padding panelů sekcí */
+  --sp-4:.25rem; --sp-8:.5rem; --sp-12:.75rem; --sp-16:1rem; --sp-20:1.25rem; --sp-24:1.5rem; --sp-28:1.75rem; --sp-32:2rem; --sp-48:3rem; --sp-64:4rem;
 
   /* radius */
   --r-card:12px; --r-btn:8px; --r-pill:999px;
@@ -64,6 +65,23 @@
   /* mřížka a kontejner — jeden zdroj pravdy pro levou hranu napříč
      hero/pásem Teď/main/patičkou (viz redesign kolo 1) */
   --container:1240px; --gutter:clamp(16px, 4vw, 40px);
+
+  /* panely sekcí a stránkové pozadí za nimi (kolo 2) — --bg-page je
+     o odstín tmavší než --panel, aby sekce vizuálně "vystupovaly" jako
+     karty nad podkladem */
+  --bg-page:#F2EEE3; --panel:#FBF9F3; --panel-border:var(--line); --r-panel:16px;
+  --shadow-panel:0 1px 2px rgba(38,32,25,.06), 0 8px 24px rgba(38,32,25,.08);
+
+  /* aktivní položka rychlé navigace — pevná barva (bílý text na vyplněné
+     pilulce), ne odvozená z --green-text (ten je laděný pro text na
+     pozadí stránky, ne pro plnou výplň) — proto samostatný token,
+     stejný v obou režimech jako škála EAQI/vody výš */
+  --nav-active-bg:#2F6B38;
+
+  /* patička — vždy tmavý pruh bez ohledu na režim stránky, takže text/link
+     tokeny jsou (jako škála výš) stejné v obou režimech; jen --footer-bg
+     se mezi režimy liší */
+  --footer-bg:#262019; --footer-text:#ECE7DA; --footer-text-2:#AFA894; --footer-link:#8FB37E;
 
   /* písma (self-hosted, viz @font-face níž) */
   --font-sans:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -85,6 +103,10 @@
     --danger:var(--alert-text); --danger-soft:var(--alert-bg);
     --sky:#8FAFC9; --sky-soft:#1C262C;
     --shadow:rgba(0,0,0,.4);
+
+    --bg-page:#13170F; --panel:#1D2219; --panel-border:#333A2B;
+    --shadow-panel:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    --footer-bg:#0E110B;
   }
 }
 :root[data-theme="dark"]{
@@ -102,6 +124,10 @@
   --danger:var(--alert-text); --danger-soft:var(--alert-bg);
   --sky:#8FAFC9; --sky-soft:#1C262C;
   --shadow:rgba(0,0,0,.4);
+
+  --bg-page:#13170F; --panel:#1D2219; --panel-border:#333A2B;
+  --shadow-panel:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  --footer-bg:#0E110B;
 }
 :root[data-theme="light"]{
   --bg:#F7F5EE; --surface:rgba(255,255,255,.6); --line:#E2DCCB;
@@ -118,6 +144,10 @@
   --danger:var(--alert-text); --danger-soft:var(--alert-bg);
   --sky:#3E5A70; --sky-soft:#DEE7EC;
   --shadow:rgba(38,32,25,.09);
+
+  --bg-page:#F2EEE3; --panel:#FBF9F3; --panel-border:var(--line);
+  --shadow-panel:0 1px 2px rgba(38,32,25,.06), 0 8px 24px rgba(38,32,25,.08);
+  --footer-bg:#262019;
 }
 
 @font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/Inter-400.woff2') format('woff2');}
@@ -129,7 +159,7 @@
 html,body{margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{
-  background:var(--bg); color:var(--text);
+  background:var(--bg-page); color:var(--text);
   font-family:var(--font-sans); font-size:var(--fs-16);
   line-height:1.5; -webkit-font-smoothing:antialiased;
   position:relative;
@@ -199,9 +229,11 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .how-details[open] summary::after{transform:rotate(180deg);}
 .how-details > p{margin:.6rem 0 0;font-size:var(--fs-14);color:var(--text-2);line-height:1.5;max-width:70ch;}
 
-.page{max-width:var(--container);margin-inline:auto;padding:0 var(--gutter) 4rem;position:relative;z-index:1;}
-.section{scroll-margin-top:4.4rem;margin-top:var(--sp-64);padding-top:var(--sp-24);border-top:1px solid var(--line);}
-@media (max-width:640px){.section{margin-top:var(--sp-48);}}
+.page{max-width:var(--container);margin-inline:auto;padding:0 var(--gutter) 4rem;position:relative;z-index:1;counter-reset:section;}
+/* panel sekce (kolo 2) — nahrazuje dřívější 1px border-top + 64px mezeru;
+   oddělení teď dělá vlastní ohraničený/stínovaný panel, ne jen linka */
+.section{scroll-margin-top:4.4rem;margin-top:var(--sp-32);background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--r-panel);box-shadow:var(--shadow-panel);padding:var(--sp-28) var(--sp-32);}
+@media (max-width:640px){.section{margin-top:var(--sp-24);padding:var(--sp-20) var(--sp-16);}}
 
 /* 12sloupcová mřížka od 1024 px — pořadí DOM se nemění, sekce jen dostanou
    explicitní šířku (grid-column), takže #bus+#traffic a #air+#water padnou
@@ -229,21 +261,42 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
    komponenta: vodorovně scrollovatelný řádek bez zalomení, ne hamburger
    (jeden tap = jedna sekce, ne dva). Aktivní sekce se zvýrazňuje sama
    podle polohy scrollu (viz IntersectionObserver v <script>). */
-.section-nav{position:sticky;top:0;z-index:20;background:var(--stone);border-bottom:1px solid var(--line);}
-.section-nav::after{content:'';position:absolute;top:0;right:0;bottom:1px;width:24px;background:linear-gradient(to right, transparent, var(--bg));pointer-events:none;}
+.section-nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb, var(--bg-page) 85%, transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+.section-nav::after{content:'';position:absolute;top:0;right:0;bottom:1px;width:24px;background:linear-gradient(to right, transparent, var(--bg-page));pointer-events:none;}
 .section-nav-inner{max-width:var(--container);margin-inline:auto;display:flex;gap:.45rem;overflow-x:auto;padding:.3rem var(--gutter);scrollbar-width:none;-ms-overflow-style:none;}
 .section-nav-inner::-webkit-scrollbar{display:none;}
 .nav-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4rem;min-height:44px;padding:.4rem .8rem;border-radius:999px;font-size:var(--fs-14);color:var(--ink-soft);text-decoration:none;white-space:nowrap;border:1px solid transparent;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
 .nav-pill svg{width:1rem;height:1rem;flex:0 0 auto;color:var(--spruce);}
 .nav-pill:hover{background:var(--surface);}
-.nav-pill.active{background:var(--spruce-soft);color:var(--green-text);border-color:var(--spruce);font-weight:600;}
-.nav-pill.active svg{color:var(--spruce);}
+.nav-pill.active{background:var(--nav-active-bg);color:#fff;border-color:var(--nav-active-bg);font-weight:600;}
+.nav-pill.active svg{color:#fff;}
 @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap;}
 .section-title{display:flex;align-items:center;gap:.6rem;}
+/* číslo sekce — čistě dekorativní CSS counter, žádný nový text v DOM;
+   vložením jako ::before prvního flex dítěte .section-title se nijak
+   nedotkne vpravo zarovnaného tagu v .section-head (viz PRAVIDLA kolo 2) */
+.section-title::before{counter-increment:section;content:counter(section, decimal-leading-zero);font-family:var(--font-sans);font-size:var(--fs-12);font-weight:600;letter-spacing:.08em;color:var(--ochre-text);flex:0 0 auto;}
 .section-icon-box{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:var(--spruce-soft);}
 .section-icon{width:1.2rem;height:1.2rem;color:var(--spruce);flex:0 0 auto;}
 .section-head h2{font-family:var(--font-display);font-size:var(--fs-28);margin:0;}
+
+/* barevné skupiny sekcí (kolo 2) — 3px akcent nahoře panelu + tónování
+   ikonového čtverce; všechny barvy jsou existující tokeny s vlastní
+   tmavou variantou, takže žádné nové tmavé hodnoty nejsou potřeba */
+#weather, #air, #water{border-top:3px solid var(--sky);}
+#weather .section-icon-box, #air .section-icon-box, #water .section-icon-box{background:var(--sky-soft);}
+#weather .section-icon, #air .section-icon, #water .section-icon{color:var(--sky);}
+
+#bus, #traffic{border-top:3px solid var(--ochre);}
+#bus .section-icon-box, #traffic .section-icon-box{background:var(--gold-soft);}
+#bus .section-icon, #traffic .section-icon{color:var(--ochre);}
+
+#board, #obec{border-top:3px solid var(--green);}
+
+#tradespeople{border-top:3px solid var(--ochre-text);}
+#tradespeople .section-icon-box{background:var(--gold-soft);}
+#tradespeople .section-icon{color:var(--ochre-text);}
 
 .tag{display:inline-flex;align-items:center;gap:.35rem;font-size:var(--fs-12);padding:.22rem .55rem;border-radius:var(--r-btn);font-family:var(--font-sans);}
 .tag.live{background:var(--good-soft);color:var(--green-text);}
@@ -266,7 +319,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .banner.unknown .stripe{background:var(--ink-soft);}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.2rem;box-shadow:0 1px 2px var(--shadow);}
+.card{background:var(--bg-page);border:none;border-radius:var(--r-card);padding:1.1rem 1.2rem;}
 .card .k{font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem;}
 .card .v{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-28);font-weight:600;line-height:1;}
 .card .v small{font-size:var(--fs-16);font-weight:500;color:var(--ink-soft);}
@@ -283,7 +336,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .card .mini-scale-fill{height:100%;border-radius:3px;background:var(--ink);opacity:.55;}
 
 .forecast{display:flex;gap:.7rem;overflow-x:auto;padding-bottom:.3rem;}
-.fday{flex:0 0 auto;width:104px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:.85rem .7rem;text-align:center;}
+.fday{flex:0 0 auto;width:104px;background:var(--bg-page);border:none;border-radius:var(--r-card);padding:.85rem .7rem;text-align:center;}
 .fday .d{font-size:var(--fs-12);color:var(--ink-soft);text-transform:capitalize;margin-bottom:.5rem;}
 .fday .icon{margin-bottom:.4rem;}
 .fday .t{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-14);}
@@ -399,8 +452,8 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 
 /* úřední deska */
 .board-list{display:flex;flex-direction:column;gap:.7rem;}
-.board-card{display:flex;gap:.8rem;padding:.9rem 1rem;border-radius:10px;background:var(--stone);border:1px solid var(--line);position:relative;min-width:0;}
-.board-card.featured{background:var(--gold-soft);border-color:transparent;}
+.board-card{display:flex;gap:.8rem;padding:.9rem 1rem;border-radius:var(--r-card);background:var(--bg-page);border:none;position:relative;min-width:0;}
+.board-card.featured{background:var(--gold-soft);}
 .board-icon{flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--fs-20);background:var(--surface);}
 .board-body{flex:1 1 auto;min-width:0;}
 .board-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;}
@@ -430,7 +483,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .dep-seg button:last-child{border-right:none;}
 .dep-seg button.active{background:var(--green);color:#fff;}
 
-.dep-next{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:var(--sp-16);margin-bottom:var(--sp-16);}
+.dep-next{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--bg-page);border:none;border-radius:var(--r-card);padding:var(--sp-16);margin-bottom:var(--sp-16);}
 .dep-next-route{font-family:var(--font-sans);font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--fs-16);background:var(--gold-soft);color:var(--ochre-text);border-radius:var(--r-btn);padding:.3rem .6rem;}
 .dep-next-body{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;flex:1 1 auto;}
 .dep-next-headsign{font-size:var(--fs-16);flex:1 1 100%;}
@@ -461,7 +514,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .story p{max-width:58ch;margin:0 0 .9rem;}
 .story .cite{font-size:var(--fs-12);color:var(--ink-soft);font-style:italic;}
 .dateline{display:inline-block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);font-weight:600;letter-spacing:.02em;background:var(--gold-soft);color:var(--ochre-text);border-radius:5px;padding:.05rem .4rem;margin:0 .1rem;white-space:nowrap;}
-.obec-data-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.2rem;}
+.obec-data-card{background:var(--bg-page);border:none;border-radius:var(--r-card);padding:1.1rem 1.2rem;}
 .bars{display:flex;flex-direction:column;gap:.5rem;}
 .bar-row{display:grid;grid-template-columns:8.5rem 1fr 2.2rem;align-items:center;gap:.6rem;}
 .bar-row .lbl{font-size:var(--fs-14);}
@@ -504,11 +557,15 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .trade-more{display:block;width:100%;margin-top:.5rem;padding:.7rem;min-height:44px;border-radius:var(--r-btn);background:var(--surface);border:1px dashed var(--line);color:var(--green-text);font-weight:600;font-size:var(--fs-14);cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
 .trade-more:hover{border-color:var(--spruce);background:var(--spruce-soft);}
 
-footer{max-width:var(--container);margin:2.6rem auto 0;padding:1.6rem var(--gutter) 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:var(--fs-12);}
-footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--green-text);margin-bottom:.9rem;}
+/* patička jako plnošířkový tmavý pruh (kolo 2) — footer nese jen barvu
+   a plnou šířku, .footer-inner uvnitř drží stejný kontejner/gutter jako
+   hero/nav/main, aby obsah zůstal zarovnaný na stejnou levou hranu */
+footer{margin-top:2.6rem;background:var(--footer-bg);color:var(--footer-text-2);font-size:var(--fs-12);}
+.footer-inner{max-width:var(--container);margin-inline:auto;padding:1.6rem var(--gutter) 1.8rem;}
+footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--footer-text);margin-bottom:.9rem;}
 footer .foot-brand svg{width:1rem;height:1rem;}
 footer p{margin:.3rem 0;}
-footer a{text-decoration:underline;}
+footer a{color:var(--footer-link);text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -808,13 +865,15 @@ footer a{text-decoration:underline;}
 </main>
 
 <footer>
-  <div class="foot-brand">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20 6 8M12 20 12 4M18 20 18 8"/><ellipse cx="4.5" cy="9.5" rx="1.6" ry="2.7" transform="rotate(-25 4.5 9.5)" fill="currentColor" stroke="none"/><ellipse cx="7.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 7.5 7.5)" fill="currentColor" stroke="none"/><ellipse cx="10.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 10.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="13.5" cy="4" rx="1.6" ry="2.7" transform="rotate(20 13.5 4)" fill="currentColor" stroke="none"/><ellipse cx="16.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 16.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="19.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 19.5 7.5)" fill="currentColor" stroke="none"/></svg>
-    ve zlonicích · vezlonicich.cz
+  <div class="footer-inner">
+    <div class="foot-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20 6 8M12 20 12 4M18 20 18 8"/><ellipse cx="4.5" cy="9.5" rx="1.6" ry="2.7" transform="rotate(-25 4.5 9.5)" fill="currentColor" stroke="none"/><ellipse cx="7.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 7.5 7.5)" fill="currentColor" stroke="none"/><ellipse cx="10.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 10.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="13.5" cy="4" rx="1.6" ry="2.7" transform="rotate(20 13.5 4)" fill="currentColor" stroke="none"/><ellipse cx="16.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 16.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="19.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 19.5 7.5)" fill="currentColor" stroke="none"/></svg>
+      ve zlonicích · vezlonicich.cz
+    </div>
+    <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (aktualizace jednou denně). Řemeslníci a služby — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES / živnostenský rejstřík</a> a <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> (aktualizace jednou týdně). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní situace — <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (kontrola na pozadí každých 15 minut).</p>
+    <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
+    <p>Provozuje: [JMÉNO / KONTAKT]</p>
   </div>
-  <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (aktualizace jednou denně). Řemeslníci a služby — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES / živnostenský rejstřík</a> a <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> (aktualizace jednou týdně). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní situace — <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (kontrola na pozadí každých 15 minut).</p>
-  <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
-  <p>Provozuje: [JMÉNO / KONTAKT]</p>
 </footer>
 
 <script>
