@@ -53,7 +53,7 @@
 
   /* typografie (12/14/16/20/28/40 px); --fs-32 je jediná výjimka ze
      škály — mobilní velikost H1 podle hierarchie v kole 1c */
-  --fs-12:.75rem; --fs-14:.875rem; --fs-16:1rem; --fs-20:1.25rem; --fs-28:1.75rem; --fs-32:2rem; --fs-40:2.5rem;
+  --fs-12:.75rem; --fs-14:.875rem; --fs-16:1rem; --fs-18:1.125rem; --fs-20:1.25rem; --fs-28:1.75rem; --fs-32:2rem; --fs-36:2.25rem; --fs-40:2.5rem; --fs-56:3.5rem;
 
   /* mezery (4/8/12/16/20/24/28/32/48/64 px); 20/28 doplněny v kole 2 pro
      vnitřní padding panelů sekcí */
@@ -178,22 +178,28 @@ body::before{
 .display{font-family:var(--font-display);}
 a{color:inherit;}
 
-.hero{position:relative;overflow:hidden;background:linear-gradient(180deg, var(--spruce-soft), var(--stone) 140%);border-bottom:1px solid var(--line);padding:2.6rem 0 2rem;}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg, var(--spruce-soft), var(--stone) 140%);border-bottom:1px solid var(--line);padding:2.6rem 0 4.6rem;}
 .hero::before{content:'';position:absolute;inset:0;pointer-events:none;
   background-image:repeating-linear-gradient(122deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 42px);
   opacity:.45;
   -webkit-mask-image:linear-gradient(200deg, black, transparent 75%);
   mask-image:linear-gradient(200deg, black, transparent 75%);}
-.hero-motif{position:absolute;right:-.5rem;bottom:-1rem;width:clamp(120px,20vw,210px);height:auto;color:var(--spruce);opacity:.15;pointer-events:none;}
+.hero-motif{position:absolute;right:-.5rem;bottom:-1rem;width:clamp(160px,18vw,260px);height:auto;color:var(--spruce);opacity:.18;pointer-events:none;}
 @media (max-width:640px){.hero-motif{opacity:.1;width:110px;}}
 .hero-inner{max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter);position:relative;z-index:1;}
+@media (min-width:1024px){.hero-inner{display:grid;grid-template-columns:7fr 5fr;gap:2.4rem;align-items:center;}}
+.hero-text{min-width:0;}
 .eyebrow{font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--green-text);display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;}
 .eyebrow .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--spruce);}
 .eyebrow-rule{display:block;width:2.6rem;height:2px;border-radius:2px;background:var(--gold);margin:0 0 1.2rem;}
-h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;letter-spacing:-.015em;}
-@media (max-width:640px){h1{font-size:var(--fs-32);}}
+h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em;margin:0 0 .5rem;text-wrap:balance;}
+@media (max-width:640px){h1{font-size:var(--fs-36);}}
 .hero-columns{display:flex;flex-wrap:wrap;gap:2rem;align-items:flex-start;}
-.hero-sub{color:var(--ink-soft);font-size:var(--fs-16);margin:0;flex:1 1 320px;max-width:68ch;}
+.hero-sub{color:var(--ink-soft);font-size:var(--fs-18);margin:0;max-width:56ch;}
+/* liniová ilustrace (horizont/brázdy/siluera zámku) — čistě dekorativní,
+   aria-hidden, žádné nové výplně (fill:none), jen currentColor tah */
+.hero-illustration{display:block;width:100%;height:auto;max-height:120px;margin-top:1.4rem;color:var(--green);opacity:.55;}
+@media (min-width:1024px){.hero-illustration{max-height:240px;margin-top:0;}}
 .hero-facts{display:flex;flex-wrap:wrap;gap:1.6rem;}
 .fact{display:flex;flex-direction:column;max-width:15.5rem;}
 .fact .k{font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
@@ -203,20 +209,31 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 /* pás "Teď ve Zlonicích" — jen prezentační vrstva nad daty, co už tak jako
    tak načtou loadWeather/loadAlerts/loadDepartures/loadAirQuality/loadWater
    pro svoje sekce; žádný nový fetch. */
-.now-wrap{max-width:var(--container);margin-inline:auto;padding:var(--sp-24) var(--gutter) 0;}
+/* pás "Teď" jako panel přesahující přes spodní okraj hero (kolo 3) —
+   stejný kontejner/gutter jako hero/nav/main, jen navíc vlastní panelový
+   vzhled a záporný margin-top pro přesah */
+.now-wrap{max-width:var(--container);margin:-40px auto 0;position:relative;z-index:2;padding:var(--sp-24) var(--gutter);background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--r-panel);box-shadow:var(--shadow-panel);}
 .now-heading{font-family:var(--font-display);font-size:var(--fs-20);margin:0;}
 .now-updated{font-size:var(--fs-14);color:var(--text-3);margin:.3rem 0 var(--sp-12);}
-.now-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--sp-12);margin-bottom:var(--sp-16);}
-@media (max-width:640px){.now-strip{grid-template-columns:repeat(2,1fr);}}
-.now-tile{min-height:96px;padding:var(--sp-16);border-radius:var(--r-card);background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:.2rem;text-decoration:none;color:var(--text);transition:border-color .15s ease;}
-.now-tile:hover{border-color:var(--green);}
-.now-tile-label{font-size:var(--fs-12);color:var(--text-3);}
-.now-tile-value{font-size:var(--fs-20);font-weight:600;font-variant-numeric:tabular-nums;}
-.now-tile-sub{font-size:var(--fs-12);color:var(--text-2);}
+.now-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--sp-12);margin-bottom:0;}
+@media (max-width:640px){
+  .now-strip{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .now-tile{min-height:160px;}
+  .now-tile-alert{grid-column:1/-1;min-height:auto;}
+}
+.now-tile{min-height:120px;padding:var(--sp-16);border-radius:var(--r-card);background:var(--bg-page);border:1px solid var(--line);border-left:3px solid transparent;display:flex;flex-direction:column;justify-content:center;gap:.2rem;text-decoration:none;color:var(--text);transition:border-color .15s ease;}
+.now-tile:hover{border-top-color:var(--green);border-right-color:var(--green);border-bottom-color:var(--green);}
+.now-tile-label{font-size:var(--fs-12);color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;}
+.now-tile-value{font-family:var(--font-display);font-size:var(--fs-28);font-weight:600;font-variant-numeric:tabular-nums;}
+.now-tile-dest{font-size:var(--fs-14);color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.now-tile-sub{font-size:var(--fs-14);color:var(--text-2);}
+/* stavový pruh vlevo — jen u dlaždic, které už mají status v kódu
+   (výstrahy: aktivní/needaktivní třída; ovzduší/voda: barva pásma už se
+   dřív počítala pro badge/stage, tady se jen znovu použije přes JS) */
+.now-tile-alert{border-left-color:var(--good);}
 .now-tile-alert .now-tile-value{color:var(--green-text);}
-.now-tile-alert.now-tile--active{grid-column:1/-1;background:var(--alert-bg);border-color:transparent;}
+.now-tile-alert.now-tile--active{background:var(--alert-bg);border-left-color:var(--danger);}
 .now-tile-alert.now-tile--active .now-tile-value, .now-tile-alert.now-tile--active .now-tile-label{color:var(--alert-text);}
-#nowWeather .now-tile-value{font-size:var(--fs-28);}
 .now-dot{display:inline-block;width:.5rem;height:.5rem;border-radius:50%;margin-right:.3rem;background:var(--ink-soft);}
 
 /* jednotná patička sekce (zdroj/živě/čas) + rozbalitelné "jak to funguje" */
@@ -604,10 +621,20 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     </g>
   </svg>
   <div class="hero-inner">
-    <span class="eyebrow"><span class="dot"></span>obecní přehled — neoficiální, komunitní projekt</span>
-    <span class="eyebrow-rule"></span>
-    <h1 class="display">Ve Zlonicích</h1>
-    <p class="hero-sub">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
+    <div class="hero-text">
+      <span class="eyebrow"><span class="dot"></span>obecní přehled — neoficiální, komunitní projekt</span>
+      <span class="eyebrow-rule"></span>
+      <h1 class="display">Ve Zlonicích</h1>
+      <p class="hero-sub">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
+    </div>
+    <svg class="hero-illustration" viewBox="0 0 400 180" fill="none" aria-hidden="true">
+      <path d="M0 140 H400" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M20 158 Q100 148 180 158 T340 158" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M10 172 Q100 162 190 172 T360 172" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M232 140 V104 H246 V90 L257 79 L268 90 V104 H282 V84 H292 V104 H308 V140" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+      <rect x="238" y="112" width="7" height="13" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="297" y="112" width="7" height="13" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
   </div>
 </header>
 
@@ -627,6 +654,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <a href="#bus" class="now-tile" id="nowBus">
       <span class="now-tile-label">Autobus</span>
       <span class="now-tile-value" id="nowBusValue">—</span>
+      <span class="now-tile-dest" id="nowBusDest"></span>
       <span class="now-tile-sub" id="nowBusSub"></span>
     </a>
     <a href="#air" class="now-tile" id="nowAir">
@@ -1365,6 +1393,7 @@ async function loadAirQuality(){
     document.getElementById('aqiBadge').style.color = band.textColor;
     document.getElementById('nowAirDot').style.background = band.color;
     document.getElementById('nowAirValue').textContent = `${eaqi} · ${band.name}`;
+    document.getElementById('nowAir').style.borderLeftColor = band.color;
     document.getElementById('aqiBand').textContent = band.name + ' — evropský index kvality ovzduší (EAQI)';
     document.getElementById('aqiDesc').textContent = band.desc;
     document.getElementById('aqiMarker').style.left = Math.min(100, eaqi) + '%';
@@ -1898,7 +1927,8 @@ async function loadDepartures(){
       if (next){
         const h = String(Math.floor(next.minutes/60)).padStart(2,'0');
         const m = String(next.minutes%60).padStart(2,'0');
-        document.getElementById('nowBusValue').textContent = `${next.route} → ${next.headsign} · ${h}:${m}`;
+        document.getElementById('nowBusValue').textContent = `${next.route} · ${h}:${m}`;
+        document.getElementById('nowBusDest').textContent = next.headsign;
         if (next.dayOffset === 0){
           const inMin = next.minutes - (new Date().getHours()*60 + new Date().getMinutes());
           document.getElementById('nowBusSub').textContent = inMin <= 0 ? 'teď' : `za ${inMin} min`;
@@ -1991,6 +2021,7 @@ async function loadWater(){
     marker.style.left = stage.pct + '%';
     document.getElementById('waterMarkerTag').textContent = `${level} cm`;
     document.getElementById('nowWaterValue').textContent = `${stage.name} · ${level} cm`;
+    document.getElementById('nowWater').style.borderLeftColor = stage.color;
 
     const extra = document.getElementById('waterExtra');
     const parts = [];
