@@ -61,6 +61,10 @@
   /* radius */
   --r-card:12px; --r-btn:8px; --r-pill:999px;
 
+  /* mřížka a kontejner — jeden zdroj pravdy pro levou hranu napříč
+     hero/pásem Teď/main/patičkou (viz redesign kolo 1) */
+  --container:1240px; --gutter:clamp(16px, 4vw, 40px);
+
   /* písma (self-hosted, viz @font-face níž) */
   --font-sans:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --font-display:'Roboto Slab',"Rockwell Nova","Rockwell",Georgia,serif;
@@ -144,7 +148,7 @@ body::before{
 .display{font-family:var(--font-display);}
 a{color:inherit;}
 
-.hero{position:relative;overflow:hidden;background:linear-gradient(180deg, var(--spruce-soft), var(--stone) 140%);border-bottom:1px solid var(--line);padding:2.6rem 1.4rem 2rem;}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg, var(--spruce-soft), var(--stone) 140%);border-bottom:1px solid var(--line);padding:2.6rem 0 2rem;}
 .hero::before{content:'';position:absolute;inset:0;pointer-events:none;
   background-image:repeating-linear-gradient(122deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 42px);
   opacity:.45;
@@ -152,15 +156,15 @@ a{color:inherit;}
   mask-image:linear-gradient(200deg, black, transparent 75%);}
 .hero-motif{position:absolute;right:-.5rem;bottom:-1rem;width:clamp(120px,20vw,210px);height:auto;color:var(--spruce);opacity:.15;pointer-events:none;}
 @media (max-width:640px){.hero-motif{opacity:.1;width:110px;}}
-.hero-inner{max-width:1080px;margin:0 auto;position:relative;z-index:1;}
+.hero-inner{max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter);position:relative;z-index:1;}
 .eyebrow{font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--green-text);display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;}
 .eyebrow .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--spruce);}
 .eyebrow-rule{display:block;width:2.6rem;height:2px;border-radius:2px;background:var(--gold);margin:0 0 1.2rem;}
 h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;letter-spacing:-.015em;}
 @media (max-width:640px){h1{font-size:var(--fs-32);}}
 .hero-columns{display:flex;flex-wrap:wrap;gap:2rem;align-items:flex-start;}
-.hero-sub{color:var(--ink-soft);font-size:var(--fs-16);margin:0;flex:1 1 320px;}
-.hero-facts{display:flex;flex-wrap:wrap;gap:1.6rem;flex:1 1 340px;}
+.hero-sub{color:var(--ink-soft);font-size:var(--fs-16);margin:0;flex:1 1 320px;max-width:68ch;}
+.hero-facts{display:flex;flex-wrap:wrap;gap:1.6rem;}
 .fact{display:flex;flex-direction:column;max-width:15.5rem;}
 .fact .k{font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
 .fact .v{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-20);font-weight:600;}
@@ -169,7 +173,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 /* pás "Teď ve Zlonicích" — jen prezentační vrstva nad daty, co už tak jako
    tak načtou loadWeather/loadAlerts/loadDepartures/loadAirQuality/loadWater
    pro svoje sekce; žádný nový fetch. */
-.now-wrap{max-width:1080px;margin:0 auto;padding:var(--sp-24) 1.4rem 0;}
+.now-wrap{max-width:var(--container);margin-inline:auto;padding:var(--sp-24) var(--gutter) 0;}
 .now-heading{font-family:var(--font-display);font-size:var(--fs-20);margin:0;}
 .now-updated{font-size:var(--fs-14);color:var(--text-3);margin:.3rem 0 var(--sp-12);}
 .now-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--sp-12);margin-bottom:var(--sp-16);}
@@ -195,9 +199,30 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .how-details[open] summary::after{transform:rotate(180deg);}
 .how-details > p{margin:.6rem 0 0;font-size:var(--fs-14);color:var(--text-2);line-height:1.5;max-width:70ch;}
 
-.page{max-width:1080px;margin:0 auto;padding:0 1.4rem 4rem;position:relative;z-index:1;}
+.page{max-width:var(--container);margin-inline:auto;padding:0 var(--gutter) 4rem;position:relative;z-index:1;}
 .section{scroll-margin-top:4.4rem;margin-top:var(--sp-64);padding-top:var(--sp-24);border-top:1px solid var(--line);}
 @media (max-width:640px){.section{margin-top:var(--sp-48);}}
+
+/* 12sloupcová mřížka od 1024 px — pořadí DOM se nemění, sekce jen dostanou
+   explicitní šířku (grid-column), takže #bus+#traffic a #air+#water padnou
+   vedle sebe samy (7+5=12), ostatní sekce zůstanou přes celou šířku.
+   margin-top jednotlivých sekcí se tu ruší, mezeru teď dělá row-gap. */
+@media (min-width:1024px){
+  main.page{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;row-gap:32px;align-items:start;}
+  main.page > .section{margin-top:0;}
+  #weather{grid-column:1/-1;}
+  #bus{grid-column:span 7;}
+  #traffic{grid-column:span 5;align-self:stretch;}
+  #board{grid-column:1/-1;}
+  #air{grid-column:span 7;}
+  #water{grid-column:span 5;}
+  #obec{grid-column:1/-1;}
+  #tradespeople{grid-column:1/-1;}
+
+  main.page .board-list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  main.page .trade-list{display:grid;grid-template-columns:repeat(2,1fr);column-gap:32px;row-gap:0;}
+  main.page .trade-more{grid-column:1/-1;}
+}
 
 /* Rychlá navigace po sekcích — sticky pruh "pilulek", stejné ikony jako
    u nadpisů sekcí (žádné nové kreslení). Na mobilu i webu stejná
@@ -206,7 +231,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
    podle polohy scrollu (viz IntersectionObserver v <script>). */
 .section-nav{position:sticky;top:0;z-index:20;background:var(--stone);border-bottom:1px solid var(--line);}
 .section-nav::after{content:'';position:absolute;top:0;right:0;bottom:1px;width:24px;background:linear-gradient(to right, transparent, var(--bg));pointer-events:none;}
-.section-nav-inner{max-width:1080px;margin:0 auto;display:flex;gap:.45rem;overflow-x:auto;padding:.3rem 1.4rem;scrollbar-width:none;-ms-overflow-style:none;}
+.section-nav-inner{max-width:var(--container);margin-inline:auto;display:flex;gap:.45rem;overflow-x:auto;padding:.3rem var(--gutter);scrollbar-width:none;-ms-overflow-style:none;}
 .section-nav-inner::-webkit-scrollbar{display:none;}
 .nav-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4rem;min-height:44px;padding:.4rem .8rem;border-radius:999px;font-size:var(--fs-14);color:var(--ink-soft);text-decoration:none;white-space:nowrap;border:1px solid transparent;transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
 .nav-pill svg{width:1rem;height:1rem;flex:0 0 auto;color:var(--spruce);}
@@ -216,6 +241,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap;}
 .section-title{display:flex;align-items:center;gap:.6rem;}
+.section-icon-box{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:var(--spruce-soft);}
 .section-icon{width:1.2rem;height:1.2rem;color:var(--spruce);flex:0 0 auto;}
 .section-head h2{font-family:var(--font-display);font-size:var(--fs-28);margin:0;}
 
@@ -373,7 +399,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 
 /* úřední deska */
 .board-list{display:flex;flex-direction:column;gap:.7rem;}
-.board-card{display:flex;gap:.8rem;padding:.9rem 1rem;border-radius:10px;background:var(--stone);border:1px solid var(--line);position:relative;}
+.board-card{display:flex;gap:.8rem;padding:.9rem 1rem;border-radius:10px;background:var(--stone);border:1px solid var(--line);position:relative;min-width:0;}
 .board-card.featured{background:var(--gold-soft);border-color:transparent;}
 .board-icon{flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--fs-20);background:var(--surface);}
 .board-body{flex:1 1 auto;min-width:0;}
@@ -415,7 +441,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .dep-next-status.warn{color:var(--warn);}
 .dep-next-status.danger{color:var(--alert-text);}
 
-.dep-table{display:flex;flex-direction:column;max-width:640px;}
+.dep-table{display:flex;flex-direction:column;}
 .dep-table-row{display:grid;grid-template-columns:3.4rem 2.6rem 1fr;gap:.6rem;align-items:center;min-height:44px;border-bottom:1px dashed var(--line);font-size:var(--fs-14);}
 .dep-table-row:last-child{border-bottom:none;}
 .dep-table-row .dep-time{font-family:var(--font-sans);font-variant-numeric:tabular-nums;}
@@ -428,8 +454,9 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .dep-day-label{font-size:var(--fs-12);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:.7rem 0 .3rem;}
 .dep-live-note{margin:.8rem 0 0;font-size:var(--fs-12);color:var(--text-3);}
 
-.obec .lede{color:var(--ink-soft);max-width:62ch;margin:0 0 1.2rem;}
-.obec-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:1.8rem;}
+.obec .lede{color:var(--ink-soft);max-width:68ch;margin:0;}
+.obec-grid{display:grid;grid-template-columns:7fr 5fr;gap:1.8rem;}
+.obec-left{display:flex;flex-direction:column;gap:1.4rem;min-width:0;}
 @media (max-width:720px){.obec-grid{grid-template-columns:1fr;}}
 .story p{max-width:58ch;margin:0 0 .9rem;}
 .story .cite{font-size:var(--fs-12);color:var(--ink-soft);font-style:italic;}
@@ -466,7 +493,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .trade-more-list{position:absolute;z-index:5;top:calc(100% + .4rem);left:0;display:flex;flex-direction:column;gap:.3rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:.5rem;min-width:210px;box-shadow:0 4px 14px var(--shadow);}
 .trade-more-list .trade-chip{width:100%;justify-content:space-between;}
 .trade-list{display:flex;flex-direction:column;}
-.trade-row{display:flex;align-items:center;gap:.8rem;padding:.7rem 0;border-bottom:1px dashed var(--line);min-height:44px;}
+.trade-row{display:flex;align-items:center;gap:.8rem;padding:.7rem 0;border-bottom:1px dashed var(--line);min-height:44px;min-width:0;}
 .trade-row:last-child{border-bottom:none;}
 .trade-row-icon{font-size:var(--fs-20);flex:0 0 auto;width:20px;display:flex;justify-content:center;}
 .trade-row-body{flex:1 1 auto;min-width:0;}
@@ -477,7 +504,7 @@ h1{font-weight:700;font-size:var(--fs-40);margin:0 0 .4rem;text-wrap:balance;let
 .trade-more{display:block;width:100%;margin-top:.5rem;padding:.7rem;min-height:44px;border-radius:var(--r-btn);background:var(--surface);border:1px dashed var(--line);color:var(--green-text);font-weight:600;font-size:var(--fs-14);cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
 .trade-more:hover{border-color:var(--spruce);background:var(--spruce-soft);}
 
-footer{max-width:1080px;margin:2.6rem auto 0;padding:1.6rem 1.4rem 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:var(--fs-12);}
+footer{max-width:var(--container);margin:2.6rem auto 0;padding:1.6rem var(--gutter) 0;border-top:1px solid var(--line);color:var(--ink-soft);font-size:var(--fs-12);}
 footer .foot-brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--green-text);margin-bottom:.9rem;}
 footer .foot-brand svg{width:1rem;height:1rem;}
 footer p{margin:.3rem 0;}
@@ -574,7 +601,7 @@ footer a{text-decoration:underline;}
   <section class="section" id="weather">
     <div class="section-head">
       <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg></span>
         <h2>Počasí</h2>
       </div>
       <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
@@ -603,7 +630,7 @@ footer a{text-decoration:underline;}
   <section class="section" id="bus">
     <div class="section-head">
       <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg></span>
         <h2>Autobus</h2>
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
@@ -631,7 +658,7 @@ footer a{text-decoration:underline;}
   <section class="section" id="traffic">
     <div class="section-head">
       <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg></span>
         <h2>Doprava v okolí</h2>
       </div>
       <span class="tag soon" id="trafficTag"><span class="dot"></span>načítám…</span>
@@ -656,7 +683,7 @@ footer a{text-decoration:underline;}
   <section class="section board-section" id="board">
     <div class="section-head">
       <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></span>
         <h2>Úřední deska</h2>
       </div>
       <span class="tag soon" id="boardTag"><span class="dot"></span>načítám…</span>
@@ -674,7 +701,7 @@ footer a{text-decoration:underline;}
   <section class="section" id="air">
     <div class="section-head">
       <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg></span>
         <h2>Kvalita ovzduší</h2>
       </div>
       <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
@@ -697,7 +724,7 @@ footer a{text-decoration:underline;}
   <section class="section" id="water">
     <div class="section-head">
       <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg></span>
         <h2>Voda</h2>
       </div>
       <span class="tag soon" id="waterTag"><span class="dot"></span>načítám</span>
@@ -723,25 +750,27 @@ footer a{text-decoration:underline;}
   <section class="section obec" id="obec">
     <div class="section-head">
       <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg></span>
         <h2 class="display">O Zlonicích</h2>
       </div>
     </div>
-    <p class="lede">Městys ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
-    <div class="hero-facts">
-      <div class="fact">
-        <span class="k">obyvatel</span><span class="v">2 294</span>
-        <span class="ctx">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
-      </div>
-      <div class="fact">
-        <span class="k">nadmořská výška</span><span class="v">223 m</span>
-        <span class="ctx">nížina — skoro o polovinu níž než český průměr (~450 m)</span>
-      </div>
-    </div>
     <div class="obec-grid">
-      <div class="story">
-        <p>Zlonický zámek, chráněný jako kulturní památka od roku 1978, je spjatý s Antonínem Dvořákem — v letech <span class="dateline">1853–1856</span> se tu mladý skladatel za vedení kantora Antonína Liehmanna učil hrát na housle a klavír. Bývalý zámecký chudobinec dnes hostí Památník Antonína Dvořáka.</p>
-        <p class="cite">Zdroj: Národní památkový ústav, antonin-dvorak.cz</p>
+      <div class="obec-left">
+        <p class="lede">Městys ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
+        <div class="hero-facts">
+          <div class="fact">
+            <span class="k">obyvatel</span><span class="v">2 294</span>
+            <span class="ctx">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
+          </div>
+          <div class="fact">
+            <span class="k">nadmořská výška</span><span class="v">223 m</span>
+            <span class="ctx">nížina — skoro o polovinu níž než český průměr (~450 m)</span>
+          </div>
+        </div>
+        <div class="story">
+          <p>Zlonický zámek, chráněný jako kulturní památka od roku 1978, je spjatý s Antonínem Dvořákem — v letech <span class="dateline">1853–1856</span> se tu mladý skladatel za vedení kantora Antonína Liehmanna učil hrát na housle a klavír. Bývalý zámecký chudobinec dnes hostí Památník Antonína Dvořáka.</p>
+          <p class="cite">Zdroj: Národní památkový ústav, antonin-dvorak.cz</p>
+        </div>
       </div>
       <div class="obec-data-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;">
@@ -759,7 +788,7 @@ footer a{text-decoration:underline;}
   <section class="section" id="tradespeople">
     <div class="section-head">
       <div class="section-title">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg>
+        <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg></span>
         <h2>Řemeslníci a služby</h2>
       </div>
       <span class="tag soon" id="tradeTag"><span class="dot"></span>načítám…</span>
