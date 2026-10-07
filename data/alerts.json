@@ -1,5 +1,7 @@
 {
-  "status": "error",
-  "updated": "2026-10-07T07:50:03.776Z",
-  "message": "CAP soubor nemá očekávanou strukturu (chybí <alert><info>)"
+  "status": "ok",
+  "updated": "2026-10-07T08:00:11.761Z",
+  "sourceFile": "alert_cap_50_070758.xml",
+  "hasActive": false,
+  "alerts": []
 }
