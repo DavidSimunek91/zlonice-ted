@@ -1,7 +1,17 @@
 {
   "status": "ok",
-  "updated": "2026-10-06T06:07:03.537Z",
+  "updated": "2026-10-07T06:07:03.800Z",
   "items": [
+    {
+      "id": 1253,
+      "title": "Dražební vyhláška - Uherská Hradiště",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1253&action=detail",
+      "pubDate": "2026-10-05T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Dražební vyhláška nemovitosti v Uherském Hradišti. Důvodem zveřejnění je vlastník, jenž má sídlo ve Zlonicích.",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13932185"
+    },
     {
       "id": 1252,
       "title": "Zásady územního rozvoje kraje - 17. aktualizace",
@@ -104,16 +114,6 @@
       "summary": null,
       "note": "První zasedání volebních komisí proběhne ve čtvrtek 17.9 v budově úřadu Městyse Zlonice od 17…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13846720"
-    },
-    {
-      "id": 1244,
-      "title": "Záměr prodeje části pozemku 498/1 a 499/1 v k.ú. Tmáň",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1244&action=detail",
-      "pubDate": "2026-08-27T08:01:58.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Záměr prodeje – část pozemku 498/1 a 499/1 parcely o výměře cca 190m2, na plánku…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13800615"
     }
   ]
 }
