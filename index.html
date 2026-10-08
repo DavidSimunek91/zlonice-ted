@@ -356,9 +356,14 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .tag.soon{background:var(--warn-soft);color:var(--warn);}
 .tag.warn{background:var(--warn-soft);color:var(--warn);}
 .tag.danger{background:var(--danger-soft);color:var(--danger);}
+/* "žlutý" stupeň výstrahy — mezi klidným "live" zeleným a "warn" oranžovým;
+   stejné tokeny jako jinde na stránce (--gold-soft/--ochre-text), žádná
+   nová barva */
+.tag.caution{background:var(--gold-soft);color:var(--ochre-text);}
 .tag .dot{width:.4rem;height:.4rem;border-radius:50%;background:currentColor;}
 
-.banner{border-radius:8px;padding:.9rem 1.2rem;display:flex;align-items:center;gap:.8rem;background:var(--good-soft);margin-top:1.6rem;}
+.banner{border-radius:8px;padding:.9rem 1.2rem;display:flex;align-items:flex-start;gap:.8rem;background:var(--good-soft);margin-top:1.6rem;}
+.banner .tag{flex:0 0 auto;}
 .banner .stripe{width:4px;align-self:stretch;border-radius:3px;background:var(--good);}
 .banner strong{display:block;font-size:var(--fs-16);}
 .banner span{font-size:var(--fs-14);color:var(--ink-soft);}
@@ -367,8 +372,17 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .banner.warn .stripe{background:var(--warn);}
 .banner.danger{background:var(--danger-soft);}
 .banner.danger .stripe{background:var(--danger);}
+.banner.caution{background:var(--gold-soft);}
+.banner.caution .stripe{background:var(--ochre);}
 .banner.unknown{background:var(--surface);border:1px dashed var(--line);}
 .banner.unknown .stripe{background:var(--ink-soft);}
+.alert-tracked{font-size:var(--fs-12);color:var(--text-3);}
+.alert-tracked a{color:inherit;text-decoration:underline;}
+.alert-list{margin-top:.6rem;display:flex;flex-direction:column;gap:.4rem;}
+.alert-row{display:flex;align-items:center;flex-wrap:wrap;gap:.3rem .5rem;font-size:var(--fs-12);color:var(--ink-soft);}
+.alert-row-body{flex:1 1 auto;min-width:0;}
+.alert-row b{color:var(--ink);font-weight:600;}
+.alert-row .tag{margin-left:auto;flex:0 0 auto;}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;}
 @media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr);}}
@@ -385,21 +399,29 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .card .sub-row{margin-top:.65rem;padding-top:.55rem;border-top:1px dashed var(--line);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;font-size:var(--fs-12);color:var(--ink-soft);cursor:help;}
 .card .sub-row b{font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;}
 .card .sub-row .takeaway{margin-top:0;margin-left:auto;}
+.card .sub-row .trend{margin-left:auto;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;}
+.wind-arrow{width:14px;height:14px;flex:0 0 auto;}
 .card .mini-scale{margin-top:.4rem;width:100%;height:6px;border-radius:3px;overflow:hidden;cursor:help;}
 .card .mini-scale-fill{height:100%;border-radius:3px;background:var(--ink);opacity:.55;}
 
 .forecast{display:flex;gap:.7rem;overflow-x:auto;padding-bottom:.3rem;}
 .fday{flex:0 0 auto;width:104px;background:var(--bg-page);border:none;border-radius:var(--r-card);padding:.85rem .7rem;text-align:center;}
 .fday .d{font-size:var(--fs-12);color:var(--ink-soft);text-transform:capitalize;margin-bottom:.5rem;}
+.fday .d .fday-date{display:block;color:var(--text-3);text-transform:none;font-variant-numeric:tabular-nums;}
 .fday .icon{margin-bottom:.4rem;}
+.fday .wicon{width:1.625rem;height:1.625rem;}
 .fday .t{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-14);}
 .fday .t .max{font-weight:700;}
 .fday .t .min{color:var(--ink-soft);}
 .fday .p{margin-top:.3rem;font-size:var(--fs-12);color:var(--sky);}
 /* rozsah teplot dne v kontextu celého týdne (kolo 4) — škálováno na
    sdílené min/max všech 7 dnů, ne jen na daný den */
-.fday-range{position:relative;height:6px;border-radius:3px;background:var(--line);margin:.5rem 0;overflow:hidden;}
+.fday-range{position:relative;height:6px;border-radius:3px;background:var(--line);margin:.5rem 0 0;overflow:hidden;}
 .fday-range-fill{position:absolute;top:0;height:100%;border-radius:3px;background:linear-gradient(90deg, var(--sky), var(--ochre));}
+/* min/max čísla připíchnutá ke koncům lišty výš — ať je jasné, co lišta
+   znázorňuje, i bez čtení textu ".t" o dva řádky výš */
+.fday-range-labels{position:relative;height:13px;margin-bottom:.3rem;font-size:10px;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--text-3);}
+.fday-range-labels span{position:absolute;top:1px;transform:translateX(-50%);white-space:nowrap;}
 
 .hourly-head{font-size:var(--fs-12);color:var(--ink-soft);margin:1.3rem 0 .5rem;}
 .wicon{width:1.25rem;height:1.25rem;color:var(--text-2);fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;}
@@ -724,10 +746,12 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <a href="#air" class="now-tile" id="nowAir">
       <span class="now-tile-label">Ovzduší</span>
       <span class="now-tile-value"><span class="now-dot" id="nowAirDot"></span><span id="nowAirValue">—</span></span>
+      <span class="now-tile-sub" id="nowAirSub"></span>
     </a>
     <a href="#water" class="now-tile" id="nowWater">
       <span class="now-tile-label">Voda</span>
       <span class="now-tile-value" id="nowWaterValue">—</span>
+      <span class="now-tile-sub" id="nowWaterSub"></span>
     </a>
   </div>
 </div>
@@ -769,7 +793,8 @@ footer a{color:var(--footer-link);text-decoration:underline;}
       <div class="card skel"><div class="k">Vítr</div><div class="v">—</div><div class="sub">načítám…</div></div>
       <div class="card skel"><div class="k">Srážky teď</div><div class="v">—</div><div class="sub">načítám…</div></div>
     </div>
-    <div class="forecast" id="forecastRow" style="margin-top:1rem;"></div>
+    <div class="hourly-head">Rozpětí teplot v týdnu (min–max)</div>
+    <div class="forecast" id="forecastRow"></div>
     <div class="hourly-head">Dnes po hodinách</div>
     <div class="hourly-strip" id="hourlyStrip"><div class="sub">načítám…</div></div>
     <div class="today-tips" id="todayTips"></div>
@@ -1125,6 +1150,14 @@ const BEAUFORT = [
 ];
 function beaufortFor(kmh){ return BEAUFORT.find(b => kmh <= b.max); }
 
+// Směr, odkud vítr vane (meteorologická konvence Open-Meteo wind_direction_10m)
+// — zkratka světové strany + šipka otočená o stejný úhel, ať je směr vidět
+// i bez čtení čísla ve stupních.
+const COMPASS_DIRS = ['S','SV','V','JV','J','JZ','Z','SZ'];
+function compassFor(deg){ return COMPASS_DIRS[Math.round(((deg % 360) / 45)) % 8]; }
+const WIND_ARROW_SVG = '<path d="M12 3v15M7 9l5-6 5 6"/>';
+const STRONG_GUST_KMH = 40;
+
 // Ikony pro krátké "kdy je dobré co dělat" odznaky pod hodinovým počasím
 // (jen vnitřek <svg>, viz section-icon).
 const MOW_ICON = '<circle cx="6" cy="6" r="2.3"/><circle cx="6" cy="18" r="2.3"/><path d="M8 7.5 19 18M19 6 8 16.5"/>';
@@ -1205,7 +1238,7 @@ function renderTodayTips(c, hourly, startIdx){
 async function loadWeather(){
   let data;
   try{
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,surface_pressure,soil_moisture_0_to_1cm&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBerlin&forecast_days=7`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,surface_pressure,pressure_msl,soil_moisture_0_to_1cm&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,weather_code,is_day,pressure_msl&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=Europe%2FBerlin&forecast_days=7`;
     const res = await fetch(url);
     data = await res.json();
   }catch(e){
@@ -1221,22 +1254,60 @@ async function loadWeather(){
   try{
     const hBand = humidityBand(Math.round(c.relative_humidity_2m));
     const wBand = beaufortFor(c.wind_speed_10m);
-    // Vlhkost půdy (0-1 cm, povrch) — modelovaný odhad (land-surface model),
-    // ne měření senzorem přímo ve Zlonicích, proto title vysvětlivka jako
-    // u ostatních "stránka odhaduje" hodnot na webu. Vlastní hodnotící odznak
-    // (soilBand), ne jen holé číslo — ale oddělený od odznaku vlhkosti
-    // vzduchu, ať je jasné, ke které hodnotě se který vztahuje.
-    const soilPct = typeof c.soil_moisture_0_to_1cm === 'number' ? Math.round(c.soil_moisture_0_to_1cm * 100) : null;
-    const soilBand = soilPct != null ? soilMoistureBand(soilPct) : null;
+
+    // Směr větru — jen z current (odkud teď vane), šipka otočená o stejný
+    // úhel jako skutečný vítr.
+    const windDirHtml = (typeof c.wind_direction_10m === 'number')
+      ? `<div class="sub-row" title="Vítr vane od směru ${Math.round(c.wind_direction_10m)}° (${compassFor(c.wind_direction_10m)}).">
+          <svg class="wind-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(${Math.round(c.wind_direction_10m)}deg)" aria-hidden="true">${WIND_ARROW_SVG}</svg>
+          vítr od <b>${compassFor(c.wind_direction_10m)}</b>
+        </div>`
+      : '';
+    const strongGustHtml = c.wind_gusts_10m >= STRONG_GUST_KMH
+      ? ` <span class="tag warn">silné nárazy</span>`
+      : '';
+
+    // Trend tlaku za poslední 3 h — porovnání aktuální hodnoty (current)
+    // s hodinovým polem ~3 h zpátky; nezávislé na startIdx dál ve funkci,
+    // ať tenhle blok funguje samostatně i kdyby se pořadí níž změnilo.
+    let pressureTrendHtml = '';
+    try{
+      if (typeof c.pressure_msl === 'number' && Array.isArray(data.hourly?.pressure_msl)){
+        const nowT = new Date();
+        const hTimes = data.hourly.time.map(t => new Date(t));
+        let idxNow = hTimes.findIndex(t => t >= nowT);
+        if (idxNow === -1) idxNow = hTimes.length - 1;
+        const idxPast = Math.max(0, idxNow - 3);
+        const past = data.hourly.pressure_msl[idxPast];
+        if (typeof past === 'number'){
+          const diff = c.pressure_msl - past;
+          const arrow = Math.abs(diff) < 0.5 ? '→' : (diff > 0 ? '↑' : '↓');
+          const word = Math.abs(diff) < 0.5 ? 'stabilní' : (diff > 0 ? 'stoupá' : 'klesá');
+          pressureTrendHtml = ` <span class="trend">${word} ${arrow}</span>`;
+        }
+      }
+    }catch(e){ /* trend je jen doplněk, karta funguje i bez něj */ }
+
+    // Vlhkost půdy (0-1 cm, povrch) se teď zobrazuje až v zahradním řádku
+    // pod hodinovým grafem (spolu se "zalévání/sekání/postřik"), ne tady —
+    // karta Vlhkost vzduchu zůstává jen o vzduchu, ať se ta dvě čísla
+    // nepletou dohromady.
     document.getElementById('weatherCards').innerHTML = `
       <div class="card"><div class="k">Teplota</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">pocitově ${c.apparent_temperature.toFixed(1)} °C</div></div>
       <div class="card">
         <div class="k">Vlhkost vzduchu</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div>
         <div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div>
-        ${soilBand ? (() => { const bar = soilBarStyle(soilPct); return `<div class="sub-row" title="Modelovaný odhad vlhkosti povrchu půdy (0–1 cm), ne měření senzorem na místě. ${soilBand.desc}">Půda (0–1 cm) <b>${soilPct} %</b><span class="takeaway ${soilBand.level}">${soilBand.name}</span></div><div class="mini-scale" style="background:${bar.track}" title="Objemový podíl vody v půdě, ne škála 0–100 %. Orientačně pro hlinitou půdu (černozem kolem Zlonic): vadnutí ~10–15 %, plná kapacita ~30–35 %."><div class="mini-scale-fill" style="width:${bar.valuePct}%"></div></div>`; })() : ''}
       </div>
-      <div class="card"><div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div><div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h</div><div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force}° Bft · ${wBand.name}</div></div>
-      <div class="card"><div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div><div class="sub">tlak ${c.surface_pressure.toFixed(1)} hPa</div></div>
+      <div class="card">
+        <div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div>
+        <div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h${strongGustHtml}</div>
+        <div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force} Bft · ${wBand.name}</div>
+        ${windDirHtml}
+      </div>
+      <div class="card">
+        <div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div>
+        <div class="sub-row" title="Tlak vzduchu přepočtený na hladinu moře — vyšší tlak obvykle znamená stabilnější počasí, klesající tlak bývá předzvěst zhoršení.">tlak (hladina moře) <b>${(c.pressure_msl ?? c.surface_pressure).toFixed(1)} hPa</b>${pressureTrendHtml}</div>
+      </div>
     `;
     document.getElementById('nowWeatherValue').textContent = `${c.temperature_2m.toFixed(1)}°`;
     document.getElementById('nowWeatherSub').textContent = `pocitově ${c.apparent_temperature.toFixed(1)} °C`;
@@ -1256,16 +1327,26 @@ async function loadWeather(){
     const rows = days.map((iso, i) => {
       const d = new Date(iso + 'T12:00:00');
       const label = i === 0 ? 'dnes' : DAYS[d.getDay()];
+      const dateStr = d.toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'});
       const code = effectiveWeatherCode(data.daily.weather_code[i], data.daily.precipitation_probability_max[i]);
       const dayMin = data.daily.temperature_2m_min[i], dayMax = data.daily.temperature_2m_max[i];
       const leftPct = ((dayMin - weekMin) / weekRange) * 100;
       const widthPct = Math.max(6, ((dayMax - dayMin) / weekRange) * 100);
+      // Popisky na koncích lišty se mírně zarovnají dovnitř (6–94 %), ať
+      // nepřesahují okraj karty u dnů blízko týdenního minima/maxima.
+      const labelLeft = Math.max(6, Math.min(94, leftPct));
+      const labelRight = Math.max(6, Math.min(94, leftPct + widthPct));
+      const rainMm = data.daily.precipitation_sum?.[i];
+      const rainText = (typeof rainMm === 'number')
+        ? `déšť ${data.daily.precipitation_probability_max[i]} % · ${rainMm.toFixed(1)} mm`
+        : `déšť ${data.daily.precipitation_probability_max[i]} %`;
       return `<div class="fday">
-        <div class="d">${label}</div>
+        <div class="d">${label} <span class="fday-date">${dateStr}</span></div>
         <div class="icon">${weatherIconHtml(code)}</div>
         <div class="t"><span class="max">${Math.round(dayMax)}°</span> <span class="min">${Math.round(dayMin)}°</span></div>
         <div class="fday-range"><div class="fday-range-fill" style="left:${leftPct}%;width:${widthPct}%"></div></div>
-        <div class="p">${data.daily.precipitation_probability_max[i]} % srážky</div>
+        <div class="fday-range-labels"><span style="left:${labelLeft}%">${Math.round(dayMin)}°</span><span style="left:${labelRight}%">${Math.round(dayMax)}°</span></div>
+        <div class="p">${rainText}</div>
       </div>`;
     }).join('');
     document.getElementById('forecastRow').innerHTML = rows;
@@ -1507,6 +1588,8 @@ async function loadAirQuality(){
     document.getElementById('nowAirDot').style.background = band.color;
     document.getElementById('nowAirValue').textContent = `${eaqi} · ${band.name}`;
     document.getElementById('nowAir').style.borderLeftColor = band.color;
+    document.getElementById('nowAirSub').textContent = 'EAQI · Open-Meteo';
+    document.getElementById('nowAir').title = `Evropský index kvality ovzduší (EAQI), zdroj Open-Meteo. Stupnice: ${EAQI_BANDS.map(b => b.name).join(' · ')}.`;
     document.getElementById('aqiBand').textContent = band.name + ' — evropský index kvality ovzduší (EAQI)';
     document.getElementById('aqiDesc').textContent = band.desc;
     document.getElementById('aqiMarker').style.left = Math.min(100, eaqi) + '%';
@@ -1704,6 +1787,54 @@ function setNowAlert(active, text){
 
 const SEVERITY_CS = {Extreme:'extrémní', Severe:'vysoká', Moderate:'střední', Minor:'nízká', Unknown:'neznámá'};
 
+// Barevný stupeň výstrahy — 3 úrovně (žlutá/oranžová/červená), stejné
+// jako meteoalarm obvykle používá. Používá existující tokeny (--ochre
+// pro žlutou, --warn pro oranžovou, --danger pro červenou), žádné nové
+// barvy. "Unknown" radši oranžová (opatrně uprostřed), ne rovnou červená
+// — o skutečné závažnosti nevíme nic jistého.
+const ALERT_TIER_MAP = {
+  Minor:   {cls:'caution', label:'žlutá'},
+  Moderate:{cls:'warn',    label:'oranžová'},
+  Severe:  {cls:'danger',  label:'červená'},
+  Extreme: {cls:'danger',  label:'červená'},
+  Unknown: {cls:'warn',    label:'oranžová'},
+};
+function alertTier(severity){ return ALERT_TIER_MAP[severity] || ALERT_TIER_MAP.Unknown; }
+
+// Ikona podle typu jevu — čistě kosmetické přiřazení podle klíčových slov
+// v textu události z ČHMÚ (stejný přístup jako boardCategoryIcon výš).
+function alertTypeIcon(event){
+  const t = String(event || '').toLowerCase();
+  if (/bouřk|blesk/.test(t)) return '⛈️';
+  if (/vítr|vichřic/.test(t)) return '💨';
+  if (/mráz|náledí|ledovk/.test(t)) return '🧊';
+  if (/vedro|horko/.test(t)) return '🌡️';
+  if (/povodeň|záplav/.test(t)) return '🌊';
+  if (/sníh|sněž/.test(t)) return '❄️';
+  if (/déšť|srážk/.test(t)) return '🌧️';
+  return '⚠️';
+}
+
+const ALERT_DAYS_SHORT = ['ne','po','út','st','čt','pá','so'];
+function alertTimeShort(iso){
+  if (!iso) return null;
+  const d = new Date(iso);
+  return `${ALERT_DAYS_SHORT[d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function alertTimeRange(a){
+  const onset = alertTimeShort(a.onset);
+  const expires = alertTimeShort(a.expires);
+  if (onset && expires) return `${onset} – ${expires}`;
+  if (onset) return `od ${onset}`;
+  if (expires) return `do ${expires}`;
+  return null;
+}
+function alertRowHtml(a){
+  const tier = alertTier(a.severity);
+  const range = alertTimeRange(a);
+  return `<div class="alert-row"><span>${alertTypeIcon(a.event)}</span><span class="alert-row-body"><b>${escapeHtml(a.event)}</b>${range ? ` · ${escapeHtml(range)}` : ''}</span><span class="tag ${tier.cls}">${tier.label}</span></div>`;
+}
+
 function unknownAlertState(reason){
   setAlertBanner('unknown', 'warn', 'nelze ověřit',
     'Aktuální výstrahy nelze ověřit',
@@ -1725,32 +1856,30 @@ async function loadAlerts(){
 
     if (!data.hasActive){
       const checked = new Date(data.updated).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+      const tracked = `<br><span class="alert-tracked">sledujeme: bouřky, vítr, mráz, vedro, povodně, sníh · <a href="https://vystrahy-cr.chmi.cz/" target="_blank" rel="noopener">ČHMÚ ↗</a></span>`;
       setAlertBanner('', 'live', 'ověřeno',
         'Beze zvláštních výstrah',
-        `ČHMÚ pro Zlonice (ORP Slaný) aktuálně nehlásí žádnou výstrahu. Ověřeno ${checked}.`);
-      setNowAlert(false, 'Bez výstrah');
+        `ČHMÚ pro Zlonice (ORP Slaný) aktuálně nehlásí žádnou výstrahu. Ověřeno ${checked}.${tracked}`);
+      setNowAlert(false, 'Bez výstrah ČHMÚ');
       return;
     }
 
     const worst = data.alerts.reduce((a,b) => (SEVERITY_RANK[b.severity] ?? 0) > (SEVERITY_RANK[a.severity] ?? 0) ? b : a);
-    const cls = (worst.severity === 'Extreme' || worst.severity === 'Severe') ? 'danger' : 'warn';
+    const tier = alertTier(worst.severity);
     const names = data.alerts.map(a => a.event).join(' · ');
+    const worstRange = alertTimeRange(worst);
+    const mainLine = `${alertTypeIcon(worst.event)} ${escapeHtml(worst.event)}${worstRange ? ` · ${escapeHtml(worstRange)}` : ''}`;
 
     // Headline z ČHMÚ chybí pro spoustu typů jevů (např. požáry) — bez
     // náhradního textu by banner zůstal skoro prázdný, jen s odkazem.
-    let context;
-    if (worst.headline){
-      context = escapeHtml(worst.headline);
-    } else {
-      const parts = [`úroveň závažnosti: ${SEVERITY_CS[worst.severity] || worst.severity}`];
-      if (worst.onset){
-        const onsetTxt = new Date(worst.onset).toLocaleString('cs-CZ', {day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit'});
-        parts.push(`platí od ${onsetTxt}`);
-      }
-      context = escapeHtml(parts.join(', '));
+    const context = worst.headline
+      ? escapeHtml(worst.headline)
+      : `úroveň závažnosti: ${SEVERITY_CS[worst.severity] || worst.severity}`;
+    let detail = `${context} — <a href="${worst.web}" target="_blank" rel="noopener">více info (ČHMÚ)</a>`;
+    if (data.alerts.length > 1){
+      detail += `<div class="alert-list">${data.alerts.map(alertRowHtml).join('')}</div>`;
     }
-    const detail = `${context} — <a href="${worst.web}" target="_blank" rel="noopener">více info</a>`;
-    setAlertBanner(cls, cls, data.alerts.length > 1 ? `${data.alerts.length} výstrahy` : 'výstraha', names, detail);
+    setAlertBanner(tier.cls, tier.cls, data.alerts.length > 1 ? `${data.alerts.length} výstrahy · ${tier.label}` : tier.label, mainLine, detail);
     setNowAlert(true, names);
   }catch(e){
     unknownAlertState(`Nepodařilo se načíst data o výstrahách (${e.message}).`);
@@ -2138,6 +2267,9 @@ async function loadWater(){
     document.getElementById('waterMarkerTag').textContent = `${level} cm`;
     document.getElementById('nowWaterValue').textContent = `${stage.name} · ${level} cm`;
     document.getElementById('nowWater').style.borderLeftColor = stage.color;
+    document.getElementById('nowWaterSub').textContent = `${data.stream} · ČHMÚ`;
+    const observedShort = new Date(data.level.observedAt).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+    document.getElementById('nowWater').title = `Stanice ${data.station}, tok ${data.stream} (ČHMÚ). ${stage.desc} Naměřeno ${observedShort}.`;
 
     const extra = document.getElementById('waterExtra');
     const parts = [];
