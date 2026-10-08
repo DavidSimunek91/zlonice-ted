@@ -442,15 +442,17 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .hourly-plot{position:relative;}
 .hourly-svg{display:block;width:100%;height:110px;overflow:visible;}
 .hourly-precip rect{fill:var(--sky);opacity:.4;}
-.hourly-grid line{opacity:.6;}
-/* popisky nad grafem (teplota na čáře, mm nad sloupci, popisky os) —
-   HTML vrstva přes SVG, ne <text> uvnitř: viewBox s preserveAspectRatio
-   ="none" škáluje osy nerovnoměrně, takže by SVG text byl zkreslený. */
+/* popisky nad grafem (teplota na čáře, mm u sloupců) — HTML vrstva přes
+   SVG, ne <text> uvnitř: viewBox s preserveAspectRatio="none" škáluje
+   osy nerovnoměrně, takže by SVG text byl zkreslený. Samostatná osa °C
+   nalevo byla zrušená — teplota je čitelná přímo z popisků na čáře. */
 .hourly-labels{position:absolute;inset:0;pointer-events:none;}
-.hourly-grid-label{position:absolute;left:2px;transform:translateY(-50%);font-size:10px;line-height:1;color:var(--text-3);font-family:var(--font-sans);font-variant-numeric:tabular-nums;background:var(--bg-page);padding:0 3px;}
 .hourly-temp-label{position:absolute;transform:translate(-50%,-140%);font-size:10px;line-height:1;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ochre-text);white-space:nowrap;}
 .hourly-temp-label.extreme{font-weight:700;font-size:11px;}
-.hourly-precip-label{position:absolute;transform:translate(-50%,-100%);font-size:10px;line-height:1;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--sky);white-space:nowrap;}
+/* mm popisek — buď vystředěný uvnitř sloupce (dost vysoký sloupec),
+   nebo nad ním (nízký sloupec, nevešlo by se dovnitř) */
+.hourly-precip-label{position:absolute;transform:translate(-50%,-115%);font-size:10px;line-height:1;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--sky);white-space:nowrap;}
+.hourly-precip-label.inside{transform:translate(-50%,-50%);color:var(--ink);font-weight:600;}
 .hourly-axis{display:flex;}
 .hourly-axis .h-label{flex:1 1 0;min-width:0;text-align:center;font-size:var(--fs-12);color:var(--ink-soft);font-family:var(--font-sans);font-variant-numeric:tabular-nums;}
 .hourly-axis .h-label.now{color:var(--green-text);font-weight:700;}
@@ -1489,6 +1491,7 @@ async function loadWeather(){
     const minIdx = temps.indexOf(min), maxIdx = temps.indexOf(max);
     const range = Math.max(max - min, 2);
     const padTop = 16, padBottom = 10, chartH = 100 - padTop - padBottom;
+    const HOURLY_SVG_PX_HEIGHT = 110; // musí sedět s .hourly-svg{height} v CSS
     const xAt = i => i + 0.5;
     const yAt = temp => padTop + (1 - (temp - min) / range) * chartH;
     const xPct = i => (xAt(i) / n) * 100;
@@ -1500,17 +1503,6 @@ async function loadWeather(){
       const barH = Math.max(0, (h.prob / 100) * chartH);
       return `<rect x="${(xAt(i) - 0.32).toFixed(2)}" y="${(100 - padBottom - barH).toFixed(1)}" width="0.64" height="${barH.toFixed(1)}" />`;
     }).join('');
-
-    // 2–3 tenké vodorovné čáry s popiskem místo plné osy °C — min, střed
-    // a max teploty v okně, zaokrouhlené a bez duplicit (když je rozsah
-    // malý, střed by jinak splynul s min/max).
-    const gridVals = [...new Set([Math.round(min), Math.round((min + max) / 2), Math.round(max)])];
-    const gridlinesSvg = gridVals.map(v =>
-      `<line x1="0" y1="${yAt(v).toFixed(1)}" x2="${n}" y2="${yAt(v).toFixed(1)}" stroke="var(--line)" stroke-width="1" vector-effect="non-scaling-stroke"/>`
-    ).join('');
-    const gridlinesHtml = gridVals.map(v =>
-      `<span class="hourly-grid-label" style="top:${yAt(v).toFixed(1)}%">${v}°</span>`
-    ).join('');
 
     // Popisky teploty přímo na čáře — každé 3 h, plus "teď" a zvlášť
     // zvýrazněný nejnižší/nejvyšší bod okna (i když nepadnou na 3h krok).
@@ -1528,18 +1520,19 @@ async function loadWeather(){
       return `<span class="hourly-temp-label${extreme}" style="left:${xPct(i).toFixed(2)}%;top:${yAt(h.temp).toFixed(1)}%">${Math.round(h.temp)}°</span>`;
     }).join('');
 
-    // Hodnota srážek (mm) nad sloupcem, jen když opravdu něco prší —
-    // výška sloupce dál vyjadřuje pravděpodobnost (beze změny), číslo
-    // nad ním je skutečný úhrn, ne totéž číslo jinak zapsané.
+    // Hodnota srážek (mm) u každého sloupce, kde opravdu něco prší —
+    // výška sloupce dál vyjadřuje pravděpodobnost (beze změny), číslo je
+    // skutečný úhrn. Vejde-li se do sloupce, je vystředěné uvnitř; jinak
+    // (nízký sloupec) se napíše nad něj.
     const precipLabelsHtml = hrs.map((h, i) => {
       if (!(h.precip > 0)) return '';
       const barH = Math.max(0, (h.prob / 100) * chartH);
-      // Velmi vysoký sloupec (téměř 100% pravděpodobnost) by popisek mm
-      // vynesl do stejné výšky jako teplotní čára/popisky nahoře —
-      // pravděpodobnost je pořád vidět z výšky sloupce, jen bez čísla navíc.
-      if (barH > chartH * 0.7) return '';
-      const topPct = Math.max(2, (100 - padBottom - barH) - 6);
-      return `<span class="hourly-precip-label" style="left:${xPct(i).toFixed(2)}%;top:${topPct.toFixed(1)}%">${h.precip.toFixed(1)}</span>`;
+      const barTopY = 100 - padBottom - barH;
+      const barPxHeight = (barH / 100) * HOURLY_SVG_PX_HEIGHT;
+      const fitsInside = barPxHeight >= 16;
+      const topPct = fitsInside ? (barTopY + barH / 2) : Math.max(2, barTopY);
+      const cls = fitsInside ? ' inside' : '';
+      return `<span class="hourly-precip-label${cls}" style="left:${xPct(i).toFixed(2)}%;top:${topPct.toFixed(1)}%">${h.precip.toFixed(1)}</span>`;
     }).join('');
 
     // Přechod přes půlnoc — popisek "zítra" místo hodiny na ose, ať je
@@ -1574,12 +1567,11 @@ async function loadWeather(){
                 <stop offset="100%" stop-color="#A8791F" stop-opacity="0"/>
               </linearGradient>
             </defs>
-            <g class="hourly-grid">${gridlinesSvg}</g>
             <g class="hourly-precip">${precipBars}</g>
             <path class="hourly-area" d="${areaPath}" fill="url(#hourlyTempFill)" stroke="none"/>
             <path class="hourly-line" d="${linePath}" fill="none" stroke="#A8791F" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
           </svg>
-          <div class="hourly-labels">${gridlinesHtml}${tempLabelsHtml}${precipLabelsHtml}</div>
+          <div class="hourly-labels">${tempLabelsHtml}${precipLabelsHtml}</div>
         </div>
         <div class="hourly-axis">${labels}</div>
       </div>
