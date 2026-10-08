@@ -251,6 +251,9 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .now-tile-value{font-family:var(--font-display);font-size:var(--fs-28);font-weight:600;font-variant-numeric:tabular-nums;}
 .now-tile-dest{font-size:var(--fs-14);color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .now-tile-sub{font-size:var(--fs-14);color:var(--text-2);}
+/* rain nowcast štítek (kolo 2) — var(--sky), stejná barevná skupina jako
+   zbytek #weather/#air/#water; skrytý (hidden atribut), když neprší */
+.now-rain-badge{margin-top:.2rem;font-size:var(--fs-12);font-weight:600;color:var(--sky);}
 /* stavový pruh vlevo — jen u dlaždic, které už mají status v kódu
    (výstrahy: aktivní/needaktivní třída; ovzduší/voda: barva pásma už se
    dřív počítala pro badge/stage, tady se jen znovu použije přes JS) */
@@ -429,9 +432,25 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
    inline SVG spojnicovým grafem teploty (plocha pod čarou) se sloupci
    pravděpodobnosti srážek na pozadí; stejná data jako dřív (hourly.*),
    jen jiné vykreslení. */
+.hourly-summary{font-size:var(--fs-14);color:var(--ink);margin:0 0 .6rem;}
+/* legenda nad grafem (kolo 2) — barvy přesně podle grafu (čára/sloupce),
+   žádné nové barvy, jen jejich opakování jako malý vzorek */
+.hourly-legend-row{display:flex;gap:1.2rem;font-size:var(--fs-12);color:var(--ink-soft);margin-bottom:.5rem;}
+.hourly-legend-row .legend-temp::before{content:'— ';color:#A8791F;font-weight:700;}
+.hourly-legend-row .legend-precip::before{content:'▮ ';color:var(--sky);}
 .hourly-chart{display:flex;flex-direction:column;gap:.4rem;}
+.hourly-plot{position:relative;}
 .hourly-svg{display:block;width:100%;height:110px;overflow:visible;}
 .hourly-precip rect{fill:var(--sky);opacity:.4;}
+.hourly-grid line{opacity:.6;}
+/* popisky nad grafem (teplota na čáře, mm nad sloupci, popisky os) —
+   HTML vrstva přes SVG, ne <text> uvnitř: viewBox s preserveAspectRatio
+   ="none" škáluje osy nerovnoměrně, takže by SVG text byl zkreslený. */
+.hourly-labels{position:absolute;inset:0;pointer-events:none;}
+.hourly-grid-label{position:absolute;left:2px;transform:translateY(-50%);font-size:10px;line-height:1;color:var(--text-3);font-family:var(--font-sans);font-variant-numeric:tabular-nums;background:var(--bg-page);padding:0 3px;}
+.hourly-temp-label{position:absolute;transform:translate(-50%,-140%);font-size:10px;line-height:1;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--ochre-text);white-space:nowrap;}
+.hourly-temp-label.extreme{font-weight:700;font-size:11px;}
+.hourly-precip-label{position:absolute;transform:translate(-50%,-100%);font-size:10px;line-height:1;font-family:var(--font-sans);font-variant-numeric:tabular-nums;color:var(--sky);white-space:nowrap;}
 .hourly-axis{display:flex;}
 .hourly-axis .h-label{flex:1 1 0;min-width:0;text-align:center;font-size:var(--fs-12);color:var(--ink-soft);font-family:var(--font-sans);font-variant-numeric:tabular-nums;}
 .hourly-axis .h-label.now{color:var(--green-text);font-weight:700;}
@@ -454,6 +473,14 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .today-tip.warn svg{color:var(--warn);}
 .today-tip.danger svg{color:var(--danger);}
 .today-tip b{color:var(--ink);font-weight:600;}
+/* vlhkost půdy v zahradním řádku (kolo 2) — stejný vzor jako dřív v kartě
+   Vlhkost vzduchu (jen přesunutý sem, viz kolo 1 bod 7), žádné nové barvy */
+.garden-soil{margin-top:.7rem;font-size:var(--fs-12);color:var(--ink-soft);cursor:help;}
+.garden-soil-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.garden-soil-row .takeaway{margin-left:auto;}
+.garden-soil .mini-scale{margin-top:.4rem;width:100%;height:6px;border-radius:3px;overflow:hidden;}
+.garden-soil .mini-scale-fill{height:100%;border-radius:3px;background:var(--ink);opacity:.55;}
+.garden-soil-sentence{margin:.4rem 0 0;font-size:var(--fs-12);color:var(--text-2);}
 
 /* air quality scale */
 .aqi-top{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:1.1rem;}
@@ -736,6 +763,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
       <span class="now-tile-label">Počasí</span>
       <span class="now-tile-value" id="nowWeatherValue">—</span>
       <span class="now-tile-sub" id="nowWeatherSub"></span>
+      <span class="now-rain-badge" id="nowRainBadge" hidden></span>
     </a>
     <a href="#bus" class="now-tile" id="nowBus">
       <span class="now-tile-label">Autobus</span>
@@ -798,6 +826,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="hourly-head">Dnes po hodinách</div>
     <div class="hourly-strip" id="hourlyStrip"><div class="sub">načítám…</div></div>
     <div class="today-tips" id="todayTips"></div>
+    <div class="garden-soil" id="gardenSoil"></div>
   </section>
 
   <section class="section" id="bus">
@@ -1176,6 +1205,59 @@ const FROST_ICON = '<path d="M12 2v20M4.5 6l15 12M19.5 6l-15 12"/>';
 function hourHasRain(H, idx){
   return (H.precipitation[idx] ?? 0) > 0.1 || (H.precipitation_probability[idx] ?? 0) >= 60;
 }
+
+// Práh pro "bude pršet" v grafu/nowcastu — záměrně jiný (citlivější) než
+// hourHasRain výš, který řeší zahradní okna (tam je konzervativní práh
+// žádoucí, ať appka neřekne "sekej", když přeháňka jen hrozí). Tady jde
+// o informování "vezmi si deštník", takže nižší práh dává smysl.
+const RAIN_NOWCAST_MM = 0.2, RAIN_NOWCAST_PROB = 50;
+function hourIsRainy(h){
+  return h.precip >= RAIN_NOWCAST_MM || h.prob >= RAIN_NOWCAST_PROB;
+}
+
+// Jednověté shrnutí nad hodinovým grafem — kdy (ne)bude pršet a jak moc
+// se bude lišit teplota v noci/přes den, odvozeno ze stejných dat jako
+// graf samotný (hrs), žádný nový výpočet navíc.
+function buildHourlySummary(hrs){
+  if (!hrs.length) return '';
+  const rainIdx = hrs.findIndex(hourIsRainy);
+  let rainPhrase;
+  if (rainIdx === -1){
+    rainPhrase = 'Beze srážek v dalších hodinách.';
+  } else if (rainIdx === 0){
+    const stopIdx = hrs.findIndex((h, i) => i > 0 && !hourIsRainy(h));
+    rainPhrase = stopIdx === -1
+      ? 'Prší po celou sledovanou dobu.'
+      : `Prší do ${String(hrs[stopIdx].time.getHours()).padStart(2, '0')}:00, pak sucho.`;
+  } else {
+    rainPhrase = `Za ${rainIdx} h začne pršet (${String(hrs[rainIdx].time.getHours()).padStart(2, '0')}:00).`;
+  }
+
+  const nightHours = hrs.filter(h => h.isDay === 0);
+  let tempPhrase;
+  if (nightHours.length > 0){
+    const minNight = Math.round(Math.min(...nightHours.map(h => h.temp)));
+    tempPhrase = `V noci klesne na ${minNight} °C.`;
+  } else {
+    const maxDay = Math.round(Math.max(...hrs.map(h => h.temp)));
+    tempPhrase = `Přes den stoupne na ${maxDay} °C.`;
+  }
+  return `${rainPhrase} ${tempPhrase}`;
+}
+
+// Krátký štítek do dlaždice Počasí v pásu "Teď" — jen když se v nejbližších
+// 3 h opravdu čeká déšť, jinak null (dlaždice zůstane beze štítku).
+function rainNowcastPhrase(hrs){
+  if (!hrs.length) return null;
+  const windowHrs = hrs.slice(0, 4); // teď + 3 h dopředu
+  const idx = windowHrs.findIndex(hourIsRainy);
+  if (idx === -1) return null;
+  if (idx === 0){
+    const stopIdx = hrs.findIndex((h, i) => i > 0 && !hourIsRainy(h));
+    return stopIdx === -1 ? 'Prší' : `Prší do ${String(hrs[stopIdx].time.getHours()).padStart(2, '0')}:00`;
+  }
+  return `Za ${idx} h začne pršet`;
+}
 function hourGoodForWater(H, idx){
   if (hourHasRain(H, idx)) return false;
   const hr = new Date(H.time[idx]).getHours();
@@ -1185,6 +1267,7 @@ function hourGoodForWater(H, idx){
 // o hodinu, kdy pršelo, tráva schne postupně i po přeháňce.
 const MOW_WET_LOOKBACK_HOURS = 3;
 function hourGoodForMow(H, idx){
+  if (H.is_day[idx] === 0) return false; // sekat jen za světla — nikdy "od 00:00"
   if ((H.precipitation[idx] ?? 0) > 0.1) return false;
   for (let i = Math.max(0, idx - MOW_WET_LOOKBACK_HOURS); i < idx; i++){
     if ((H.precipitation[i] ?? 0) > 0.1) return false; // tráva ještě mokrá od nedávného deště
@@ -1233,6 +1316,26 @@ function renderTodayTips(c, hourly, startIdx){
   }
 
   return chips.map(ch => `<span class="today-tip ${ch.level}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ch.icon}</svg>${ch.label}: <b>${ch.when}</b></span>`).join('');
+}
+
+// Vlhkost půdy v zahradním řádku — stejná stupnice/škála jako dřív v
+// kartě Vlhkost vzduchu (kolo 1 bod 7 ji odtud přesunul sem, kolo 2
+// bod 10 ji doplňuje o jednovětý závěr).
+function renderGardenSoil(c){
+  const soilPct = typeof c.soil_moisture_0_to_1cm === 'number' ? Math.round(c.soil_moisture_0_to_1cm * 100) : null;
+  if (soilPct == null) return '';
+  const band = soilMoistureBand(soilPct);
+  const bar = soilBarStyle(soilPct);
+  const sentence = (band.name === 'Velmi sucho' || band.name === 'Sucho')
+    ? 'Půda je suchá – zalij.'
+    : (band.name === 'Nasyceno' ? 'Půda je hodně vlhká, zalévání teď není potřeba.' : 'Půda má přiměřenou vlhkost.');
+  return `
+    <div class="garden-soil-row" title="Modelovaný odhad vlhkosti povrchu půdy (0–1 cm), ne měření senzorem na místě. ${band.desc}">
+      Půda (0–1 cm) <b>${soilPct} %</b><span class="takeaway ${band.level}">${band.name}</span>
+    </div>
+    <div class="mini-scale" style="background:${bar.track}" title="Objemový podíl vody v půdě, ne škála 0–100 %. Orientačně pro hlinitou půdu (černozem kolem Zlonic): vadnutí ~10–15 %, plná kapacita ~30–35 %."><div class="mini-scale-fill" style="width:${bar.valuePct}%"></div></div>
+    <p class="garden-soil-sentence">${sentence}</p>
+  `;
 }
 
 async function loadWeather(){
@@ -1293,18 +1396,20 @@ async function loadWeather(){
     // karta Vlhkost vzduchu zůstává jen o vzduchu, ať se ta dvě čísla
     // nepletou dohromady.
     document.getElementById('weatherCards').innerHTML = `
-      <div class="card"><div class="k">Teplota</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">pocitově ${c.apparent_temperature.toFixed(1)} °C</div></div>
-      <div class="card">
+      <div class="card" title="Aktuální teplota vzduchu 2 m nad zemí — \"pocitově\" navíc počítá s větrem a vlhkostí.">
+        <div class="k">Teplota</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">pocitově ${c.apparent_temperature.toFixed(1)} °C</div>
+      </div>
+      <div class="card" title="Relativní vlhkost vzduchu — kolik vodní páry vzduch teď obsahuje vůči maximu, které by při téhle teplotě unesl.">
         <div class="k">Vlhkost vzduchu</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div>
         <div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div>
       </div>
-      <div class="card">
+      <div class="card" title="Průměrná rychlost větru za posledních 10 minut, 10 m nad zemí.">
         <div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div>
         <div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h${strongGustHtml}</div>
         <div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force} Bft · ${wBand.name}</div>
         ${windDirHtml}
       </div>
-      <div class="card">
+      <div class="card" title="Úhrn srážek za poslední hodinu podle modelu Open-Meteo.">
         <div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div>
         <div class="sub-row" title="Tlak vzduchu přepočtený na hladinu moře — vyšší tlak obvykle znamená stabilnější počasí, klesající tlak bývá předzvěst zhoršení.">tlak (hladina moře) <b>${(c.pressure_msl ?? c.surface_pressure).toFixed(1)} hPa</b>${pressureTrendHtml}</div>
       </div>
@@ -1340,7 +1445,8 @@ async function loadWeather(){
       const rainText = (typeof rainMm === 'number')
         ? `déšť ${data.daily.precipitation_probability_max[i]} % · ${rainMm.toFixed(1)} mm`
         : `déšť ${data.daily.precipitation_probability_max[i]} %`;
-      return `<div class="fday">
+      const dayTitle = `${label} ${dateStr}: ${Math.round(dayMax)}–${Math.round(dayMin)} °C, ${rainText}.`;
+      return `<div class="fday" title="${dayTitle}">
         <div class="d">${label} <span class="fday-date">${dateStr}</span></div>
         <div class="icon">${weatherIconHtml(code)}</div>
         <div class="t"><span class="max">${Math.round(dayMax)}°</span> <span class="min">${Math.round(dayMin)}°</span></div>
@@ -1365,19 +1471,27 @@ async function loadWeather(){
     if (startIdx === -1) startIdx = Math.max(0, times.length - 1);
   }catch(e){ startIdx = 0; }
 
+  let hrs = [];
   try{
     const H = data.hourly;
-    const hrs = [];
     for (let i = startIdx; i < Math.min(startIdx + 16, H.time.length); i++){
-      hrs.push({ time: new Date(H.time[i]), temp: H.temperature_2m[i], prob: H.precipitation_probability[i] ?? 0 });
+      hrs.push({
+        time: new Date(H.time[i]),
+        temp: H.temperature_2m[i],
+        prob: H.precipitation_probability[i] ?? 0,
+        precip: H.precipitation[i] ?? 0,
+        isDay: H.is_day[i],
+      });
     }
     const n = hrs.length;
     const temps = hrs.map(h => h.temp);
     const min = Math.min(...temps), max = Math.max(...temps);
+    const minIdx = temps.indexOf(min), maxIdx = temps.indexOf(max);
     const range = Math.max(max - min, 2);
-    const padTop = 10, padBottom = 10, chartH = 100 - padTop - padBottom;
+    const padTop = 16, padBottom = 10, chartH = 100 - padTop - padBottom;
     const xAt = i => i + 0.5;
     const yAt = temp => padTop + (1 - (temp - min) / range) * chartH;
+    const xPct = i => (xAt(i) / n) * 100;
 
     const linePoints = hrs.map((h, i) => `${xAt(i)},${yAt(h.temp).toFixed(1)}`).join(' L ');
     const linePath = `M ${linePoints}`;
@@ -1385,6 +1499,47 @@ async function loadWeather(){
     const precipBars = hrs.map((h, i) => {
       const barH = Math.max(0, (h.prob / 100) * chartH);
       return `<rect x="${(xAt(i) - 0.32).toFixed(2)}" y="${(100 - padBottom - barH).toFixed(1)}" width="0.64" height="${barH.toFixed(1)}" />`;
+    }).join('');
+
+    // 2–3 tenké vodorovné čáry s popiskem místo plné osy °C — min, střed
+    // a max teploty v okně, zaokrouhlené a bez duplicit (když je rozsah
+    // malý, střed by jinak splynul s min/max).
+    const gridVals = [...new Set([Math.round(min), Math.round((min + max) / 2), Math.round(max)])];
+    const gridlinesSvg = gridVals.map(v =>
+      `<line x1="0" y1="${yAt(v).toFixed(1)}" x2="${n}" y2="${yAt(v).toFixed(1)}" stroke="var(--line)" stroke-width="1" vector-effect="non-scaling-stroke"/>`
+    ).join('');
+    const gridlinesHtml = gridVals.map(v =>
+      `<span class="hourly-grid-label" style="top:${yAt(v).toFixed(1)}%">${v}°</span>`
+    ).join('');
+
+    // Popisky teploty přímo na čáře — každé 3 h, plus "teď" a zvlášť
+    // zvýrazněný nejnižší/nejvyšší bod okna (i když nepadnou na 3h krok).
+    // Běžný 3h popisek těsně vedle extrému se vynechá, ať se vizuálně
+    // neslije s tím zvýrazněným (viz QA: popisky se nesmí překrývat).
+    const labelIdxAccepted = [0, minIdx, maxIdx].filter((v, idx, arr) => arr.indexOf(v) === idx);
+    for (let i = 0; i < n; i += 3){
+      if (labelIdxAccepted.includes(i)) continue;
+      if (labelIdxAccepted.some(a => Math.abs(a - i) <= 2)) continue;
+      labelIdxAccepted.push(i);
+    }
+    const tempLabelsHtml = labelIdxAccepted.sort((a, b) => a - b).map(i => {
+      const h = hrs[i];
+      const extreme = (i === minIdx || i === maxIdx) ? ' extreme' : '';
+      return `<span class="hourly-temp-label${extreme}" style="left:${xPct(i).toFixed(2)}%;top:${yAt(h.temp).toFixed(1)}%">${Math.round(h.temp)}°</span>`;
+    }).join('');
+
+    // Hodnota srážek (mm) nad sloupcem, jen když opravdu něco prší —
+    // výška sloupce dál vyjadřuje pravděpodobnost (beze změny), číslo
+    // nad ním je skutečný úhrn, ne totéž číslo jinak zapsané.
+    const precipLabelsHtml = hrs.map((h, i) => {
+      if (!(h.precip > 0)) return '';
+      const barH = Math.max(0, (h.prob / 100) * chartH);
+      // Velmi vysoký sloupec (téměř 100% pravděpodobnost) by popisek mm
+      // vynesl do stejné výšky jako teplotní čára/popisky nahoře —
+      // pravděpodobnost je pořád vidět z výšky sloupce, jen bez čísla navíc.
+      if (barH > chartH * 0.7) return '';
+      const topPct = Math.max(2, (100 - padBottom - barH) - 6);
+      return `<span class="hourly-precip-label" style="left:${xPct(i).toFixed(2)}%;top:${topPct.toFixed(1)}%">${h.precip.toFixed(1)}</span>`;
     }).join('');
 
     // Přechod přes půlnoc — popisek "zítra" místo hodiny na ose, ať je
@@ -1399,37 +1554,65 @@ async function loadWeather(){
     }).join('');
     // Skrytý textový ekvivalent grafu pro čtečky obrazovky — graf sám je
     // aria-hidden, ať se nečte bod po bodu, ale stejná data (teplota,
-    // pravděpodobnost srážek) musí zůstat dostupná jako text.
+    // srážky, pravděpodobnost) musí zůstat dostupná jako text.
     const srList = hrs.map(h =>
-      `${h.time.toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'})}: ${Math.round(h.temp)} °C, srážky ${Math.round(h.prob)} %`
+      `${h.time.toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'})}: ${Math.round(h.temp)} °C, srážky ${h.precip.toFixed(1)} mm (${Math.round(h.prob)} % pravděpodobnost)`
     ).join('; ');
 
     document.getElementById('hourlyStrip').innerHTML = `
+      <p class="hourly-summary">${escapeHtml(buildHourlySummary(hrs))}</p>
+      <div class="hourly-legend-row">
+        <span class="legend-temp">teplota °C</span>
+        <span class="legend-precip">srážky mm</span>
+      </div>
       <div class="hourly-chart">
-        <svg class="hourly-svg" viewBox="0 0 ${n} 100" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="hourlyTempFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#A8791F" stop-opacity=".35"/>
-              <stop offset="100%" stop-color="#A8791F" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <g class="hourly-precip">${precipBars}</g>
-          <path class="hourly-area" d="${areaPath}" fill="url(#hourlyTempFill)" stroke="none"/>
-          <path class="hourly-line" d="${linePath}" fill="none" stroke="#A8791F" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
-        </svg>
+        <div class="hourly-plot">
+          <svg class="hourly-svg" viewBox="0 0 ${n} 100" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="hourlyTempFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#A8791F" stop-opacity=".35"/>
+                <stop offset="100%" stop-color="#A8791F" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g class="hourly-grid">${gridlinesSvg}</g>
+            <g class="hourly-precip">${precipBars}</g>
+            <path class="hourly-area" d="${areaPath}" fill="url(#hourlyTempFill)" stroke="none"/>
+            <path class="hourly-line" d="${linePath}" fill="none" stroke="#A8791F" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
+          </svg>
+          <div class="hourly-labels">${gridlinesHtml}${tempLabelsHtml}${precipLabelsHtml}</div>
+        </div>
         <div class="hourly-axis">${labels}</div>
       </div>
-      <p class="sr-only">Hodinový průběh teploty a pravděpodobnosti srážek: ${escapeHtml(srList)}.</p>
+      <p class="sr-only">Hodinový průběh teploty a srážek: ${escapeHtml(srList)}.</p>
     `;
     markRefreshed('hourlyStrip');
   }catch(e){
     document.getElementById('hourlyStrip').innerHTML = `<div class="sub">Hodinový průběh se nepodařilo zobrazit.</div>`;
   }
 
+  // Rain nowcast v dlaždici Počasí (pás "Teď") — jen když v příštích 3 h
+  // skutečně něco prší/je vysoká pravděpodobnost, jinak se štítek skryje.
+  try{
+    const phrase = rainNowcastPhrase(hrs);
+    const badge = document.getElementById('nowRainBadge');
+    if (phrase){
+      badge.textContent = `☔ ${phrase}`;
+      badge.hidden = false;
+    } else {
+      badge.hidden = true;
+    }
+  }catch(e){ /* nowcast je jen doplněk, dlaždice funguje i bez něj */ }
+
   try{
     document.getElementById('todayTips').innerHTML = renderTodayTips(c, data.hourly, startIdx);
   }catch(e){
     document.getElementById('todayTips').innerHTML = '';
+  }
+
+  try{
+    document.getElementById('gardenSoil').innerHTML = renderGardenSoil(c);
+  }catch(e){
+    document.getElementById('gardenSoil').innerHTML = '';
   }
 }
 
@@ -1585,6 +1768,7 @@ async function loadAirQuality(){
     document.getElementById('aqiBadge').textContent = eaqi;
     document.getElementById('aqiBadge').style.background = band.color;
     document.getElementById('aqiBadge').style.color = band.textColor;
+    document.getElementById('aqiBadge').title = `${band.name}: ${band.desc}`;
     document.getElementById('nowAirDot').style.background = band.color;
     document.getElementById('nowAirValue').textContent = `${eaqi} · ${band.name}`;
     document.getElementById('nowAir').style.borderLeftColor = band.color;
@@ -2259,6 +2443,7 @@ async function loadWater(){
     const stageEl = document.getElementById('waterStage');
     stageEl.style.color = stage.color;
     stageEl.innerHTML = `${stage.name} <span class="val">${level} cm</span>`;
+    stageEl.title = stage.desc;
     document.getElementById('waterDesc').textContent = `Stanice ${data.station}, tok ${data.stream} — ${stage.desc}`;
 
     const marker = document.getElementById('waterMarker');
