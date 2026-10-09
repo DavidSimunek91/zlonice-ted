@@ -1,7 +1,17 @@
 {
   "status": "ok",
-  "updated": "2026-10-08T06:07:04.709Z",
+  "updated": "2026-10-09T06:07:03.194Z",
   "items": [
+    {
+      "id": 1255,
+      "title": "Rozhodnutí „Vestavba podkroví Dřínov č.p. 72“",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1255&action=detail",
+      "pubDate": "2026-10-07T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Rozhodnutí - Stavební povolení „Vestavba podkroví Dřínov č.p. 72“",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13942193"
+    },
     {
       "id": 1254,
       "title": "Záměr prodeje - hasičký vůz",
@@ -104,16 +114,6 @@
       },
       "note": null,
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13866883"
-    },
-    {
-      "id": 1245,
-      "title": "Svolání volebních komisí pro volby do obecního zastupitelstva",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1245&action=detail",
-      "pubDate": "2026-09-13T22:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "První zasedání volebních komisí proběhne ve čtvrtek 17.9 v budově úřadu Městyse Zlonice od 17…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13846720"
     }
   ]
 }
