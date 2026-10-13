@@ -1,7 +1,17 @@
 {
   "status": "ok",
-  "updated": "2026-10-12T06:07:02.934Z",
+  "updated": "2026-10-13T06:07:16.301Z",
   "items": [
+    {
+      "id": 1256,
+      "title": "Zápis o výsledku voleb - Zlonice",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1256&action=detail",
+      "pubDate": "2026-10-11T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "ZÁPIS O VÝSLEDKU VOLEB DO ZASTUPITELSTVA OBCE Ve volbách do zastupitelstva obce (městysu, města, městské…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13956369"
+    },
     {
       "id": 1255,
       "title": "Rozhodnutí „Vestavba podkroví Dřínov č.p. 72“",
@@ -91,29 +101,6 @@
       "summary": null,
       "note": "OZNÁMENÍ O DOBĚ A MÍSTU KONÁNÍ VOLEB DO ZASTUPITELSTEV OBCÍ podle § 5 zákona č.…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13883851"
-    },
-    {
-      "id": 1246,
-      "title": "Rozpočtové opatření č. 3 / 2026",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1246&action=detail",
-      "pubDate": "2026-09-16T22:00:00.000Z",
-      "type": "rozpocet",
-      "summary": {
-        "prijmy": {
-          "before": "1 170 000 Kč",
-          "after": "1 761 950 Kč",
-          "change": "+591 950 Kč",
-          "direction": "up"
-        },
-        "vydaje": {
-          "before": "15 884 000 Kč",
-          "after": "16 475 950 Kč",
-          "change": "+591 950 Kč",
-          "direction": "up"
-        }
-      },
-      "note": null,
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13866883"
     }
   ]
 }
