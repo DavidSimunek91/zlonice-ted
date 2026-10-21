@@ -1,7 +1,17 @@
 {
   "status": "ok",
-  "updated": "2026-10-20T06:07:03.579Z",
+  "updated": "2026-10-21T06:07:09.827Z",
   "items": [
+    {
+      "id": 1257,
+      "title": "Oznámení o přerušení dodávky elektrické energie č. 110061125697",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1257&action=detail",
+      "pubDate": "2026-10-20T22:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Oznámení o přerušení dodávky elektrické energie č. 110061125697 &#13; dne 10. 11. 2026 od 7:30…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=13988488"
+    },
     {
       "id": 1256,
       "title": "Zápis o výsledku voleb - Zlonice",
@@ -91,16 +101,6 @@
       "summary": null,
       "note": "AUKČNÍ VYHLÁŠKA č. EAS/SBE/038/2026 Elektronická aukce se řídí platným Aukčním řádem, není-li stanoveno v této…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13890574"
-    },
-    {
-      "id": 1247,
-      "title": "Oznámení o době a místu konání voleb",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1247&action=detail",
-      "pubDate": "2026-09-21T22:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "OZNÁMENÍ O DOBĚ A MÍSTU KONÁNÍ VOLEB DO ZASTUPITELSTEV OBCÍ podle § 5 zákona č.…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13883851"
     }
   ]
 }
