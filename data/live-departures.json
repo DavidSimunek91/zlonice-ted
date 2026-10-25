@@ -1,5 +1,1 @@
-{
-  "status": "error",
-  "updated": "2026-10-25T07:55:22.170Z",
-  "message": "Golemio API vrátilo HTTP 522"
-}
+{"status":"ok","updated":"2026-10-25T08:05:04.252Z","byTrip":{"590_380_260905":{"isCanceled":false,"isAtStop":false,"delayAvailable":true,"delayMinutes":0,"delaySeconds":0,"scheduled":"2026-10-25T10:15:00+01:00","predicted":"2026-10-25T10:15:00+01:00"},"590_381_260905":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-10-25T11:54:00+01:00","predicted":"2026-10-25T11:54:00+01:00"},"590_159_260905":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-10-25T14:15:00+01:00","predicted":"2026-10-25T14:15:00+01:00"}}}
