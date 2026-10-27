@@ -1,7 +1,17 @@
 {
   "status": "ok",
-  "updated": "2026-10-26T06:07:04.084Z",
+  "updated": "2026-10-27T06:07:09.504Z",
   "items": [
+    {
+      "id": 1261,
+      "title": "Svolání zastupitelstva - ustavující 1/2026",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1261&action=detail",
+      "pubDate": "2026-10-26T07:36:42.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Podklady pro jednání zastupitelstva ustavující 1/2026 Tento dokument přibližuje některé body k jednání. Některé body…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14004662"
+    },
     {
       "id": 1258,
       "title": "Aukční vyhláška - Drnov, čp. 11 (3. opakování aukce)",
@@ -11,6 +21,26 @@
       "summary": null,
       "note": "Na základě žádosti UZSVM zveřejňujeme.",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=14004315"
+    },
+    {
+      "id": 1259,
+      "title": "Upozornění k odstranění a okleštění stromoví a jiných porostů",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1259&action=detail",
+      "pubDate": "2026-10-25T23:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "ČEZ Distribuce žádá dle zákona o provedení okleštění stromoví v blízkosti elektrického vedení. Pokud tak…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14004393"
+    },
+    {
+      "id": 1260,
+      "title": "Přehled odpadového hospodářství 2025",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1260&action=detail",
+      "pubDate": "2026-10-25T23:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "Základní výsledky odpadového hospodářství obce za rok 2025: Produkce směsného komunálního odpadu 644,5785 tun 305…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14004581"
     },
     {
       "id": 1257,
@@ -71,36 +101,6 @@
       "summary": null,
       "note": "VEŘEJNÁ VYHLÁŠKA Krajský úřad Středočeského kraje, Odbor územního plánování a krajský stavební úřad (dále jen…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13903326"
-    },
-    {
-      "id": 1248,
-      "title": "Riziko šíření karanténního škůdce jasanů, polníka jasanového",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1248&action=detail",
-      "pubDate": "2026-09-24T05:26:22.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Věc: Oznámení o potencionálním riziku šíření karanténního škůdce jasanů, polníka jasanového (Agrilus planipennis) Krajský úřad…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13890506"
-    },
-    {
-      "id": 1249,
-      "title": "Exekuční příkaz - Vyšínek 10",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1249&action=detail",
-      "pubDate": "2026-09-23T22:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "EXEKUČNÍ PŘÍKAZ K PROVEDENÍ EXEKUCE PRODEJEM NEMOVITÝCH VĚCÍ Povinný: Vymáhaná povinnost: (pohledávka HEAVENDOOR, a.s., IČ:…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13890522"
-    },
-    {
-      "id": 1250,
-      "title": "Aukční vyhláška - Drnov, čp. 11",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1250&action=detail",
-      "pubDate": "2026-09-23T22:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "UZSVM požádal o zveřejnění aukce nemovitosti Drnov, čp. 11",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13890555"
     }
   ]
 }
