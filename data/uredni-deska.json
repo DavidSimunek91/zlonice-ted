@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "updated": "2026-10-29T06:07:03.677Z",
+  "updated": "2026-10-30T06:07:03.326Z",
   "items": [
     {
       "id": 1261,
@@ -23,16 +23,6 @@
       "fileUrl": "https://www.zlonice.cz/file.php?oid=14004315"
     },
     {
-      "id": 1259,
-      "title": "Upozornění k odstranění a okleštění stromoví a jiných porostů",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1259&action=detail",
-      "pubDate": "2026-10-25T23:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "ČEZ Distribuce žádá dle zákona o provedení okleštění stromoví v blízkosti elektrického vedení. Pokud tak…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=14004393"
-    },
-    {
       "id": 1260,
       "title": "Přehled odpadového hospodářství 2025",
       "link": "https://www.zlonice.cz/uredni-deska?id=1260&action=detail",
@@ -41,6 +31,16 @@
       "summary": null,
       "note": "Základní výsledky odpadového hospodářství obce za rok 2025: Produkce směsného komunálního odpadu 644,5785 tun 305…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=14004581"
+    },
+    {
+      "id": 1259,
+      "title": "Upozornění k odstranění a okleštění stromoví a jiných porostů",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1259&action=detail",
+      "pubDate": "2026-10-25T23:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "ČEZ Distribuce žádá dle zákona o provedení okleštění stromoví v blízkosti elektrického vedení. Pokud tak…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14004393"
     },
     {
       "id": 1257,
