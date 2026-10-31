@@ -1,5 +1,10 @@
 # Datové pipeline na vlastním droplu (DigitalOcean)
 
+> Pro ŘSD/NDIC pipeline (doprava, zimní sjízdnost) viz nejdřív
+> `CLAUDE.md` → "Infrastruktura ŘSD/NDIC proxy" pro aktuální stav, co je
+> živé/legacy — tenhle soubor popisuje droplet obecně, ne které proxy
+> řešení zrovna platí.
+
 ## Proč tohle vůbec existuje
 
 GitHub Actions `schedule:` trigger má u tohohle repa dlouhodobě zdokumentované

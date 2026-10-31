@@ -5,22 +5,32 @@
 // Basic Auth s neveřejnými přihlašovacími údaji), jen čte výsledný JSON.
 //
 // PROXY (viz RSD_PROXY_URL níž): ŘSD blokuje spojení z datacenter IP
-// rozsahů GitHub Actions runnerů (connect timeout, ověřeno — z běžného
+// rozsahů (GitHub Actions i droplet, connect timeout, ověřeno — z běžného
 // připojení přímé volání s týmiž údaji funguje bez problémů; portál ŘSD
-// navíc nenabízí žádné self-service nastavení IP whitelistu). Proto
-// požadavek místo přímo na ŘSD chodí přes malý Cloudflare Worker, který
-// ho jen transparentně přeposílá dál (viz X-Proxy-Key níž — chrání
-// Worker proti zneužití coby veřejná proxy, ŘSD přihlašovací údaje samy
-// o sobě nijak neukládá). Když RSD_PROXY_URL není nastavené, skript
-// volá ŘSD přímo — pro případ, že by se blokace v budoucnu zrušila.
+// navíc nenabízí žádné self-service nastavení IP whitelistu). Požadavek
+// proto chodí přes transparentní relay místo přímo na ŘSD (viz X-Proxy-Key
+// níž — chrání relay proti zneužití coby veřejná proxy, ŘSD přihlašovací
+// údaje samy o sobě nijak neukládá). Když RSD_PROXY_URL není nastavené,
+// skript volá ŘSD přímo — pro případ, že by se blokace v budoucnu zrušila.
 //
-// POZOR: ani Cloudflare Worker není spolehlivá 100% záchrana — ověřeno
-// (11.8.2026): i cesta Worker→ŘSD občas skončí na Cloudflare 522
-// (connection timed out), zřejmě proto, že Workers mají sdílený výstupní
-// IP fond napříč všemi zákazníky Cloudflare, ne vyhrazenou IP. Reálně to
-// vychází na ~25 % úspěšnost jednotlivých běhů, ne blokaci na 100 %. Proto
-// níž v main().catch() při chybě NEpřepisujeme poslední DOBRÁ data —
-// viz komentář tam.
+// CO dnes sedí za RSD_PROXY_URL — AKTUÁLNÍ STAV je v `CLAUDE.md`
+// (→ Infrastruktura ŘSD/NDIC proxy), ne jen tady v tomhle komentáři; ten
+// soubor je po tomhle zjištění (31.10.2026) myšlený jako jediný zdroj
+// pravdy, co je zrovna živé, protože se to v historii repa dvakrát
+// vyměnilo (Cloudflare Worker #20 → Oracle relay `infra/rsd-relay/` #27 →
+// `home-proxy/` na MSI notebooku #44) a tenhle komentář by to sám
+// neudržel v aktuálním stavu.
+//
+// POZOR: historická poznámka z éry Cloudflare Workeru, ne dnešního stavu
+// — zachováno jako kontext pro ladění. Sdílený výstupní IP fond
+// Cloudflare Workers napříč všemi zákazníky (ne vyhrazená IP) tehdy dával
+// jen ~25 % úspěšnost jednotlivých běhů (ověřeno 11.8.2026, i cesta
+// Worker→ŘSD občas skončila na Cloudflare 522). Dnešní `home-proxy/` má
+// vyhrazenou domácí IP, takže by takhle nízká úspěšnost už neměla být
+// normální — opakované selhání dnes spíš znamená, že notebook/Tailscale/
+// NSSM služba neběží, ne stejnou inherentní flakiness jako tehdy. Proto
+// níž v main().catch() při chybě NEpřepisujeme poslední DOBRÁ data — viz
+// komentář tam (to pravidlo platí dál, i když se důvod k opatrnosti změnil).
 //
 // POZOR (přečti, než budeš ladit nesedící data): parser níž je napsaný
 // podle standardní struktury DATEX II v2.3 "Situation Publication"
