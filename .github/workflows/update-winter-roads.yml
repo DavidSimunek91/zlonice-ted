@@ -1,0 +1,64 @@
+name: Update winter roads data
+
+# Stáhne data o zimní sjízdnosti silnic z ŘSD/NDIC (samostatný odběr, jiný
+# než dopravní situace) a uloží zjednodušený výsledek do
+# data/winter-roads.json. Appka ten soubor jen čte jako obyčejný statický
+# JSON — přihlašovací údaje nikdy nejdou do klientského kódu.
+#
+# Setup: Settings → Secrets and variables → Actions → New repository secret
+#   RSD_USERNAME, RSD_PASSWORD = stejné přístupové údaje k portálu
+#   mobilitydata.rsd.cz jako u scripts/update-traffic.mjs (jeden portálový
+#   účet, víc odběrů dat)
+#   RSD_WINTER_URL = cílová URL pro odběr "DDR - Zimní sjízdnost (snímek)"
+#   (zdroj cz-ndic_ddr-winter-pull na registr.dopravniinfo.cz) — portál ji
+#   zobrazí až po schválení tohodle odběru, žádná natvrdo napsaná výchozí
+#   hodnota (viz komentář ve scripts/update-winter-roads.mjs)
+# Dokud RSD_WINTER_URL nebo RSD_USERNAME/RSD_PASSWORD nejsou nastavené, skript se sám ukončí bez chyby a nic nemění.
+#
+# Bez automatického časovače ze stejného důvodu jako update-traffic.yml:
+# skutečný zdroj pravdy je droplet cron (infra/do-pipelines/), workflow
+# zůstává jen pro ruční spuštění (workflow_dispatch) při ladění.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm install --no-save
+
+      - name: Fetch and transform winter roads data
+        env:
+          RSD_USERNAME: ${{ secrets.RSD_USERNAME }}
+          RSD_PASSWORD: ${{ secrets.RSD_PASSWORD }}
+          RSD_WINTER_URL: ${{ secrets.RSD_WINTER_URL }}
+        run: node scripts/update-winter-roads.mjs
+
+      - name: Commit if changed
+        run: |
+          git config user.name "winter-roads-data-bot"
+          git config user.email "actions@github.com"
+          git add data/winter-roads.json
+          git diff --staged --quiet && { echo "Beze změny, nic k odeslání."; exit 0; }
+          git commit -m "Update winter roads data [skip ci]"
+
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push odmítnut (pokus $attempt/5), rebasuju na aktuální main a zkouším znovu…"
+            git fetch origin main
+            git rebase origin/main
+            sleep $((attempt * 2))
+          done
+          echo "::error::Push se nepovedl ani po 5 pokusech."
+          exit 1
