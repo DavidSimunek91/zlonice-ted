@@ -18,17 +18,19 @@
 # ČHMÚ výstrahy — každých 10 minut
 */10 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-alerts.mjs data/alerts.json "Update ČHMÚ alerts" >> $HOME/zlonice-ted-cron.log 2>&1
 
-# Doprava (ŘSD/NDIC) — každých 15 minut. Bez RSD_PROXY_URL v env souboru
-# skript volá ŘSD přímo (viz komentář ve scripts/update-traffic.mjs) —
-# funguje to jen pokud ŘSD neblokuje i IP tohohle droplu (ověř nejdřív
-# krokem 1 v README.md).
+# Doprava (ŘSD/NDIC) — každých 15 minut. Droplet je u ŘSD potvrzeně
+# blokovaný — vyžaduje RSD_PROXY_URL/PROXY_KEY v env souboru (domácí proxy
+# na MSI notebooku, viz home-proxy/README.md). Bez nich skript zkusí volat
+# ŘSD přímo a skončí na timeoutu do status:"error" (viz komentář ve
+# scripts/update-traffic.mjs).
 */15 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-traffic.mjs data/traffic.json "Update traffic data" >> $HOME/zlonice-ted-cron.log 2>&1
 
 # Zimní sjízdnost silnic (ŘSD/NDIC) — každých 30 minut, samostatný odběr
-# od dopravy výš (RSD_WINTER_URL v env souboru). Bez RSD_WINTER_URL skript
-# jen zapíše pending_access a nic nevolá (viz scripts/update-winter-
-# roads.mjs). Mimo zimní sezónu ŘSD podle registru data vůbec neposkytuje,
-# to není chyba pipeline.
+# od dopravy výš, vlastní RSD_WINTER_USERNAME/RSD_WINTER_PASSWORD v env
+# souboru (stejný RSD_PROXY_URL/PROXY_KEY jako doprava). Bez
+# RSD_WINTER_USERNAME/RSD_WINTER_PASSWORD skript jen zapíše pending_access
+# a nic nevolá (viz scripts/update-winter-roads.mjs). Mimo zimní sezónu
+# ŘSD podle registru data vůbec neposkytuje, to není chyba pipeline.
 */30 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-winter-roads.mjs data/winter-roads.json "Update winter roads data" >> $HOME/zlonice-ted-cron.log 2>&1
 
 # Autobusy — jízdní řád jednou denně v 6:00 UTC

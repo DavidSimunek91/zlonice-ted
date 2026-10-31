@@ -54,7 +54,15 @@ const PORT = Number(process.env.PORT || 8787);
 const BIND_HOST = process.env.BIND_HOST || '127.0.0.1';
 const PROXY_KEY = process.env.PROXY_KEY;
 const TARGET_HOST = 'mobilitydata.rsd.cz';
-const TARGET_PATH = '/Resources/Dynamic/CommonTIDatex_v2/';
+// Allowlist cesta na proxy → skutečná cesta na ŘSD. Pořád žádná obecná
+// proxy na cokoli — jen tyhle dvě konkrétní, ověřené odběry. Kořen ('/')
+// zůstává dopravou kvůli zpětné kompatibilitě se stávající konfigurací
+// RSD_PROXY_URL na droplu (ukazuje na holý kořen bez cesty).
+const TARGET_PATHS = {
+  '/': '/Resources/Dynamic/CommonTIDatex_v2/',
+  '/traffic': '/Resources/Dynamic/CommonTIDatex_v2/',
+  '/winter': '/Resources/Dynamic/WinterTIDDR/',
+};
 const UPSTREAM_TIMEOUT_MS = 20_000;
 const LOG_PATH = join(__dirname, 'proxy.log');
 
@@ -90,13 +98,21 @@ const server = createServer((req, res) => {
     return;
   }
 
-  // Cílová cesta je napevno daná (allowlist) — ignoruje se, s jakou cestou
-  // nebo parametry požadavek skutečně přišel. Nejde to použít jako obecnou
-  // proxy na cokoli jiného.
+  // Cílová cesta se vybírá jen z pevné allowlisty výš podle cesty
+  // požadavku — nejde to použít jako obecnou proxy na cokoli jiného.
+  const reqPath = (req.url || '/').split('?')[0];
+  const targetPath = TARGET_PATHS[reqPath];
+  if (!targetPath) {
+    log(`404 neznámá cesta ${reqPath}`);
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Not found (cesta není na allowlistu)');
+    return;
+  }
+
   const upstreamReq = httpsRequest(
     {
       hostname: TARGET_HOST,
-      path: TARGET_PATH,
+      path: targetPath,
       method: 'GET',
       headers: { Authorization: req.headers['authorization'] || '' },
       timeout: UPSTREAM_TIMEOUT_MS,

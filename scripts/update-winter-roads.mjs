@@ -7,13 +7,12 @@
 // nedělá, jen čte výsledný JSON.
 //
 // DŮLEŽITÉ: tohle je SAMOSTATNÝ odběr, ne tentýž jako u scripts/update-
-// traffic.mjs. Stejný portálový účet (RSD_USERNAME/RSD_PASSWORD) na
-// mobilitydata.rsd.cz pravděpodobně funguje pro oba odběry (jeden účet,
-// víc "odběrů" dat), ale je potřeba ho na portálu zvlášť schválit a teprve
-// pak portál ukáže konkrétní URL koncového bodu pro tenhle zdroj — proto
-// RSD_WINTER_URL níž nemá (a nesmí mít) žádnou natvrdo napsanou výchozí
-// hodnotu, na rozdíl od DIRECT_URL v update-traffic.mjs. Dokud ji někdo
-// nevyplní jako secret, skript nic nevolá (viz pending_access níž).
+// traffic.mjs — a na rozdíl od původního předpokladu NEsdílí přihlašovací
+// údaje s dopravou. Portál ke každému odběru generuje VLASTNÍ Basic Auth
+// dvojici (náhodný hex login, ne zvolené jméno portálového účtu) — proto
+// RSD_WINTER_USERNAME/RSD_WINTER_PASSWORD níž, oddělené od RSD_USERNAME/
+// RSD_PASSWORD u dopravy. Cílová URL (ověřeno přímo na portálu
+// mobilitydata.rsd.cz, ne odhad): /Resources/Dynamic/WinterTIDDR/.
 //
 // Zdroj je navíc SEZÓNNÍ — mimo zimní sezónu ho ŘSD podle registru vůbec
 // neposkytuje. Prázdný/nedostupný výsledek mimo sezónu tedy neznamená
@@ -44,15 +43,15 @@
 // neuvidíme skutečnou odpověď, nevíme jistě, v jakém poli to bude — hledá
 // se proto v libovolném textovém poli nalezeného záznamu.
 //
-// PROXY: na rozdíl od dopravy tu (zatím) NENÍ zapojený žádný proxy
-// fallback (RSD_PROXY_URL) — existující Cloudflare Worker/relay
-// (infra/rsd-relay) má cílovou cestu natvrdo napevno na dopravní endpoint
-// (/Resources/Dynamic/CommonTIDatex_v2/, viz infra/rsd-relay/relay-
-// server.mjs), takže by pro tenhle zdroj stejně jen volal špatnou URL.
-// Produkční cesta je přímé volání z droplu s vlastní IP (viz infra/do-
-// pipelines/README.md krok 1) — pokud se ukáže, že ŘSD blokuje i tenhle
-// endpoint z droplu, bude potřeba relay rozšířit o druhou cílovou cestu,
-// což je mimo rozsah tohodle kola.
+// PROXY: droplet je u ŘSD potvrzeně blokovaný (viz infra/rsd-relay/README.md
+// a home-proxy/README.md) — produkční cesta je přes domácí proxy na MSI
+// notebooku (home-proxy/server.mjs), ne přímé volání z droplu. Proxy
+// přeposílá Basic Auth hlavičku beze změny (sám žádné přihlašovací údaje
+// nezná, jen sdílený PROXY_KEY) a cílovou cestu vybírá podle cesty
+// požadavku z pevné allowlisty — RSD_PROXY_URL + "/winter" tedy jde na
+// stejný proxy jako doprava (RSD_PROXY_URL samotné, bez cesty), jen na
+// jinou cílovou ŘSD URL. Stejný proxy server, stejný PROXY_KEY, žádná
+// nová hodnota na notebooku navíc.
 //
 // Bezpečnostní pravidla, stejná jako u ostatních zdrojů v tomhle repu:
 //   1. Cokoli se nepovede (síť, auth, formát, chybějící očekávaná pole) →
@@ -65,9 +64,11 @@ import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { XMLParser } from 'fast-xml-parser';
 
 const OUT_PATH = 'data/winter-roads.json';
-const WINTER_URL = process.env.RSD_WINTER_URL;
-const USERNAME = process.env.RSD_USERNAME;
-const PASSWORD = process.env.RSD_PASSWORD;
+const DIRECT_URL = 'https://mobilitydata.rsd.cz/Resources/Dynamic/WinterTIDDR/';
+const PROXY_URL = process.env.RSD_PROXY_URL; // domácí proxy na MSI notebooku, viz komentář výš
+const PROXY_KEY = process.env.PROXY_KEY;
+const USERNAME = process.env.RSD_WINTER_USERNAME;
+const PASSWORD = process.env.RSD_WINTER_PASSWORD;
 
 const FETCH_TIMEOUT_MS = 15_000;
 const MAX_ATTEMPTS = 3;
@@ -159,24 +160,23 @@ export function topLevelShape(doc) {
 }
 
 async function main() {
-  if (!USERNAME || !PASSWORD || !WINTER_URL) {
-    const missing = !WINTER_URL
-      ? 'RSD_WINTER_URL (URL se zobrazí na mobilitydata.rsd.cz až po schválení odběru "DDR - Zimní sjízdnost (snímek)")'
-      : 'RSD_USERNAME/RSD_PASSWORD';
+  if (!USERNAME || !PASSWORD) {
     const output = {
       status: 'pending_access',
       updated: new Date().toISOString(),
-      note: `${missing} nejsou nastavené jako secrety.`,
+      note: 'RSD_WINTER_USERNAME/RSD_WINTER_PASSWORD nejsou nastavené jako secrety.',
     };
     writeFileSync(OUT_PATH, JSON.stringify(output, null, 2) + '\n');
-    console.log(`${missing} chybí, nic nevolám.`);
+    console.log('RSD_WINTER_USERNAME/RSD_WINTER_PASSWORD chybí, nic nevolám.');
     return;
   }
 
   const auth = Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64');
   const headers = { Authorization: `Basic ${auth}` };
+  const url = PROXY_URL ? PROXY_URL.replace(/\/?$/, '/winter') : DIRECT_URL;
+  if (PROXY_URL) headers['X-Proxy-Key'] = PROXY_KEY || '';
 
-  const res = await fetchWithRetry(WINTER_URL, { headers });
+  const res = await fetchWithRetry(url, { headers });
   if (!res.ok) throw new Error(`ŘSD/NDIC API (zimní sjízdnost) vrátilo HTTP ${res.status}`);
   const xml = await res.text();
 

@@ -36,9 +36,6 @@ na GitHub Actions.
 
 ### Krok 1 — Otestovat, jestli ŘSD blokuje i IP tohohle droplu
 
-Nejlevnější test hned na začátku — určí, jestli budeme vůbec potřebovat
-Cloudflare Worker jako zálohu pro dopravu.
-
 ```bash
 ssh <uzivatel>@<IP-droplu>
 
@@ -47,14 +44,13 @@ curl -sS -i -u '<RSD_USERNAME>:<RSD_PASSWORD>' \
   'https://mobilitydata.rsd.cz/Resources/Dynamic/CommonTIDatex_v2/'
 ```
 
-- **Dostaneš zpátky XML/DATEX II data (HTTP 200)** → droplet není
-  blokovaný, super, nic dalšího k dopravě řešit nemusíš, jen v `env`
-  souboru (krok 4) nech `RSD_PROXY_URL`/`PROXY_KEY` zakomentované.
-- **Timeout / connection refused** → droplet je blokovaný stejně jako
-  GitHub Actions. V `env` souboru pak odkomentuj `RSD_PROXY_URL`/
-  `PROXY_KEY` a nech dopravu jet přes existující Cloudflare Worker (funguje
-  dál, jen s tou nižší ~25% úspěšností — ale aspoň se o to droplet bude
-  pokoušet co 15 minut místo jednou za několik hodin).
+**Aktuální stav (ověřeno, ne jen teoreticky): droplet JE blokovaný**, stejně
+jako GitHub Actions a sdílený fond Cloudflare Workers. Produkční cesta je
+proto domácí proxy na MSI notebooku (`home-proxy/`, viz
+`home-proxy/README.md`) — v `env` souboru (krok 4) nastav `RSD_PROXY_URL`
+na jeho Tailscale adresu a `PROXY_KEY` na sdílený token. Tenhle test si
+klidně zopakuj, kdyby se blokace časem zrušila, ale dokud nedostaneš
+HTTP 200 přímo, proxy je potřeba.
 
 ### Krok 2 — Deploy key pro push do GitHubu
 
@@ -138,13 +134,15 @@ Měl bys vidět řádky jako `[update-water] pushnuto` bez chyb. Pak zkontroluj
 přímo na `vezlonicich.cz` (tvrdý refresh, Ctrl+Shift+R), jestli dlaždice
 Voda/Výstrahy/Doprava ukazují čerstvý čas, ne "nelze ověřit".
 
-### (Jen pokud krok 1 ukázal, že ŘSD droplet blokuje)
+### Droplet je blokovaný (potvrzeno) — domácí proxy na MSI notebooku
 
-Pak dává smysl znovu zvážit `infra/rsd-relay/` (Caddy + `relay-server.mjs`)
-přímo na tomhle droplu — postup je stejný jako v `infra/rsd-relay/README.md`,
-jen přeskoč kroky 1–4 (ty jsou pro Oracle Cloud, tenhle droplet už existuje
-a má stálou IP) a rovnou pokračuj od kroku 5 (DNS). Než instalovat Caddy
-znovu, zkontroluj `sudo systemctl status caddy` — pokud už běží kvůli
-`ebru-rsvp`, stačí do existujícího `Caddyfile` přidat blok pro
-`rsd-relay.vezlonicich.cz` (viz `infra/rsd-relay/Caddyfile`), ne instalovat
-druhou instanci.
+Aktuálně živé řešení: `home-proxy/` (Node + Tailscale, běží jako Windows
+služba na MSI notebooku) — postup v `home-proxy/README.md`. Přeposílá
+Basic Auth hlavičku beze změny (sám přihlašovací údaje nezná) na jednu z
+pevně dané allowlisty cest (doprava i zimní sjízdnost), podle toho, na
+jakou cestu na proxy požadavek přišel.
+
+`infra/rsd-relay/` (Caddy + `relay-server.mjs` na Oracle Cloud) je starší,
+dnes nepoužívaná alternativa se stejnou myšlenkou — nech ji být, dokud
+home-proxy funguje; dává smysl ji oživit jen kdyby domácí notebook přestal
+být spolehlivý (notebook offline/spánek vs. cloudová VM s vyšší dostupností).
