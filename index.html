@@ -555,6 +555,7 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .traffic-dist{font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);color:var(--ink-soft);white-space:nowrap;}
 .traffic-comment{margin-top:.4rem;font-size:var(--fs-14);}
 .traffic-time{margin-top:.25rem;font-size:var(--fs-12);color:var(--ink-soft);}
+.traffic-subhead{margin:1.4rem 0 .8rem;padding-top:1.1rem;border-top:1px dashed var(--line);font-weight:600;font-size:var(--fs-16);display:flex;align-items:center;gap:.5rem;}
 
 /* úřední deska */
 .board-list{display:flex;flex-direction:column;gap:.7rem;}
@@ -876,10 +877,21 @@ footer a{color:var(--footer-link);text-decoration:underline;}
         </div>
       </div>
       <div id="trafficList"></div>
+
+      <div class="traffic-subhead">❄️ Zimní sjízdnost silnic</div>
+      <div class="banner traffic-banner" id="winterBanner">
+        <div class="stripe"></div>
+        <div>
+          <strong id="winterHeadline">Kontroluji sjízdnost…</strong>
+          <span id="winterDetail">Načítám data ŘSD/NDIC.</span>
+        </div>
+      </div>
+      <div id="winterList"></div>
+
       <p class="section-foot">Zdroj: <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> · živě</p>
       <details class="how-details">
         <summary>Jak to funguje</summary>
-        <p>Zdroj: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Stránka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení.</p>
+        <p>Dopravní situace: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Stránka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení. Zimní sjízdnost silnic je samostatný odběr ŘSD/NDIC (formát DDR, jen v zimní sezóně), kontrola co 30 minut, filtrováno podle Středočeského kraje a hlavních silnic v okolí Zlonic.</p>
       </details>
     </div>
   </section>
@@ -2160,6 +2172,70 @@ async function loadTraffic(){
   }
 }
 
+// Zimní sjízdnost silnic — samostatný odběr ŘSD/NDIC (DDR formát, jen v
+// zimní sezóně), viz scripts/update-winter-roads.mjs a data/README.md.
+// Na rozdíl od dopravních situací výš appka nerozlišuje typ/závažnost
+// hlášení (zdroj to spolehlivě nedává, viz komentář ve skriptu) — jen
+// ukazuje text, co ŘSD poslala, filtrovaný na okolí Zlonic.
+const WINTER_STALE_MS = 2 * 60 * 60 * 1000; // pipeline běží co 30 min, klidná rezerva
+
+function setWinterBanner(cls, headline, detailHtml){
+  document.getElementById('winterBanner').className = 'banner traffic-banner' + (cls ? ' ' + cls : '');
+  document.getElementById('winterHeadline').textContent = headline;
+  document.getElementById('winterDetail').innerHTML = detailHtml;
+}
+
+function unknownWinterState(reason){
+  setWinterBanner('unknown', '❓ Sjízdnost silnic nelze ověřit',
+    `${escapeHtml(reason)} Zkontroluj prosím oficiální zdroj přímo: <a href="https://dopravniinfo.cz" target="_blank" rel="noopener">dopravniinfo.cz</a>.`);
+  document.getElementById('winterList').innerHTML = '';
+}
+
+async function loadWinter(){
+  const list = document.getElementById('winterList');
+  try{
+    const res = await fetch('./data/winter-roads.json', {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    if (data.status === 'pending_access'){
+      setWinterBanner('unknown', '⏳ Čeká se na přístup k datům o sjízdnosti',
+        escapeHtml(data.note || 'Čekáme na schválení přístupu k datům ŘSD/NDIC.'));
+      list.innerHTML = '';
+      return;
+    }
+
+    const ageMs = Date.now() - new Date(data.updated).getTime();
+    if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > WINTER_STALE_MS){
+      unknownWinterState('Automatická kontrola sjízdnosti silnic ŘSD/NDIC teď neběží nebo selhala.');
+      return;
+    }
+
+    const checked = new Date(data.updated).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+
+    if (data.reports.length === 0){
+      setWinterBanner('', '✅ Žádná omezení sjízdnosti v okolí',
+        `ŘSD/NDIC aktuálně nehlásí žádné problémy se sjízdností silnic v okolí Zlonic (mimo zimní sezónu zdroj data ani nemá). Ověřeno ${checked}.`);
+      list.innerHTML = '';
+      return;
+    }
+
+    const count = data.reports.length;
+    setWinterBanner('warn',
+      `🚧 ${count > 1 ? `${count} hlášení o sjízdnosti` : '1 hlášení o sjízdnosti'} v okolí`,
+      `Ověřeno ${checked}.`);
+
+    list.innerHTML = data.reports.map((r) => `<div class="traffic-row">
+        <div class="traffic-row-icon">❄️</div>
+        <div class="traffic-row-body">
+          <div class="traffic-comment">${escapeHtml(r.text)}</div>
+        </div>
+      </div>`).join('');
+  }catch(e){
+    unknownWinterState(`Data o sjízdnosti se nepodařilo načíst (${e.message}).`);
+  }
+}
+
 // Autobusové odjezdy — stránka čte jen předzpracovaný jízdní řád (PID GTFS
 // nemá CORS, navíc je to 46 MB zip), viz scripts/update-departures.mjs a
 // data/README.md. "Další odjezdy" stránka počítá sama z aktuálního data a
@@ -2731,6 +2807,7 @@ loadAirQuality();
 loadAres();
 loadDepartures();
 loadTraffic();
+loadWinter();
 loadTradespeople();
 loadUredniDeska();
 

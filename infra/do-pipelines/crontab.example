@@ -24,6 +24,13 @@
 # krokem 1 v README.md).
 */15 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-traffic.mjs data/traffic.json "Update traffic data" >> $HOME/zlonice-ted-cron.log 2>&1
 
+# Zimní sjízdnost silnic (ŘSD/NDIC) — každých 30 minut, samostatný odběr
+# od dopravy výš (RSD_WINTER_URL v env souboru). Bez RSD_WINTER_URL skript
+# jen zapíše pending_access a nic nevolá (viz scripts/update-winter-
+# roads.mjs). Mimo zimní sezónu ŘSD podle registru data vůbec neposkytuje,
+# to není chyba pipeline.
+*/30 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-winter-roads.mjs data/winter-roads.json "Update winter roads data" >> $HOME/zlonice-ted-cron.log 2>&1
+
 # Autobusy — jízdní řád jednou denně v 6:00 UTC
 0 6 * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-departures.mjs data/departures.json "Update bus departures" >> $HOME/zlonice-ted-cron.log 2>&1
 

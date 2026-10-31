@@ -45,6 +45,47 @@ stejně snadno jako Open-Meteo.
   měl selhat čistě do `status:"error"` (viz komentáře přímo ve skriptu),
   appka mezitím ukáže "nelze ověřit".
 
+## Zimní sjízdnost silnic (`winter-roads.json`)
+
+- **Zdroj:** ŘSD/NDIC, portál mobilitydata.rsd.cz — odběr "DDR - Zimní
+  sjízdnost (snímek)" (zdroj `cz-ndic_ddr-winter-pull` v
+  [registru dopravních informací](https://registr.dopravniinfo.cz/en/sources/cz-ndic_ddr-winter-pull/),
+  formát DDR XML v3.2.5, PULL na vyžádání). **Je to jiný, samostatný odběr
+  než Doprava výš** — jiný formát (DDR, ne DATEX II), jiná schválená
+  žádost na portálu, i když stejný portálový účet. Podle registru ho ŘSD
+  poskytuje jen v zimní sezóně.
+- **Aktualizace:** `.github/workflows/update-winter-roads.yml` (ruční
+  spuštění/fallback) a droplet cron (`infra/do-pipelines/`) každých 30
+  minut — viz `scripts/update-winter-roads.mjs`.
+- **Vyžaduje:** odběr schválený přes mobilitydata.rsd.cz + repo secrety
+  `RSD_USERNAME`/`RSD_PASSWORD` (stejné jako u Dopravy, jeden portálový
+  účet) a navíc `RSD_WINTER_URL` — cílovou URL konkrétně pro tenhle odběr,
+  kterou portál zobrazí až po jeho schválení (nejde ji odvodit z
+  dopravního odběru, proto žádná natvrdo napsaná výchozí hodnota v kódu).
+- **Dokud `RSD_WINTER_URL`/secrety nejsou nastavené:** pipeline nic
+  nemění, soubor zůstává ve stavu `pending_access` a appka v podsekci
+  "Zimní sjízdnost silnic" ukazuje "čeká se na přístup".
+- **Filtrování:** zdroj hlásí sjízdnost podle oblastí/úseků silnic, ne
+  podle souřadnic bodu — appka/skript proto nefiltruje haversine okruhem
+  jako u Dopravy, ale podle toho, jestli text hlášení zmiňuje Středočeský
+  kraj nebo hlavní silnice v okolí Zlonic (viz `NEARBY_KEYWORDS` ve
+  skriptu).
+- **Neověřeno proti živé odpovědi — a na rozdíl od Dopravy výš tu
+  nemáme ani jistotu z obecné normy:** dokumentace formátu (XSD/RNC
+  schéma, ukázky XML) je na registr.dopravniinfo.cz, které z tohodle
+  prostředí nejde natáhnout (stejná blokace datacenter IP, co má i
+  samotné API). Parser v `scripts/update-winter-roads.mjs` proto dělá jen
+  obecný rozklad XML, hledá cokoli, co vypadá jako pole záznamů s textem,
+  a když si není jistý, skončí čistě `status:"error"` s výpisem skutečné
+  struktury XML v hlášce — po prvním ostrém běhu (až budou secrety
+  nastavené) bude pravděpodobně potřeba doladit `findRecordArrays`/
+  filtrování podle toho, co ŘSD skutečně vrátí.
+- **Bez proxy fallbacku (zatím):** existující Cloudflare Worker/relay pro
+  Dopravu (`RSD_PROXY_URL`) má cílovou cestu natvrdo na dopravní endpoint
+  — pro tenhle zdroj by volal špatnou URL. Produkční cesta je přímé volání
+  z droplu s vlastní IP; pokud by ŘSD blokovala i tenhle endpoint odtud,
+  relay bude potřeba rozšířit (mimo rozsah prvního nasazení).
+
 ## Výstrahy ČHMÚ (`alerts.json`)
 
 - **Zdroj:** opendata.chmi.cz, CAP/XML formát (celostátní bulletin, ~2 MB)
