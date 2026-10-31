@@ -218,3 +218,28 @@ obojí přežije, jen s pár minutami výpadku.
 - `data/traffic.json` na droplu/webu má čerstvé `updated` a `status:"ok"`
 - Cron (`infra/do-pipelines/crontab.example`, řádek pro traffic) běží dál
   beze změny — jen teď skrz tenhle proxy místo napřímo/přes starý Worker.
+
+## 9. Druhý zdroj přes stejný proxy (zimní sjízdnost)
+
+`server.mjs` teď umí přeposílat na **dvě** cílové ŘSD URL podle cesty
+požadavku (viz `TARGET_PATHS` v kódu): `/` a `/traffic` jdou dál na
+dopravu jako dřív, `/winter` jde na odběr "DDR - Zimní sjízdnost". Žádná
+nová hodnota v `.env` na notebooku není potřeba — jen je nutné dostat
+novější `server.mjs` na notebook a restartovat službu:
+
+```powershell
+cd C:\zlonice-ted
+git pull
+nssm restart RsdHomeProxy
+nssm status RsdHomeProxy   # čekej: SERVICE_RUNNING
+```
+
+Ověření stejné jako v kroku 8, jen na `/winter`:
+
+```bash
+curl -i -H "X-Proxy-Key: <token>" http://100.x.y.z:8787/winter   # DDR XML, ne 404
+```
+
+Na droplu se nic nemění — `scripts/update-winter-roads.mjs` použije
+stejné `RSD_PROXY_URL`/`PROXY_KEY` z `~/zlonice-ted.env` jako doprava, jen
+si sám připojí `/winter` k adrese.

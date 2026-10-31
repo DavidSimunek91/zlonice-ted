@@ -6,14 +6,15 @@ name: Update winter roads data
 # JSON — přihlašovací údaje nikdy nejdou do klientského kódu.
 #
 # Setup: Settings → Secrets and variables → Actions → New repository secret
-#   RSD_USERNAME, RSD_PASSWORD = stejné přístupové údaje k portálu
-#   mobilitydata.rsd.cz jako u scripts/update-traffic.mjs (jeden portálový
-#   účet, víc odběrů dat)
-#   RSD_WINTER_URL = cílová URL pro odběr "DDR - Zimní sjízdnost (snímek)"
-#   (zdroj cz-ndic_ddr-winter-pull na registr.dopravniinfo.cz) — portál ji
-#   zobrazí až po schválení tohodle odběru, žádná natvrdo napsaná výchozí
-#   hodnota (viz komentář ve scripts/update-winter-roads.mjs)
-# Dokud RSD_WINTER_URL nebo RSD_USERNAME/RSD_PASSWORD nejsou nastavené, skript se sám ukončí bez chyby a nic nemění.
+#   RSD_WINTER_USERNAME, RSD_WINTER_PASSWORD = přístupové údaje k odběru
+#   "DDR - Zimní sjízdnost (snímek)" z mobilitydata.rsd.cz — portál
+#   generuje VLASTNÍ dvojici pro každý odběr, nejsou stejné jako
+#   RSD_USERNAME/RSD_PASSWORD u scripts/update-traffic.mjs
+#   RSD_PROXY_URL, PROXY_KEY = stejné jako u update-traffic.yml (ŘSD
+#   blokuje GitHub Actions runnery, viz komentář ve scripts/update-winter-
+#   roads.mjs) — bez nich skript zkusí volat ŘSD přímo a nejspíš selže na
+#   timeoutu do status:"error", žádná data to nerozbije.
+# Dokud RSD_WINTER_USERNAME/RSD_WINTER_PASSWORD nejsou nastavené, skript se sám ukončí bez chyby a nic nemění.
 #
 # Bez automatického časovače ze stejného důvodu jako update-traffic.yml:
 # skutečný zdroj pravdy je droplet cron (infra/do-pipelines/), workflow
@@ -38,9 +39,10 @@ jobs:
 
       - name: Fetch and transform winter roads data
         env:
-          RSD_USERNAME: ${{ secrets.RSD_USERNAME }}
-          RSD_PASSWORD: ${{ secrets.RSD_PASSWORD }}
-          RSD_WINTER_URL: ${{ secrets.RSD_WINTER_URL }}
+          RSD_WINTER_USERNAME: ${{ secrets.RSD_WINTER_USERNAME }}
+          RSD_WINTER_PASSWORD: ${{ secrets.RSD_WINTER_PASSWORD }}
+          RSD_PROXY_URL: ${{ secrets.RSD_PROXY_URL }}
+          PROXY_KEY: ${{ secrets.PROXY_KEY }}
         run: node scripts/update-winter-roads.mjs
 
       - name: Commit if changed

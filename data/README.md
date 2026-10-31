@@ -50,21 +50,26 @@ stejně snadno jako Open-Meteo.
 - **Zdroj:** ŘSD/NDIC, portál mobilitydata.rsd.cz — odběr "DDR - Zimní
   sjízdnost (snímek)" (zdroj `cz-ndic_ddr-winter-pull` v
   [registru dopravních informací](https://registr.dopravniinfo.cz/en/sources/cz-ndic_ddr-winter-pull/),
-  formát DDR XML v3.2.5, PULL na vyžádání). **Je to jiný, samostatný odběr
-  než Doprava výš** — jiný formát (DDR, ne DATEX II), jiná schválená
-  žádost na portálu, i když stejný portálový účet. Podle registru ho ŘSD
-  poskytuje jen v zimní sezóně.
+  formát DDR XML v3.2.5, PULL na vyžádání, URL
+  `https://mobilitydata.rsd.cz/Resources/Dynamic/WinterTIDDR/` — ověřeno
+  přímo na portálu). **Je to jiný, samostatný odběr než Doprava výš** —
+  jiný formát (DDR, ne DATEX II), jiná schválená žádost na portálu, a na
+  rozdíl od původního předpokladu i **vlastní, oddělené přihlašovací
+  údaje** (portál generuje Basic Auth dvojici zvlášť pro každý odběr, ne
+  jeden sdílený účet). Podle registru ho ŘSD poskytuje jen v zimní sezóně.
 - **Aktualizace:** `.github/workflows/update-winter-roads.yml` (ruční
   spuštění/fallback) a droplet cron (`infra/do-pipelines/`) každých 30
   minut — viz `scripts/update-winter-roads.mjs`.
 - **Vyžaduje:** odběr schválený přes mobilitydata.rsd.cz + repo secrety
-  `RSD_USERNAME`/`RSD_PASSWORD` (stejné jako u Dopravy, jeden portálový
-  účet) a navíc `RSD_WINTER_URL` — cílovou URL konkrétně pro tenhle odběr,
-  kterou portál zobrazí až po jeho schválení (nejde ji odvodit z
-  dopravního odběru, proto žádná natvrdo napsaná výchozí hodnota v kódu).
-- **Dokud `RSD_WINTER_URL`/secrety nejsou nastavené:** pipeline nic
-  nemění, soubor zůstává ve stavu `pending_access` a appka v podsekci
-  "Zimní sjízdnost silnic" ukazuje "čeká se na přístup".
+  `RSD_WINTER_USERNAME`/`RSD_WINTER_PASSWORD` (vlastní pro tenhle odběr,
+  ne stejné jako `RSD_USERNAME`/`RSD_PASSWORD` u Dopravy). Droplet je u
+  ŘSD potvrzeně blokovaný stejně jako u Dopravy, takže navíc potřebuje
+  `RSD_PROXY_URL`/`PROXY_KEY` (domácí proxy na MSI notebooku, viz
+  `home-proxy/README.md`) — stejné hodnoty, co už používá Doprava, žádná
+  nová hodnota na notebooku.
+- **Dokud `RSD_WINTER_USERNAME`/`RSD_WINTER_PASSWORD` nejsou nastavené:**
+  pipeline nic nemění, soubor zůstává ve stavu `pending_access` a appka v
+  podsekci "Zimní sjízdnost silnic" ukazuje "čeká se na přístup".
 - **Filtrování:** zdroj hlásí sjízdnost podle oblastí/úseků silnic, ne
   podle souřadnic bodu — appka/skript proto nefiltruje haversine okruhem
   jako u Dopravy, ale podle toho, jestli text hlášení zmiňuje Středočeský
@@ -80,11 +85,11 @@ stejně snadno jako Open-Meteo.
   struktury XML v hlášce — po prvním ostrém běhu (až budou secrety
   nastavené) bude pravděpodobně potřeba doladit `findRecordArrays`/
   filtrování podle toho, co ŘSD skutečně vrátí.
-- **Bez proxy fallbacku (zatím):** existující Cloudflare Worker/relay pro
-  Dopravu (`RSD_PROXY_URL`) má cílovou cestu natvrdo na dopravní endpoint
-  — pro tenhle zdroj by volal špatnou URL. Produkční cesta je přímé volání
-  z droplu s vlastní IP; pokud by ŘSD blokovala i tenhle endpoint odtud,
-  relay bude potřeba rozšířit (mimo rozsah prvního nasazení).
+- **Proxy:** jede přes stejný domácí proxy na MSI notebooku jako Doprava
+  (`home-proxy/server.mjs`) — ten vybírá cílovou ŘSD URL podle cesty
+  požadavku (`/` nebo `/traffic` → dopravní endpoint, `/winter` → tenhle),
+  takže `RSD_PROXY_URL` se jen doplní o `/winter` (viz skript), žádná
+  nová proxy ani token navíc.
 
 ## Výstrahy ČHMÚ (`alerts.json`)
 
