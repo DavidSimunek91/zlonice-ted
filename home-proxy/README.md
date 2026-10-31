@@ -1,5 +1,9 @@
 # Domácí RSD proxy (Windows notebook + Tailscale)
 
+> Tohle je AKTUÁLNÍ živé řešení (viz `CLAUDE.md` → "Infrastruktura
+> ŘSD/NDIC proxy") — `infra/rsd-relay/` a Cloudflare Worker jsou starší,
+> nahrazené varianty.
+
 ## Proč tohle existuje
 
 ŘSD/NDIC blokuje spojení z cloudových/datacentrových IP rozsahů — potvrzeno

@@ -1,5 +1,13 @@
 # RSD relay na vlastní IP (Oracle Cloud Always Free)
 
+> **STAV (ověřeno 2026-10-31): NEAKTIVNÍ/LEGACY.** Produkční proxy je dnes
+> `home-proxy/` na MSI notebooku (viz `CLAUDE.md` → Infrastruktura ŘSD/NDIC
+> proxy). Tenhle Oracle relay nahradil ještě starší Cloudflare Worker (#20),
+> ale podle PR #44 byl v době, kdy vznikal home-proxy, pravděpodobně i on
+> sám blokovaný stejně jako droplet. Kód tu zůstává jako záloha/historie,
+> ne jako aktuální zdroj pravdy — než cokoli měnit nebo nasazovat, ověř
+> stav v `CLAUDE.md`.
+
 Náhrada za Cloudflare Worker (`RSD_PROXY_URL` secret) — stejná úloha (transparentně
 přeposílá požadavek na `mobilitydata.rsd.cz` s Basic Auth hlavičkou), ale běží na
 serveru s **vlastní vyhrazenou IP adresou** místo sdíleného výstupního fondu
