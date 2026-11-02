@@ -212,6 +212,19 @@ a{color:inherit;}
 .theme-toggle{position:absolute;top:var(--gutter);right:var(--gutter);z-index:2;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);color:var(--spruce);cursor:pointer;}
 .theme-toggle:hover{border-color:var(--green);}
 .theme-toggle svg{width:1.25rem;height:1.25rem;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+/* přepínač jazyka (CZ/EN) — malá "pilulka" vlevo od přepínače tmavého
+   režimu, stejná výška/pozice, ať tvoří jeden vizuální pár v rohu hero.
+   Dvě poloviny s posuvným zvýrazněním (jako iOS switch), ne dvě oddělená
+   tlačítka — jasně ukazuje, že jde o JEDEN přepínač se dvěma stavy. */
+.lang-toggle{position:absolute;top:var(--gutter);right:calc(var(--gutter) + 48px);z-index:2;display:flex;align-items:center;height:40px;padding:3px;border-radius:999px;background:var(--surface);border:1px solid var(--line);cursor:pointer;font-family:var(--font-sans);font-size:var(--fs-12);font-weight:600;letter-spacing:.02em;color:var(--ink-soft);gap:0;}
+.lang-toggle:hover{border-color:var(--green);}
+.lang-toggle span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;transition:color .2s ease;}
+.lang-toggle span.active{color:#fff;}
+.lang-toggle .lang-knob{position:absolute;top:3px;left:3px;width:34px;height:34px;border-radius:50%;background:var(--nav-active-bg);transition:transform .2s ease;z-index:0;}
+.lang-toggle[data-lang="en"] .lang-knob{transform:translateX(34px);}
+@media (max-width:640px){
+  .lang-toggle{right:calc(var(--gutter) + 48px);}
+}
 .hero-text{min-width:0;}
 .eyebrow{font-family:var(--font-sans);font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--green-text);display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;}
 .eyebrow .dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--spruce);}
@@ -739,12 +752,16 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   <button type="button" id="themeToggle" class="theme-toggle" aria-label="Přepnout tmavý režim">
     <svg aria-hidden="true"><use id="themeToggleIcon" href="#i-moon"/></svg>
   </button>
+  <button type="button" id="langToggle" class="lang-toggle" data-lang="cs" aria-label="Switch language / přepnout jazyk">
+    <span class="lang-knob" aria-hidden="true"></span>
+    <span id="langToggleCs">CZ</span><span id="langToggleEn">EN</span>
+  </button>
   <div class="hero-inner">
     <div class="hero-text">
-      <span class="eyebrow"><span class="dot"></span>obecní přehled — neoficiální, komunitní projekt</span>
+      <span class="eyebrow"><span class="dot"></span><span data-i18n-en="village overview — unofficial, community project">obecní přehled — neoficiální, komunitní projekt</span></span>
       <span class="eyebrow-rule"></span>
       <h1 class="display">Ve Zlonicích</h1>
-      <p class="hero-sub">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
+      <p class="hero-sub" data-i18n-en="One page with what's happening in and around the village right now — weather, air quality, water and a few facts about Zlonice. No sign-up, no app, just open and look.">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
     </div>
     <svg class="hero-illustration" viewBox="0 0 400 180" fill="none" aria-hidden="true">
       <path d="M0 140 H400" stroke="currentColor" stroke-width="1.5"/>
@@ -758,32 +775,32 @@ footer a{color:var(--footer-link);text-decoration:underline;}
 </header>
 
 <div class="now-wrap">
-  <h2 class="now-heading">Teď ve Zlonicích</h2>
-  <p class="now-updated">Aktualizováno <time id="clock">—</time></p>
+  <h2 class="now-heading" data-i18n-en="Right now in Zlonice">Teď ve Zlonicích</h2>
+  <p class="now-updated"><span data-i18n-en="Updated">Aktualizováno</span> <time id="clock">—</time></p>
   <div class="now-strip" id="nowStrip">
     <a href="#weather" class="now-tile now-tile-alert" id="nowAlert">
-      <span class="now-tile-label">Výstrahy</span>
+      <span class="now-tile-label" data-i18n-en="Alerts">Výstrahy</span>
       <span class="now-tile-value" id="nowAlertValue">—</span>
     </a>
     <a href="#weather" class="now-tile" id="nowWeather">
-      <span class="now-tile-label">Počasí</span>
+      <span class="now-tile-label" data-i18n-en="Weather">Počasí</span>
       <span class="now-tile-value" id="nowWeatherValue">—</span>
       <span class="now-tile-sub" id="nowWeatherSub"></span>
       <span class="now-rain-badge" id="nowRainBadge" hidden></span>
     </a>
     <a href="#bus" class="now-tile" id="nowBus">
-      <span class="now-tile-label">Autobus</span>
+      <span class="now-tile-label" data-i18n-en="Bus">Autobus</span>
       <span class="now-tile-value" id="nowBusValue">—</span>
       <span class="now-tile-dest" id="nowBusDest"></span>
       <span class="now-tile-sub" id="nowBusSub"></span>
     </a>
     <a href="#air" class="now-tile" id="nowAir">
-      <span class="now-tile-label">Ovzduší</span>
+      <span class="now-tile-label" data-i18n-en="Air quality">Ovzduší</span>
       <span class="now-tile-value"><span class="now-dot" id="nowAirDot"></span><span id="nowAirValue">—</span></span>
       <span class="now-tile-sub" id="nowAirSub"></span>
     </a>
     <a href="#water" class="now-tile" id="nowWater">
-      <span class="now-tile-label">Voda</span>
+      <span class="now-tile-label" data-i18n-en="Water">Voda</span>
       <span class="now-tile-value" id="nowWaterValue">—</span>
       <span class="now-tile-sub" id="nowWaterSub"></span>
     </a>
@@ -792,14 +809,14 @@ footer a{color:var(--footer-link);text-decoration:underline;}
 
 <nav class="section-nav" id="sectionNav" aria-label="Rychlá navigace po sekcích">
   <div class="section-nav-inner">
-    <a href="#weather" class="nav-pill" data-target="weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg><span>Počasí</span></a>
-    <a href="#bus" class="nav-pill" data-target="bus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg><span>Autobus</span></a>
-    <a href="#traffic" class="nav-pill" data-target="traffic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg><span>Doprava</span></a>
-    <a href="#board" class="nav-pill" data-target="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span>Úřední deska</span></a>
-    <a href="#air" class="nav-pill" data-target="air"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg><span>Ovzduší</span></a>
-    <a href="#water" class="nav-pill" data-target="water"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg><span>Voda</span></a>
-    <a href="#obec" class="nav-pill" data-target="obec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg><span>Obec</span></a>
-    <a href="#tradespeople" class="nav-pill" data-target="tradespeople"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg><span>Řemeslníci</span></a>
+    <a href="#weather" class="nav-pill" data-target="weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg><span data-i18n-en="Weather">Počasí</span></a>
+    <a href="#bus" class="nav-pill" data-target="bus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg><span data-i18n-en="Bus">Autobus</span></a>
+    <a href="#traffic" class="nav-pill" data-target="traffic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg><span data-i18n-en="Traffic">Doprava</span></a>
+    <a href="#board" class="nav-pill" data-target="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span data-i18n-en="Notice board">Úřední deska</span></a>
+    <a href="#air" class="nav-pill" data-target="air"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg><span data-i18n-en="Air quality">Ovzduší</span></a>
+    <a href="#water" class="nav-pill" data-target="water"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg><span data-i18n-en="Water">Voda</span></a>
+    <a href="#obec" class="nav-pill" data-target="obec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg><span data-i18n-en="Village">Obec</span></a>
+    <a href="#tradespeople" class="nav-pill" data-target="tradespeople"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg><span data-i18n-en="Services">Řemeslníci</span></a>
   </div>
 </nav>
 
@@ -809,28 +826,28 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="section-head">
       <div class="section-title">
         <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .4-7.98 5.5 5.5 0 0 0-10.6 1.7A3.5 3.5 0 0 0 7 18Z"/></svg></span>
-        <h2>Počasí</h2>
+        <h2 data-i18n-en="Weather">Počasí</h2>
       </div>
-      <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
+      <span class="tag live"><span class="dot"></span><span data-i18n-en="live · Open-Meteo">živě · Open-Meteo</span></span>
     </div>
     <div class="banner" id="alertBanner" style="margin-top:0;margin-bottom:1.2rem;">
       <div class="stripe"></div>
       <div>
-        <strong id="alertHeadline">Kontroluji výstrahy…</strong>
-        <span id="alertDetail">Načítám aktuální stav z ČHMÚ.</span>
+        <strong id="alertHeadline" data-i18n-en="Checking alerts…">Kontroluji výstrahy…</strong>
+        <span id="alertDetail" data-i18n-en="Loading the current status from ČHMÚ.">Načítám aktuální stav z ČHMÚ.</span>
       </div>
-      <span class="tag soon" id="alertTag" style="margin-left:auto;"><span class="dot"></span>načítám</span>
+      <span class="tag soon" id="alertTag" style="margin-left:auto;"><span class="dot"></span><span data-i18n-en="loading">načítám</span></span>
     </div>
     <div class="grid" id="weatherCards">
-      <div class="card skel"><div class="k">Teplota</div><div class="v">—</div><div class="sub">načítám…</div></div>
-      <div class="card skel"><div class="k">Vlhkost</div><div class="v">—</div><div class="sub">načítám…</div></div>
-      <div class="card skel"><div class="k">Vítr</div><div class="v">—</div><div class="sub">načítám…</div></div>
-      <div class="card skel"><div class="k">Srážky teď</div><div class="v">—</div><div class="sub">načítám…</div></div>
+      <div class="card skel"><div class="k" data-i18n-en="Temperature">Teplota</div><div class="v">—</div><div class="sub" data-i18n-en="loading…">načítám…</div></div>
+      <div class="card skel"><div class="k" data-i18n-en="Humidity">Vlhkost</div><div class="v">—</div><div class="sub" data-i18n-en="loading…">načítám…</div></div>
+      <div class="card skel"><div class="k" data-i18n-en="Wind">Vítr</div><div class="v">—</div><div class="sub" data-i18n-en="loading…">načítám…</div></div>
+      <div class="card skel"><div class="k" data-i18n-en="Precipitation now">Srážky teď</div><div class="v">—</div><div class="sub" data-i18n-en="loading…">načítám…</div></div>
     </div>
-    <div class="hourly-head">Rozpětí teplot v týdnu (min–max)</div>
+    <div class="hourly-head" data-i18n-en="Weekly temperature range (min–max)">Rozpětí teplot v týdnu (min–max)</div>
     <div class="forecast" id="forecastRow"></div>
-    <div class="hourly-head">Dnes po hodinách</div>
-    <div class="hourly-strip" id="hourlyStrip"><div class="sub">načítám…</div></div>
+    <div class="hourly-head" data-i18n-en="Today, hour by hour">Dnes po hodinách</div>
+    <div class="hourly-strip" id="hourlyStrip"><div class="sub" data-i18n-en="loading…">načítám…</div></div>
     <div class="today-tips" id="todayTips"></div>
     <div class="garden-soil" id="gardenSoil"></div>
   </section>
@@ -839,26 +856,26 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="section-head">
       <div class="section-title">
         <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="10" rx="2"/><path d="M3 12h18M7 16v2M17 16v2"/><circle cx="7.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="18.4" r=".9" fill="currentColor" stroke="none"/></svg></span>
-        <h2>Autobus</h2>
+        <h2 data-i18n-en="Bus">Autobus</h2>
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <span class="tag snapshot"><span class="dot"></span>jízdní řád · denně</span>
-        <span class="tag live"><span class="dot"></span>zpoždění živě · Golemio</span>
+        <span class="tag snapshot"><span class="dot"></span><span data-i18n-en="timetable · daily">jízdní řád · denně</span></span>
+        <span class="tag live"><span class="dot"></span><span data-i18n-en="live delays · Golemio">zpoždění živě · Golemio</span></span>
       </div>
     </div>
     <div class="dep-card" id="depCard">
       <div class="dep-top">
-        <label for="depStopSelect" class="dep-top-label">Zastávka</label>
+        <label for="depStopSelect" class="dep-top-label" data-i18n-en="Stop">Zastávka</label>
         <select id="depStopSelect" class="stop-select"></select>
         <div class="dep-seg" id="depSeg" hidden></div>
       </div>
       <div class="dep-next" id="depNext"></div>
-      <div class="dep-table" id="depList"><div class="sub">načítám…</div></div>
-      <p class="dep-live-note">Zpoždění se zobrazí, až spoj vyjede.</p>
-      <p class="section-foot">Zdroj: <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a> · živě</p>
+      <div class="dep-table" id="depList"><div class="sub" data-i18n-en="loading…">načítám…</div></div>
+      <p class="dep-live-note" data-i18n-en="Delay shows up once the service has actually departed.">Zpoždění se zobrazí, až spoj vyjede.</p>
+      <p class="section-foot"><span data-i18n-en="Source:">Zdroj:</span> <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a> · <span data-i18n-en="live">živě</span></p>
       <details class="how-details">
-        <summary>Jak to funguje</summary>
-        <p>Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "žádná data o zpoždění" znamená, že live zpoždění teď stránce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky stránka neukazuje.</p>
+        <summary data-i18n-en="How it works">Jak to funguje</summary>
+        <p data-i18n-en="Timetable (lines 590/591/594) updates once a day. Delay for individual services is live (Golemio, checked every 5 minutes) — a green/yellow/red badge means a confirmed service status. A grey &quot;no live data yet&quot; badge means the service hasn't departed yet and Golemio isn't tracking it yet — not that it's on time. A grey &quot;no delay data&quot; badge means live delay tracking isn't working for the page right now (an outage), not that services are on time. The page doesn't show route closures.">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "žádná data o zpoždění" znamená, že live zpoždění teď stránce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky stránka neukazuje.</p>
       </details>
     </div>
   </section>
@@ -867,34 +884,34 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="section-head">
       <div class="section-title">
         <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 19H3L12 4Z"/><path d="M12 10v4M12 16.3v.01"/></svg></span>
-        <h2>Doprava v okolí</h2>
+        <h2 data-i18n-en="Traffic nearby">Doprava v okolí</h2>
       </div>
-      <span class="tag soon" id="trafficTag"><span class="dot"></span>načítám…</span>
+      <span class="tag soon" id="trafficTag"><span class="dot"></span><span data-i18n-en="loading…">načítám…</span></span>
     </div>
     <div id="trafficCard">
       <div class="banner traffic-banner" id="trafficBanner">
         <div class="stripe"></div>
         <div>
-          <strong id="trafficHeadline">Kontroluji dopravní situaci…</strong>
-          <span id="trafficDetail">Načítám data ŘSD/NDIC.</span>
+          <strong id="trafficHeadline" data-i18n-en="Checking traffic situation…">Kontroluji dopravní situaci…</strong>
+          <span id="trafficDetail" data-i18n-en="Loading ŘSD/NDIC data.">Načítám data ŘSD/NDIC.</span>
         </div>
       </div>
       <div id="trafficList"></div>
 
-      <div class="traffic-subhead">❄️ Zimní sjízdnost silnic</div>
+      <div class="traffic-subhead">❄️ <span data-i18n-en="Winter road conditions">Zimní sjízdnost silnic</span></div>
       <div class="banner traffic-banner" id="winterBanner">
         <div class="stripe"></div>
         <div>
-          <strong id="winterHeadline">Kontroluji sjízdnost…</strong>
-          <span id="winterDetail">Načítám data ŘSD/NDIC.</span>
+          <strong id="winterHeadline" data-i18n-en="Checking road conditions…">Kontroluji sjízdnost…</strong>
+          <span id="winterDetail" data-i18n-en="Loading ŘSD/NDIC data.">Načítám data ŘSD/NDIC.</span>
         </div>
       </div>
       <div id="winterList"></div>
 
-      <p class="section-foot">Zdroj: <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> · živě</p>
+      <p class="section-foot"><span data-i18n-en="Source:">Zdroj:</span> <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> · <span data-i18n-en="live">živě</span></p>
       <details class="how-details">
-        <summary>Jak to funguje</summary>
-        <p>Dopravní situace: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Stránka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení. Zimní sjízdnost silnic je samostatný odběr ŘSD/NDIC (formát DDR, jen v zimní sezóně), kontrola co 30 minut, filtrováno podle Středočeského kraje a hlavních silnic v okolí Zlonic.</p>
+        <summary data-i18n-en="How it works">Jak to funguje</summary>
+        <p data-i18n-en="Traffic situations: ŘSD/NDIC (DATEX II, mobilitydata.rsd.cz data subscription registry), 20 km radius around Zlonice. The page itself never calls out, checked in the background every 15 minutes. Tracked types: accidents, closures, roadworks, and other situations ŘSD reports with a location to display. Winter road conditions is a separate ŘSD/NDIC subscription (DDR format, winter season only), checked every 30 minutes, filtered to the Central Bohemian region and major roads around Zlonice.">Dopravní situace: ŘSD/NDIC (DATEX II, registr odběrů dat mobilitydata.rsd.cz), okruh 20 km od Zlonic. Stránka sama žádné volání nedělá, kontrola na pozadí co 15 minut. Sledované typy: nehody, uzavírky, práce na silnici a další situace, které ŘSD hlásí s polohou pro zobrazení. Zimní sjízdnost silnic je samostatný odběr ŘSD/NDIC (formát DDR, jen v zimní sezóně), kontrola co 30 minut, filtrováno podle Středočeského kraje a hlavních silnic v okolí Zlonic.</p>
       </details>
     </div>
   </section>
@@ -903,16 +920,16 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="section-head">
       <div class="section-title">
         <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg></span>
-        <h2>Úřední deska</h2>
+        <h2 data-i18n-en="Notice board">Úřední deska</h2>
       </div>
-      <span class="tag soon" id="boardTag"><span class="dot"></span>načítám…</span>
+      <span class="tag soon" id="boardTag"><span class="dot"></span><span data-i18n-en="loading…">načítám…</span></span>
     </div>
     <div id="boardCard">
-      <div id="boardList"><div class="sub">načítám…</div></div>
-      <p class="section-foot">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> · živě</p>
+      <div id="boardList"><div class="sub" data-i18n-en="loading…">načítám…</div></div>
+      <p class="section-foot"><span data-i18n-en="Source:">Zdroj:</span> <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> · <span data-i18n-en="live">živě</span></p>
       <details class="how-details">
-        <summary>Jak to funguje</summary>
-        <p>Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS), poslední 3 zprávy. U rozpočtových opatření stránka automaticky přečte přiloženou PDF přílohu a spočítá rozdíl v příjmech/výdajích — u ostatních dokumentů ukazuje krátký úryvek textu (RSS popis, nebo náhled přílohy). Stránka si nic nevymýšlí — jen ukazuje, co skutečně stojí ve zdroji.</p>
+        <summary data-i18n-en="How it works">Jak to funguje</summary>
+        <p data-i18n-en="Source: official notice board of the Zlonice municipal office (RSS), last 3 notices. Note: notice board content itself stays in the original Czech — it's government legal/administrative text, and the page never auto-translates it (avoids any risk of a misleading translation of an official document). For budget measures the page automatically reads the attached PDF and calculates the change in income/spending — for other documents it shows a short excerpt (the RSS description, or a preview of the attachment). The page never makes anything up — it only shows what's actually in the source.">Zdroj: <a href="https://www.zlonice.cz/uredni-deska" target="_blank" rel="noopener">úřední deska Městyse Zlonice</a> (RSS), poslední 3 zprávy. U rozpočtových opatření stránka automaticky přečte přiloženou PDF přílohu a spočítá rozdíl v příjmech/výdajích — u ostatních dokumentů ukazuje krátký úryvek textu (RSS popis, nebo náhled přílohy). Stránka si nic nevymýšlí — jen ukazuje, co skutečně stojí ve zdroji.</p>
       </details>
     </div>
   </section>
@@ -921,20 +938,20 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="section-head">
       <div class="section-title">
         <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg></span>
-        <h2>Kvalita ovzduší</h2>
+        <h2 data-i18n-en="Air quality">Kvalita ovzduší</h2>
       </div>
-      <span class="tag live"><span class="dot"></span>živě · Open-Meteo</span>
+      <span class="tag live"><span class="dot"></span><span data-i18n-en="live · Open-Meteo">živě · Open-Meteo</span></span>
     </div>
     <div class="aqi-card" id="aqiCard">
       <div class="aqi-top">
         <div class="aqi-badge" id="aqiBadge" style="background:var(--ink-soft);">—</div>
         <div class="aqi-label">
-          <div class="band" id="aqiBand">Načítám…</div>
+          <div class="band" id="aqiBand" data-i18n-en="Loading…">Načítám…</div>
           <div class="desc" id="aqiDesc"></div>
         </div>
       </div>
       <div class="scale" id="aqiScale"><div class="scale-marker" id="aqiMarker" style="left:0%;"></div></div>
-      <div class="scale-ticks"><span>0 dobrá</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100+ extrémní</span></div>
+      <div class="scale-ticks"><span data-i18n-en="0 good">0 dobrá</span><span>20</span><span>40</span><span>60</span><span>80</span><span data-i18n-en="100+ extreme">100+ extrémní</span></div>
       <div class="aqi-metrics" id="aqiMetrics"></div>
       <div class="aqi-pollen" id="aqiPollen"></div>
     </div>
@@ -944,25 +961,25 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="section-head">
       <div class="section-title">
         <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg></span>
-        <h2>Voda</h2>
+        <h2 data-i18n-en="Water">Voda</h2>
       </div>
-      <span class="tag soon" id="waterTag"><span class="dot"></span>načítám</span>
+      <span class="tag soon" id="waterTag"><span class="dot"></span><span data-i18n-en="loading">načítám</span></span>
     </div>
     <div class="water-card" id="waterCard">
       <div class="water-top">
-        <div class="stage" id="waterStage" style="color:var(--ink-soft);">Načítám…</div>
+        <div class="stage" id="waterStage" style="color:var(--ink-soft);" data-i18n-en="Loading…">Načítám…</div>
         <div class="desc" id="waterDesc"></div>
       </div>
       <div class="water-scale"><div class="water-marker" id="waterMarker" style="left:0%;"><span class="tag" id="waterMarkerTag"></span></div></div>
       <div class="water-ticks" id="waterTicks">
-        <span><span class="name">sucho</span><span class="range">&lt; 24</span></span>
-        <span><span class="name">normální</span><span class="range">24–105</span></span>
-        <span><span class="name">1. bdělost</span><span class="range">105–145</span></span>
-        <span><span class="name">2. pohotovost</span><span class="range">145–175</span></span>
-        <span><span class="name">3. ohrožení</span><span class="range">&gt; 175</span></span>
+        <span><span class="name" data-i18n-en="dry">sucho</span><span class="range">&lt; 24</span></span>
+        <span><span class="name" data-i18n-en="normal">normální</span><span class="range">24–105</span></span>
+        <span><span class="name" data-i18n-en="1st — alert">1. bdělost</span><span class="range">105–145</span></span>
+        <span><span class="name" data-i18n-en="2nd — readiness">2. pohotovost</span><span class="range">145–175</span></span>
+        <span><span class="name" data-i18n-en="3rd — danger">3. ohrožení</span><span class="range">&gt; 175</span></span>
       </div>
       <div class="water-extra" id="waterExtra"></div>
-      <p class="section-foot" id="waterFooter">Stanice Velvary, tok Bakovský potok — nejbližší reálná stanice ČHMÚ, 16 km po proudu od Zlonic.</p>
+      <p class="section-foot" id="waterFooter" data-i18n-en="Velvary station, Bakovský stream — nearest real ČHMÚ station, 16 km downstream from Zlonice.">Stanice Velvary, tok Bakovský potok — nejbližší reálná stanice ČHMÚ, 16 km po proudu od Zlonic.</p>
     </div>
   </section>
 
@@ -970,34 +987,34 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="section-head">
       <div class="section-title">
         <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg></span>
-        <h2 class="display">O Zlonicích</h2>
+        <h2 class="display" data-i18n-en="About Zlonice">O Zlonicích</h2>
       </div>
     </div>
     <div class="obec-grid">
       <div class="obec-left">
-        <p class="lede">Městys ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
+        <p class="lede" data-i18n-en="A market town in the Central Bohemian region with a major musical heritage and its own small economy.">Městys ve Středočeském kraji s velkým hudebním dědictvím a vlastní drobnou ekonomikou.</p>
         <div class="hero-facts">
           <div class="fact">
-            <span class="k">obyvatel</span><span class="v">2 294</span>
-            <span class="ctx">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
+            <span class="k" data-i18n-en="population">obyvatel</span><span class="v">2 294</span>
+            <span class="ctx" data-i18n-en="villages over 1000 residents are only a quarter of all Czech municipalities">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
           </div>
           <div class="fact">
-            <span class="k">nadmořská výška</span><span class="v">223 m</span>
-            <span class="ctx">nížina — skoro o polovinu níž než český průměr (~450 m)</span>
+            <span class="k" data-i18n-en="elevation">nadmořská výška</span><span class="v">223 m</span>
+            <span class="ctx" data-i18n-en="lowland — almost half as high as the Czech average (~450 m)">nížina — skoro o polovinu níž než český průměr (~450 m)</span>
           </div>
         </div>
         <div class="story">
-          <p>Zlonický zámek, chráněný jako kulturní památka od roku 1978, je spjatý s Antonínem Dvořákem — v letech <span class="dateline">1853–1856</span> se tu mladý skladatel za vedení kantora Antonína Liehmanna učil hrát na housle a klavír. Bývalý zámecký chudobinec dnes hostí Památník Antonína Dvořáka.</p>
-          <p class="cite">Zdroj: Národní památkový ústav, antonin-dvorak.cz</p>
+          <p data-i18n-en="Zlonice Chateau, protected as a cultural monument since 1978, is linked to Antonín Dvořák — between 1853–1856 the young composer learned to play violin and piano here under teacher Antonín Liehmann. The chateau's former poorhouse today hosts the Antonín Dvořák Memorial.">Zlonický zámek, chráněný jako kulturní památka od roku 1978, je spjatý s Antonínem Dvořákem — v letech <span class="dateline">1853–1856</span> se tu mladý skladatel za vedení kantora Antonína Liehmanna učil hrát na housle a klavír. Bývalý zámecký chudobinec dnes hostí Památník Antonína Dvořáka.</p>
+          <p class="cite"><span data-i18n-en="Source:">Zdroj:</span> Národní památkový ústav, antonin-dvorak.cz</p>
         </div>
       </div>
       <div class="obec-data-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;">
-          <strong style="font-size:var(--fs-16);">Místní firmy podle oboru</strong>
-          <span class="tag snapshot"><span class="dot"></span>aktualizace denně · ARES</span>
+          <strong style="font-size:var(--fs-16);" data-i18n-en="Local businesses by sector">Místní firmy podle oboru</strong>
+          <span class="tag snapshot"><span class="dot"></span><span data-i18n-en="daily update · ARES">aktualizace denně · ARES</span></span>
         </div>
         <div class="bars" id="aresBars">
-          <div class="bar-row"><span class="lbl">načítám…</span><span class="bar-track"><span class="bar-fill" style="width:0%;"></span></span><span class="n">—</span></div>
+          <div class="bar-row"><span class="lbl" data-i18n-en="loading…">načítám…</span><span class="bar-track"><span class="bar-fill" style="width:0%;"></span></span><span class="n">—</span></div>
         </div>
         <div id="aresStats"></div>
       </div>
@@ -1008,18 +1025,18 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <div class="section-head">
       <div class="section-title">
         <span class="section-icon-box"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg></span>
-        <h2>Řemeslníci a služby</h2>
+        <h2 data-i18n-en="Tradespeople &amp; services">Řemeslníci a služby</h2>
       </div>
-      <span class="tag soon" id="tradeTag"><span class="dot"></span>načítám…</span>
+      <span class="tag soon" id="tradeTag"><span class="dot"></span><span data-i18n-en="loading…">načítám…</span></span>
     </div>
     <div id="tradeCard">
-      <input type="search" id="tradeSearch" class="trade-search" placeholder="Hledat řemeslníka nebo obor">
+      <input type="search" id="tradeSearch" class="trade-search" placeholder="Hledat řemeslníka nebo obor" data-i18n-en-placeholder="Search tradesperson or trade">
       <div class="trade-filters" id="tradeFilters"></div>
       <div class="trade-list" id="tradeGrid"></div>
-      <p class="section-foot">Zdroj: <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> · aktualizace týdně</p>
+      <p class="section-foot"><span data-i18n-en="Source:">Zdroj:</span> <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> · <span data-i18n-en="weekly update">aktualizace týdně</span></p>
       <details class="how-details">
-        <summary>Jak to funguje</summary>
-        <p>Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web stránka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt".</p>
+        <summary data-i18n-en="How it works">Jak to funguje</summary>
+        <p data-i18n-en="Who to call for a bricklayer, electrician or seamstress? A list from the trade licence register (ARES) — who in Zlonice is actively trading in a specific craft or regulated trade. The page only shows a phone/website where it managed to find one on OpenStreetMap — for the rest, try the &quot;find contact&quot; link.">Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web stránka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt".</p>
       </details>
     </div>
   </section>
@@ -1032,14 +1049,142 @@ footer a{color:var(--footer-link);text-decoration:underline;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 20 6 8M12 20 12 4M18 20 18 8"/><ellipse cx="4.5" cy="9.5" rx="1.6" ry="2.7" transform="rotate(-25 4.5 9.5)" fill="currentColor" stroke="none"/><ellipse cx="7.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 7.5 7.5)" fill="currentColor" stroke="none"/><ellipse cx="10.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 10.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="13.5" cy="4" rx="1.6" ry="2.7" transform="rotate(20 13.5 4)" fill="currentColor" stroke="none"/><ellipse cx="16.5" cy="5.5" rx="1.6" ry="2.7" transform="rotate(-25 16.5 5.5)" fill="currentColor" stroke="none"/><ellipse cx="19.5" cy="7.5" rx="1.6" ry="2.7" transform="rotate(20 19.5 7.5)" fill="currentColor" stroke="none"/></svg>
       ve zlonicích · vezlonicich.cz
     </div>
-    <p><strong>Zdroje dat:</strong> počasí a kvalita ovzduší — <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (živě). Místní firmy — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (aktualizace jednou denně). Řemeslníci a služby — <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES / živnostenský rejstřík</a> a <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> (aktualizace jednou týdně). Výstrahy a voda — <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (kontrola na pozadí každých 10–15 minut). Autobusy — <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (jízdní řád, aktualizace denně). Dopravní situace — <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (kontrola na pozadí každých 15 minut).</p>
-    <p>Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
-    <p>Provozuje: [JMÉNO / KONTAKT]</p>
+    <p><strong data-i18n-en="Data sources:">Zdroje dat:</strong> <span data-i18n-en="weather and air quality —">počasí a kvalita ovzduší —</span> <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> (<span data-i18n-en="live">živě</span>). <span data-i18n-en="Local businesses —">Místní firmy —</span> <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> (<span data-i18n-en="updated once a day">aktualizace jednou denně</span>). <span data-i18n-en="Tradespeople &amp; services —">Řemeslníci a služby —</span> <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES / živnostenský rejstřík</a> <span data-i18n-en="and">a</span> <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a> (<span data-i18n-en="updated once a week">aktualizace jednou týdně</span>). <span data-i18n-en="Alerts and water —">Výstrahy a voda —</span> <a href="https://opendata.chmi.cz" target="_blank" rel="noopener">ČHMÚ opendata</a> (<span data-i18n-en="checked in the background every 10–15 minutes">kontrola na pozadí každých 10–15 minut</span>). <span data-i18n-en="Buses —">Autobusy —</span> <a href="https://pid.cz" target="_blank" rel="noopener">PID</a> (<span data-i18n-en="timetable, updated daily">jízdní řád, aktualizace denně</span>). <span data-i18n-en="Traffic situations —">Dopravní situace —</span> <a href="https://mobilitydata.rsd.cz" target="_blank" rel="noopener">ŘSD/NDIC</a> (<span data-i18n-en="checked in the background every 15 minutes">kontrola na pozadí každých 15 minut</span>).</p>
+    <p data-i18n-en="Independent community project, not an official website of the Zlonice municipal office.">Nezávislý komunitní projekt, není oficiální stránkou Obecního úřadu Zlonice.</p>
+    <p><span data-i18n-en="Operated by:">Provozuje:</span> [JMÉNO / KONTAKT]</p>
   </div>
 </footer>
 
 <script>
 const LAT = 50.2875, LON = 14.0922;
+
+// --- Jazyk (CZ/EN) ---------------------------------------------------
+// Appka je prvotně česká appka pro místní — anglická verze je doplněk pro
+// cizojazyčné návštěvníky, ne rovnocenná lokalizace s vlastním obsahovým
+// pipeline. Proto dva různé mechanismy podle typu textu:
+//  1. Statický text v HTML (nadpisy, popisky, "jak to funguje") — element
+//     má data-i18n-en="…" s hotovým anglickým překladem, applyI18n() níž
+//     ho prohodí za originál podle `lang` (originál se při prvním běhu
+//     sám zapamatuje do data-i18n-cs, ať ho nemusíme psát ručně dvakrát).
+//  2. Text, co skládají load* funkce za běhu (čísla, věty se skloňováním)
+//     — pomocná funkce t(cs, en) na místě, kde se řetězec sestavuje.
+//  3. Živá data z API (ŘSD/ČHMÚ/ARES) — ŘSD/ČHMÚ texty (počasí, stav
+//     silnic, typ výstrahy) se skládají z malé, opakující se slovní
+//     zásoby → GLOSSARY níž, překlad hledáním celých frází. Řemeslnické
+//     obory jsou pevná množina z scripts/update-tradespeople.mjs →
+//     TRADE_CATEGORY_EN. Volný text (konkrétní komentář ŘSD k nehodě,
+//     obsah úřední desky) se NEPŘEKLÁDÁ — radši česky a poctivě, než
+//     riskovat zavádějící strojový překlad u bezpečnostně/právně
+//     citlivého textu (stejná zásada jako jinde v repu: nikdy nic
+//     nevymýšlet, viz CLAUDE.md).
+let lang = (function(){
+  try{ return localStorage.getItem('zlonice-lang') === 'en' ? 'en' : 'cs'; }catch(e){ return 'cs'; }
+})();
+
+function t(cs, en){ return lang === 'en' ? en : cs; }
+function LOCALE(){ return lang === 'en' ? 'en-GB' : 'cs-CZ'; }
+
+// Pro datové tabulky definované JEDNOU při načtení stránky (pásma
+// vlhkosti/větru/kvality ovzduší apod.) nejde použít t() přímo v
+// definici — vyhodnotilo by se to natvrdo podle `lang` v okamžiku
+// načtení a při pozdějším přepnutí jazyka by se to už nezměnilo (tabulka
+// se znovu nevytváří). Proto se u těchto tabulek ukládají OBĚ varianty
+// (`name`/`nameEn`, `desc`/`descEn`) a teprve při vykreslení (uvnitř
+// load* funkcí, které se po přepnutí jazyka volají znovu) se vybere ta
+// správná přes bt().
+function bt(obj, field){
+  if (lang !== 'en') return obj[field];
+  const enField = field + 'En';
+  return enField in obj ? obj[enField] : obj[field];
+}
+
+// Projde všechny [data-i18n-en] prvky a nastaví jejich obsah podle
+// aktuálního jazyka. innerHTML (ne textContent), ať fungují i ty vzácné
+// případy se zanořenou značkou (viz "O Zlonicích" odstavec s <span
+// class="dateline">). Hodnoty v data-i18n-en jsou vlastní, důvěryhodný
+// text psaný přímo v HTML, ne data odjinud — bezpečné pro innerHTML.
+function applyI18n(){
+  document.querySelectorAll('[data-i18n-en]').forEach(el => {
+    if (el.dataset.i18nCs === undefined) el.dataset.i18nCs = el.innerHTML;
+    el.innerHTML = lang === 'en' ? el.getAttribute('data-i18n-en') : el.dataset.i18nCs;
+  });
+  document.querySelectorAll('[data-i18n-en-placeholder]').forEach(el => {
+    if (el.dataset.i18nCsPlaceholder === undefined) el.dataset.i18nCsPlaceholder = el.getAttribute('placeholder') || '';
+    el.setAttribute('placeholder', lang === 'en' ? el.getAttribute('data-i18n-en-placeholder') : el.dataset.i18nCsPlaceholder);
+  });
+  document.documentElement.setAttribute('lang', lang);
+}
+
+// Slovník opakujících se frází z živých zdrojů (ŘSD zimní sjízdnost,
+// ČHMÚ počasí/stav silnic — viz scripts/update-winter-roads.mjs a
+// data/README.md pro to, že tahle slovní zásoba je skutečně omezená, ne
+// volný text). Hledá se CELÁ FRÁZE napřed (delší/specifičtější vzory
+// první), ať "bez srážek" nenahradí jen kus delší fráze nekonzistentně.
+// Co není ve slovníku, zůstane česky — nikdy nehádáme/nevymýšlíme překlad
+// neznámé fráze (stejná zásada jako jinde v appce).
+const GLOSSARY = [
+  // sjízdnost / stav vozovky
+  ['sjízdné bez omezení', 'passable, no restrictions'],
+  ['sjízdné se zvýšenou opatrností', 'passable with increased caution'],
+  ['sjízdné s omezením', 'passable with restrictions'],
+  ['nesjízdné', 'not passable'],
+  ['holé suché', 'bare and dry'],
+  ['holé vlhké', 'bare and wet'],
+  ['holé mokré', 'bare and wet'],
+  ['mokré', 'wet'],
+  ['vlhké', 'damp'],
+  ['sněhová vrstva', 'snow layer'],
+  ['rozbředlý sníh', 'slush'],
+  ['náledí', 'black ice'],
+  ['namrzlá vozovka', 'icy road surface'],
+  ['náledí místy', 'black ice in places'],
+  ['posyp', 'grit/salt treatment'],
+  // počasí
+  ['jasno', 'clear'],
+  ['skoro jasno', 'mostly clear'],
+  ['polojasno', 'partly cloudy'],
+  ['oblačno', 'cloudy'],
+  ['zataženo', 'overcast'],
+  ['mlha', 'fog'],
+  ['mlhavo', 'foggy'],
+  ['bez srážek', 'no precipitation'],
+  ['slabé srážky', 'light precipitation'],
+  ['mírné srážky', 'moderate precipitation'],
+  ['vydatné srážky', 'heavy precipitation'],
+  ['déšť', 'rain'],
+  ['sněžení', 'snowfall'],
+  ['bezvětří', 'calm, no wind'],
+  ['slabý vítr', 'light wind'],
+  ['mírný vítr', 'moderate wind'],
+  ['silný vítr', 'strong wind'],
+  ['viditelnost bez omezení', 'unrestricted visibility'],
+  ['viditelnost snížená', 'reduced visibility'],
+  ['zhoršená viditelnost', 'reduced visibility'],
+  // směry větru (celé slovo, ať "jižní" nenahradí kus "jihozápadní")
+  ['severní', 'northern'], ['jižní', 'southern'], ['východní', 'eastern'], ['západní', 'western'],
+  ['severovýchodní', 'northeastern'], ['severozápadní', 'northwestern'],
+  ['jihovýchodní', 'southeastern'], ['jihozápadní', 'southwestern'],
+  // typy silnic (winter-roads roads[].type)
+  ['Dálnice', 'Motorway'],
+  ['Silnice I. třídy', 'Class I road'],
+  ['Silnice II. třídy', 'Class II road'],
+  ['Silnice III. třídy', 'Class III road'],
+];
+// Delší fráze první, ať se nenahradí jen jejich podřetězec (např.
+// "sjízdné bez omezení" před "bez omezení", kdyby se tam někdy objevilo
+// samostatně).
+GLOSSARY.sort((a, b) => b[0].length - a[0].length);
+
+function tr(csText){
+  if (lang !== 'en' || !csText) return csText;
+  let out = csText;
+  for (const [cs, en] of GLOSSARY){
+    out = out.replace(new RegExp(cs.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), en);
+  }
+  return out;
+}
+
+applyI18n(); // hned, ať statický text sedí s uloženou volbou ještě než doběhnou load* funkce níž
 
 // Jemné prolnutí, když se "načítám…" nahradí skutečnou hodnotou (viz
 // @keyframes valueFadeIn, jen při prefers-reduced-motion:no-preference) —
@@ -1052,9 +1197,12 @@ function markRefreshed(id){
   el.classList.add('value-refresh');
 }
 
-document.getElementById('clock').textContent = new Date().toLocaleString('cs-CZ', {
-  day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'
-});
+function renderClock(){
+  document.getElementById('clock').textContent = new Date().toLocaleString(LOCALE(), {
+    day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'
+  });
+}
+renderClock();
 
 // Rychlá navigace po sekcích (#sectionNav) — zvýrazňuje pilulku aktuální
 // sekce podle scrollu. rootMargin zúží "viditelné" pásmo na horní třetinu
@@ -1093,6 +1241,15 @@ document.getElementById('clock').textContent = new Date().toLocaleString('cs-CZ'
   targets.forEach(t => observer.observe(t));
 })();
 
+const WMO_LABEL_EN = {
+  0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',
+  45:'Fog',48:'Fog',
+  51:'Drizzle',53:'Drizzle',55:'Drizzle',
+  61:'Rain',63:'Rain',65:'Heavy rain',
+  71:'Snow',73:'Snow',75:'Heavy snow',
+  80:'Showers',81:'Showers',82:'Heavy showers',
+  95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with hail',
+};
 const WMO_LABEL = {
   0:'Jasno',1:'Skoro jasno',2:'Polojasno',3:'Zataženo',
   45:'Mlha',48:'Mlha',
@@ -1121,6 +1278,7 @@ function weatherIconHtml(code){
   return `<svg class="wicon"${style} aria-hidden="true"><use href="#${spec.id}"/></svg>`;
 }
 const DAYS = ['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'];
+const DAYS_EN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 // weather_code od Open-Meteo je "nejvýznamnější jev, co může ten den nastat",
 // takže i pravděpodobnost srážek jen 5 % dá kód přeháněk/deště — ikona pak
@@ -1137,10 +1295,10 @@ function effectiveWeatherCode(code, probPct){
 // Komfortní pásma relativní vlhkosti — obecný odhad dopadu na dýchání/pocit tepla,
 // ne lékařský ukazatel.
 const HUMIDITY_BANDS = [
-  {max:30, name:'Sucho', level:'warn', desc:'Suchý vzduch — může dráždit oči a dýchací cesty, hlavně ve spojení s teplem.'},
-  {max:60, name:'Komfortní', level:'good', desc:'Příjemná vlhkost, dýchání ani pocit tepla nejsou výrazně ovlivněné.'},
-  {max:75, name:'Vlhko', level:'warn', desc:'Zvýšená vlhkost zesiluje pocit horka, může být dusno.'},
-  {max:Infinity, name:'Velmi vlhko', level:'danger', desc:'Vzduch nasycený vlhkostí — silný pocit dusna, hlavně při vyšších teplotách.'},
+  {max:30, name:'Sucho', nameEn:'Dry', level:'warn', desc:'Suchý vzduch — může dráždit oči a dýchací cesty, hlavně ve spojení s teplem.', descEn:'Dry air — can irritate eyes and airways, especially combined with heat.'},
+  {max:60, name:'Komfortní', nameEn:'Comfortable', level:'good', desc:'Příjemná vlhkost, dýchání ani pocit tepla nejsou výrazně ovlivněné.', descEn:'Pleasant humidity, neither breathing nor perceived heat is significantly affected.'},
+  {max:75, name:'Vlhko', nameEn:'Humid', level:'warn', desc:'Zvýšená vlhkost zesiluje pocit horka, může být dusno.', descEn:'Increased humidity intensifies the feeling of heat, can feel stuffy.'},
+  {max:Infinity, name:'Velmi vlhko', nameEn:'Very humid', level:'danger', desc:'Vzduch nasycený vlhkostí — silný pocit dusna, hlavně při vyšších teplotách.', descEn:'Air saturated with moisture — strong stuffy feeling, especially at higher temperatures.'},
 ];
 function humidityBand(pct){ return HUMIDITY_BANDS.find(b => pct <= b.max); }
 
@@ -1158,10 +1316,10 @@ function humidityBand(pct){ return HUMIDITY_BANDS.find(b => pct <= b.max); }
 // tohle jsou obecné orientační hranice pro hlinitou půdu, ne přesná
 // agronomická diagnóza jednoho konkrétního pozemku.
 const SOIL_MOISTURE_BANDS = [
-  {max:10, name:'Velmi sucho', level:'danger', desc:'Blízko bodu vadnutí typického pro hlinitou půdu (jako je černozem kolem Zlonic) — bez zálivky hrozí rostlinám stres suchem.'},
-  {max:20, name:'Sucho', level:'warn', desc:'Citelně pod polní kapacitou hlinité půdy — číslo nevypadá nízko, ale pro tenhle typ půdy to už sucho je. Zvaž zálivku, hlavně u mladých rostlin.'},
-  {max:35, name:'Vlhko', level:'good', desc:'Blízko polní kapacity hlinité půdy — přiměřená vlhkost, další zálivka většinou není akutní.'},
-  {max:Infinity, name:'Nasyceno', level:'warn', desc:'Nad polní kapacitou hlinité půdy — svrchní vrstva je hodně vlhká až nasycená. Další zálivka teď není potřeba.'},
+  {max:10, name:'Velmi sucho', nameEn:'Very dry', level:'danger', desc:'Blízko bodu vadnutí typického pro hlinitou půdu (jako je černozem kolem Zlonic) — bez zálivky hrozí rostlinám stres suchem.', descEn:'Close to the wilting point typical for loamy soil (like the chernozem around Zlonice) — without watering, plants risk drought stress.'},
+  {max:20, name:'Sucho', nameEn:'Dry', level:'warn', desc:'Citelně pod polní kapacitou hlinité půdy — číslo nevypadá nízko, ale pro tenhle typ půdy to už sucho je. Zvaž zálivku, hlavně u mladých rostlin.', descEn:"Noticeably below the field capacity of loamy soil — the number doesn't look low, but for this soil type it's already dry. Consider watering, especially young plants."},
+  {max:35, name:'Vlhko', nameEn:'Moist', level:'good', desc:'Blízko polní kapacity hlinité půdy — přiměřená vlhkost, další zálivka většinou není akutní.', descEn:"Close to the field capacity of loamy soil — adequate moisture, further watering usually isn't urgent."},
+  {max:Infinity, name:'Nasyceno', nameEn:'Saturated', level:'warn', desc:'Nad polní kapacitou hlinité půdy — svrchní vrstva je hodně vlhká až nasycená. Další zálivka teď není potřeba.', descEn:'Above the field capacity of loamy soil — the top layer is very moist to saturated. No further watering needed right now.'},
 ];
 function soilMoistureBand(pct){ return SOIL_MOISTURE_BANDS.find(b => pct <= b.max); }
 
@@ -1180,19 +1338,19 @@ function soilBarStyle(pct){
 // Beaufortova stupnice síly větru — reálný meteorologický standard z roku 1805,
 // dodnes používaný. Hranice v km/h pro průměrnou rychlost (ne nárazy).
 const BEAUFORT = [
-  {max:1,  force:0,  name:'Bezvětří',              level:'good',   desc:'kouř stoupá svisle, naprostý klid'},
-  {max:5,  force:1,  name:'Vánek',                  level:'good',   desc:'kouř se mírně unáší'},
-  {max:11, force:2,  name:'Slabý vítr',              level:'good',   desc:'cítíte ho na tváři, listí šelestí'},
-  {max:19, force:3,  name:'Mírný vítr',              level:'good',   desc:'listí a větvičky v pohybu, vlaje praporek'},
-  {max:28, force:4,  name:'Dosti čerstvý vítr',      level:'warn',   desc:'zvedá prach a papír, hýbe větším větvemi'},
-  {max:38, force:5,  name:'Čerstvý vítr',            level:'warn',   desc:'menší stromky se pohybují, na vodě vlnky'},
-  {max:49, force:6,  name:'Silný vítr',              level:'warn',   desc:'silnější větve v pohybu, deštník se špatně drží'},
-  {max:61, force:7,  name:'Prudký vítr',             level:'danger', desc:'celé stromy se hýbou, chůze proti větru obtížná'},
-  {max:74, force:8,  name:'Bouřlivý vítr',           level:'danger', desc:'větve se lámou, chůze velmi obtížná'},
-  {max:88, force:9,  name:'Velmi bouřlivý vítr',     level:'danger', desc:'menší škody na střechách'},
-  {max:102,force:10, name:'Vichřice',                level:'danger', desc:'stromy vyvrácené, značné škody'},
-  {max:117,force:11, name:'Silná vichřice',          level:'danger', desc:'rozsáhlé škody'},
-  {max:Infinity,force:12,name:'Orkán',               level:'danger', desc:'ničivé škody'},
+  {max:1,  force:0,  name:'Bezvětří',              nameEn:'Calm',             level:'good',   desc:'kouř stoupá svisle, naprostý klid', descEn:'smoke rises vertically, total calm'},
+  {max:5,  force:1,  name:'Vánek',                  nameEn:'Light air',        level:'good',   desc:'kouř se mírně unáší', descEn:'smoke drifts slightly'},
+  {max:11, force:2,  name:'Slabý vítr',              nameEn:'Light breeze',     level:'good',   desc:'cítíte ho na tváři, listí šelestí', descEn:'felt on the face, leaves rustle'},
+  {max:19, force:3,  name:'Mírný vítr',              nameEn:'Gentle breeze',    level:'good',   desc:'listí a větvičky v pohybu, vlaje praporek', descEn:'leaves and twigs in motion, flags extend'},
+  {max:28, force:4,  name:'Dosti čerstvý vítr',      nameEn:'Moderate breeze',  level:'warn',   desc:'zvedá prach a papír, hýbe větším větvemi', descEn:'raises dust and paper, moves larger branches'},
+  {max:38, force:5,  name:'Čerstvý vítr',            nameEn:'Fresh breeze',     level:'warn',   desc:'menší stromky se pohybují, na vodě vlnky', descEn:'small trees sway, waves form on water'},
+  {max:49, force:6,  name:'Silný vítr',              nameEn:'Strong breeze',    level:'warn',   desc:'silnější větve v pohybu, deštník se špatně drží', descEn:'larger branches move, umbrellas hard to hold'},
+  {max:61, force:7,  name:'Prudký vítr',             nameEn:'Near gale',        level:'danger', desc:'celé stromy se hýbou, chůze proti větru obtížná', descEn:'whole trees sway, walking against wind is hard'},
+  {max:74, force:8,  name:'Bouřlivý vítr',           nameEn:'Gale',             level:'danger', desc:'větve se lámou, chůze velmi obtížná', descEn:'branches break, walking is very difficult'},
+  {max:88, force:9,  name:'Velmi bouřlivý vítr',     nameEn:'Strong gale',      level:'danger', desc:'menší škody na střechách', descEn:'minor roof damage'},
+  {max:102,force:10, name:'Vichřice',                nameEn:'Storm',            level:'danger', desc:'stromy vyvrácené, značné škody', descEn:'trees uprooted, considerable damage'},
+  {max:117,force:11, name:'Silná vichřice',          nameEn:'Violent storm',    level:'danger', desc:'rozsáhlé škody', descEn:'widespread damage'},
+  {max:Infinity,force:12,name:'Orkán',               nameEn:'Hurricane force',  level:'danger', desc:'ničivé škody', descEn:'devastating damage'},
 ];
 function beaufortFor(kmh){ return BEAUFORT.find(b => kmh <= b.max); }
 
@@ -1200,7 +1358,8 @@ function beaufortFor(kmh){ return BEAUFORT.find(b => kmh <= b.max); }
 // — zkratka světové strany + šipka otočená o stejný úhel, ať je směr vidět
 // i bez čtení čísla ve stupních.
 const COMPASS_DIRS = ['S','SV','V','JV','J','JZ','Z','SZ'];
-function compassFor(deg){ return COMPASS_DIRS[Math.round(((deg % 360) / 45)) % 8]; }
+const COMPASS_DIRS_EN = ['N','NE','E','SE','S','SW','W','NW'];
+function compassFor(deg){ return (lang === 'en' ? COMPASS_DIRS_EN : COMPASS_DIRS)[Math.round(((deg % 360) / 45)) % 8]; }
 const WIND_ARROW_SVG = '<path d="M12 3v15M7 9l5-6 5 6"/>';
 const STRONG_GUST_KMH = 40;
 
@@ -1240,24 +1399,26 @@ function buildHourlySummary(hrs){
   const rainIdx = hrs.findIndex(hourIsRainy);
   let rainPhrase;
   if (rainIdx === -1){
-    rainPhrase = 'Beze srážek v dalších hodinách.';
+    rainPhrase = t('Beze srážek v dalších hodinách.', 'No precipitation in the coming hours.');
   } else if (rainIdx === 0){
     const stopIdx = hrs.findIndex((h, i) => i > 0 && !hourIsRainy(h));
+    const hh = stopIdx === -1 ? null : String(hrs[stopIdx].time.getHours()).padStart(2, '0');
     rainPhrase = stopIdx === -1
-      ? 'Prší po celou sledovanou dobu.'
-      : `Prší do ${String(hrs[stopIdx].time.getHours()).padStart(2, '0')}:00, pak sucho.`;
+      ? t('Prší po celou sledovanou dobu.', 'Rain for the whole forecast window.')
+      : t(`Prší do ${hh}:00, pak sucho.`, `Rain until ${hh}:00, then dry.`);
   } else {
-    rainPhrase = `Za ${rainIdx} h začne pršet (${String(hrs[rainIdx].time.getHours()).padStart(2, '0')}:00).`;
+    const hh = String(hrs[rainIdx].time.getHours()).padStart(2, '0');
+    rainPhrase = t(`Za ${rainIdx} h začne pršet (${hh}:00).`, `Rain starts in ${rainIdx} h (${hh}:00).`);
   }
 
   const nightHours = hrs.filter(h => h.isDay === 0);
   let tempPhrase;
   if (nightHours.length > 0){
     const minNight = Math.round(Math.min(...nightHours.map(h => h.temp)));
-    tempPhrase = `V noci klesne na ${minNight} °C.`;
+    tempPhrase = t(`V noci klesne na ${minNight} °C.`, `Drops to ${minNight} °C overnight.`);
   } else {
     const maxDay = Math.round(Math.max(...hrs.map(h => h.temp)));
-    tempPhrase = `Přes den stoupne na ${maxDay} °C.`;
+    tempPhrase = t(`Přes den stoupne na ${maxDay} °C.`, `Rises to ${maxDay} °C during the day.`);
   }
   return `${rainPhrase} ${tempPhrase}`;
 }
@@ -1271,9 +1432,11 @@ function rainNowcastPhrase(hrs){
   if (idx === -1) return null;
   if (idx === 0){
     const stopIdx = hrs.findIndex((h, i) => i > 0 && !hourIsRainy(h));
-    return stopIdx === -1 ? 'Prší' : `Prší do ${String(hrs[stopIdx].time.getHours()).padStart(2, '0')}:00`;
+    if (stopIdx === -1) return t('Prší', 'Raining');
+    const hh = String(hrs[stopIdx].time.getHours()).padStart(2, '0');
+    return t(`Prší do ${hh}:00`, `Rain until ${hh}:00`);
   }
-  return `Za ${idx} h začne pršet`;
+  return t(`Za ${idx} h začne pršet`, `Rain starts in ${idx} h`);
 }
 function hourGoodForWater(H, idx){
   if (hourHasRain(H, idx)) return false;
@@ -1306,30 +1469,31 @@ function hourGoodForSpray(H, idx){
 // kalendářní datum než teď.
 function nextGoodWindow(H, startIdx, predicate){
   const isDaytimeNow = H.is_day[startIdx] === 1;
-  if (isDaytimeNow && predicate(H, startIdx)) return {when:'teď', level:'good'};
+  if (isDaytimeNow && predicate(H, startIdx)) return {when:t('teď','now'), level:'good'};
   const startDate = new Date(H.time[startIdx]).getDate();
   for (let i = 1; i < Math.min(36, H.time.length - startIdx); i++){
     if (predicate(H, startIdx + i)){
-      const t = new Date(H.time[startIdx + i]);
-      const prefix = t.getDate() !== startDate ? 'zítra od ' : 'od ';
-      return {when:`${prefix}${String(t.getHours()).padStart(2,'0')}:00`, level:'warn'};
+      const dt = new Date(H.time[startIdx + i]);
+      const hh = String(dt.getHours()).padStart(2,'0');
+      const when = dt.getDate() !== startDate ? t(`zítra od ${hh}:00`, `tomorrow from ${hh}:00`) : t(`od ${hh}:00`, `from ${hh}:00`);
+      return {when, level:'warn'};
     }
   }
-  return {when:'dnes už ne', level:'warn'};
+  return {when:t('dnes už ne','not today anymore'), level:'warn'};
 }
 
 function renderTodayTips(c, hourly, startIdx){
   const chips = [
-    {icon: WATER_ICON, label:'Zalévání', ...nextGoodWindow(hourly, startIdx, hourGoodForWater)},
-    {icon: MOW_ICON, label:'Sekání', ...nextGoodWindow(hourly, startIdx, hourGoodForMow)},
-    {icon: SPRAY_ICON, label:'Postřik', ...nextGoodWindow(hourly, startIdx, hourGoodForSpray)},
+    {icon: WATER_ICON, label:t('Zalévání','Watering'), ...nextGoodWindow(hourly, startIdx, hourGoodForWater)},
+    {icon: MOW_ICON, label:t('Sekání','Mowing'), ...nextGoodWindow(hourly, startIdx, hourGoodForMow)},
+    {icon: SPRAY_ICON, label:t('Postřik','Spraying'), ...nextGoodWindow(hourly, startIdx, hourGoodForSpray)},
   ];
 
   // Mráz jen když je to relevantní (jinak by odznak skoro pořád jen zabíral místo).
   const nextTemps = hourly.temperature_2m.slice(startIdx, startIdx + 15);
   const minNext = nextTemps.length > 0 ? Math.min(...nextTemps) : c.temperature_2m;
   if (minNext <= 3){
-    chips.push({icon: FROST_ICON, label:'Mráz', when: minNext <= 0 ? 'hrozí do rána' : 'možný do rána', level: minNext <= 0 ? 'danger' : 'warn'});
+    chips.push({icon: FROST_ICON, label:t('Mráz','Frost'), when: t(minNext <= 0 ? 'hrozí do rána' : 'možný do rána', minNext <= 0 ? 'likely by morning' : 'possible by morning'), level: minNext <= 0 ? 'danger' : 'warn'});
   }
 
   return chips.map(ch => `<span class="today-tip ${ch.level}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ch.icon}</svg>${ch.label}: <b>${ch.when}</b></span>`).join('');
@@ -1344,13 +1508,21 @@ function renderGardenSoil(c){
   const band = soilMoistureBand(soilPct);
   const bar = soilBarStyle(soilPct);
   const sentence = (band.name === 'Velmi sucho' || band.name === 'Sucho')
-    ? 'Půda je suchá – zalij.'
-    : (band.name === 'Nasyceno' ? 'Půda je hodně vlhká, zalévání teď není potřeba.' : 'Půda má přiměřenou vlhkost.');
+    ? t('Půda je suchá – zalij.', 'The soil is dry – water it.')
+    : (band.name === 'Nasyceno' ? t('Půda je hodně vlhká, zalévání teď není potřeba.', "The soil is very moist, no need to water right now.") : t('Půda má přiměřenou vlhkost.', 'The soil has adequate moisture.'));
+  const title = t(
+    `Modelovaný odhad vlhkosti povrchu půdy (0–1 cm), ne měření senzorem na místě. ${bt(band,'desc')}`,
+    `Modelled estimate of surface soil moisture (0–1 cm), not an on-site sensor measurement. ${bt(band,'desc')}`
+  );
+  const barTitle = t(
+    'Objemový podíl vody v půdě, ne škála 0–100 %. Orientačně pro hlinitou půdu (černozem kolem Zlonic): vadnutí ~10–15 %, plná kapacita ~30–35 %.',
+    'Volumetric water content of the soil, not a 0–100% scale. Rough guide for loamy soil (chernozem around Zlonice): wilting point ~10–15%, field capacity ~30–35%.'
+  );
   return `
-    <div class="garden-soil-row" title="Modelovaný odhad vlhkosti povrchu půdy (0–1 cm), ne měření senzorem na místě. ${band.desc}">
-      Půda (0–1 cm) <b>${soilPct} %</b><span class="takeaway ${band.level}">${band.name}</span>
+    <div class="garden-soil-row" title="${title}">
+      ${t('Půda (0–1 cm)','Soil (0–1 cm)')} <b>${soilPct} %</b><span class="takeaway ${band.level}">${bt(band,'name')}</span>
     </div>
-    <div class="mini-scale" style="background:${bar.track}" title="Objemový podíl vody v půdě, ne škála 0–100 %. Orientačně pro hlinitou půdu (černozem kolem Zlonic): vadnutí ~10–15 %, plná kapacita ~30–35 %."><div class="mini-scale-fill" style="width:${bar.valuePct}%"></div></div>
+    <div class="mini-scale" style="background:${bar.track}" title="${barTitle}"><div class="mini-scale-fill" style="width:${bar.valuePct}%"></div></div>
     <p class="garden-soil-sentence">${sentence}</p>
   `;
 }
@@ -1362,9 +1534,9 @@ async function loadWeather(){
     const res = await fetch(url);
     data = await res.json();
   }catch(e){
-    const msg = `Počasí se nepodařilo načíst (${e.message}). Zkus obnovit stránku.`;
+    const msg = t(`Počasí se nepodařilo načíst (${e.message}). Zkus obnovit stránku.`, `Failed to load weather (${e.message}). Try reloading the page.`);
     document.getElementById('weatherCards').innerHTML = `<div class="soon-card">${msg}</div>`;
-    document.getElementById('hourlyStrip').innerHTML = `<div class="sub">Nepodařilo se načíst.</div>`;
+    document.getElementById('hourlyStrip').innerHTML = `<div class="sub">${t('Nepodařilo se načíst.','Failed to load.')}</div>`;
     document.getElementById('todayTips').innerHTML = '';
     return;
   }
@@ -1378,13 +1550,13 @@ async function loadWeather(){
     // Směr větru — jen z current (odkud teď vane), šipka otočená o stejný
     // úhel jako skutečný vítr.
     const windDirHtml = (typeof c.wind_direction_10m === 'number')
-      ? `<div class="sub-row" title="Vítr vane od směru ${Math.round(c.wind_direction_10m)}° (${compassFor(c.wind_direction_10m)}).">
+      ? `<div class="sub-row" title="${t(`Vítr vane od směru ${Math.round(c.wind_direction_10m)}° (${compassFor(c.wind_direction_10m)}).`, `Wind blows from ${Math.round(c.wind_direction_10m)}° (${compassFor(c.wind_direction_10m)}).`)}">
           <svg class="wind-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(${Math.round(c.wind_direction_10m)}deg)" aria-hidden="true">${WIND_ARROW_SVG}</svg>
-          vítr od <b>${compassFor(c.wind_direction_10m)}</b>
+          ${t('vítr od','wind from')} <b>${compassFor(c.wind_direction_10m)}</b>
         </div>`
       : '';
     const strongGustHtml = c.wind_gusts_10m >= STRONG_GUST_KMH
-      ? ` <span class="tag warn">silné nárazy</span>`
+      ? ` <span class="tag warn">${t('silné nárazy','strong gusts')}</span>`
       : '';
 
     // Trend tlaku za poslední 3 h — porovnání aktuální hodnoty (current)
@@ -1402,7 +1574,7 @@ async function loadWeather(){
         if (typeof past === 'number'){
           const diff = c.pressure_msl - past;
           const arrow = Math.abs(diff) < 0.5 ? '→' : (diff > 0 ? '↑' : '↓');
-          const word = Math.abs(diff) < 0.5 ? 'stabilní' : (diff > 0 ? 'stoupá' : 'klesá');
+          const word = Math.abs(diff) < 0.5 ? t('stabilní','stable') : (diff > 0 ? t('stoupá','rising') : t('klesá','falling'));
           pressureTrendHtml = ` <span class="trend">${word} ${arrow}</span>`;
         }
       }
@@ -1413,29 +1585,29 @@ async function loadWeather(){
     // karta Vlhkost vzduchu zůstává jen o vzduchu, ať se ta dvě čísla
     // nepletou dohromady.
     document.getElementById('weatherCards').innerHTML = `
-      <div class="card" title="Aktuální teplota vzduchu 2 m nad zemí — \"pocitově\" navíc počítá s větrem a vlhkostí.">
-        <div class="k">Teplota</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">pocitově ${c.apparent_temperature.toFixed(1)} °C</div>
+      <div class="card" title="${t('Aktuální teplota vzduchu 2 m nad zemí — "pocitově" navíc počítá s větrem a vlhkostí.', 'Current air temperature 2 m above ground — "feels like" also accounts for wind and humidity.')}">
+        <div class="k">${t('Teplota','Temperature')}</div><div class="v">${c.temperature_2m.toFixed(1)}<small>°C</small></div><div class="sub">${t('pocitově','feels like')} ${c.apparent_temperature.toFixed(1)} °C</div>
       </div>
-      <div class="card" title="Relativní vlhkost vzduchu — kolik vodní páry vzduch teď obsahuje vůči maximu, které by při téhle teplotě unesl.">
-        <div class="k">Vlhkost vzduchu</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div>
-        <div class="takeaway ${hBand.level}" title="${hBand.desc}">${hBand.name}</div>
+      <div class="card" title="${t('Relativní vlhkost vzduchu — kolik vodní páry vzduch teď obsahuje vůči maximu, které by při téhle teplotě unesl.', 'Relative air humidity — how much water vapour the air currently holds against the maximum it could hold at this temperature.')}">
+        <div class="k">${t('Vlhkost vzduchu','Air humidity')}</div><div class="v">${Math.round(c.relative_humidity_2m)}<small>%</small></div>
+        <div class="takeaway ${hBand.level}" title="${bt(hBand,'desc')}">${bt(hBand,'name')}</div>
       </div>
-      <div class="card" title="Průměrná rychlost větru za posledních 10 minut, 10 m nad zemí.">
-        <div class="k">Vítr</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div>
-        <div class="sub">nárazy do ${c.wind_gusts_10m.toFixed(1)} km/h${strongGustHtml}</div>
-        <div class="takeaway ${wBand.level}" title="${wBand.desc}">${wBand.force} Bft · ${wBand.name}</div>
+      <div class="card" title="${t('Průměrná rychlost větru za posledních 10 minut, 10 m nad zemí.', 'Average wind speed over the last 10 minutes, 10 m above ground.')}">
+        <div class="k">${t('Vítr','Wind')}</div><div class="v">${c.wind_speed_10m.toFixed(1)}<small>km/h</small></div>
+        <div class="sub">${t('nárazy do','gusts up to')} ${c.wind_gusts_10m.toFixed(1)} km/h${strongGustHtml}</div>
+        <div class="takeaway ${wBand.level}" title="${bt(wBand,'desc')}">${wBand.force} Bft · ${bt(wBand,'name')}</div>
         ${windDirHtml}
       </div>
-      <div class="card" title="Úhrn srážek za poslední hodinu podle modelu Open-Meteo.">
-        <div class="k">Srážky teď</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div>
-        <div class="sub-row" title="Tlak vzduchu přepočtený na hladinu moře — vyšší tlak obvykle znamená stabilnější počasí, klesající tlak bývá předzvěst zhoršení.">tlak (hladina moře) <b>${(c.pressure_msl ?? c.surface_pressure).toFixed(1)} hPa</b>${pressureTrendHtml}</div>
+      <div class="card" title="${t('Úhrn srážek za poslední hodinu podle modelu Open-Meteo.', 'Precipitation total for the last hour from the Open-Meteo model.')}">
+        <div class="k">${t('Srážky teď','Precipitation now')}</div><div class="v">${c.precipitation.toFixed(1)}<small>mm</small></div>
+        <div class="sub-row" title="${t('Tlak vzduchu přepočtený na hladinu moře — vyšší tlak obvykle znamená stabilnější počasí, klesající tlak bývá předzvěst zhoršení.', 'Air pressure converted to sea level — higher pressure usually means more stable weather, falling pressure often signals a change for the worse.')}">${t('tlak (hladina moře)','pressure (sea level)')} <b>${(c.pressure_msl ?? c.surface_pressure).toFixed(1)} hPa</b>${pressureTrendHtml}</div>
       </div>
     `;
     document.getElementById('nowWeatherValue').textContent = `${c.temperature_2m.toFixed(1)}°`;
-    document.getElementById('nowWeatherSub').textContent = `pocitově ${c.apparent_temperature.toFixed(1)} °C`;
+    document.getElementById('nowWeatherSub').textContent = `${t('pocitově','feels like')} ${c.apparent_temperature.toFixed(1)} °C`;
     markRefreshed('weatherCards');
   }catch(e){
-    document.getElementById('weatherCards').innerHTML = `<div class="soon-card">Počasí se nepodařilo zobrazit (${e.message}).</div>`;
+    document.getElementById('weatherCards').innerHTML = `<div class="soon-card">${t(`Počasí se nepodařilo zobrazit (${e.message}).`, `Failed to display weather (${e.message}).`)}</div>`;
   }
 
   try{
@@ -1448,8 +1620,8 @@ async function loadWeather(){
     const weekRange = Math.max(weekMax - weekMin, 1);
     const rows = days.map((iso, i) => {
       const d = new Date(iso + 'T12:00:00');
-      const label = i === 0 ? 'dnes' : DAYS[d.getDay()];
-      const dateStr = d.toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric'});
+      const label = i === 0 ? t('dnes','today') : t(DAYS[d.getDay()], DAYS_EN[d.getDay()]);
+      const dateStr = d.toLocaleDateString(LOCALE(), {day:'numeric', month:'numeric'});
       const code = effectiveWeatherCode(data.daily.weather_code[i], data.daily.precipitation_probability_max[i]);
       const dayMin = data.daily.temperature_2m_min[i], dayMax = data.daily.temperature_2m_max[i];
       const leftPct = ((dayMin - weekMin) / weekRange) * 100;
@@ -1460,8 +1632,8 @@ async function loadWeather(){
       const labelRight = Math.max(6, Math.min(94, leftPct + widthPct));
       const rainMm = data.daily.precipitation_sum?.[i];
       const rainText = (typeof rainMm === 'number')
-        ? `déšť ${data.daily.precipitation_probability_max[i]} % · ${rainMm.toFixed(1)} mm`
-        : `déšť ${data.daily.precipitation_probability_max[i]} %`;
+        ? t(`déšť ${data.daily.precipitation_probability_max[i]} % · ${rainMm.toFixed(1)} mm`, `rain ${data.daily.precipitation_probability_max[i]}% · ${rainMm.toFixed(1)} mm`)
+        : t(`déšť ${data.daily.precipitation_probability_max[i]} %`, `rain ${data.daily.precipitation_probability_max[i]}%`);
       const dayTitle = `${label} ${dateStr}: ${Math.round(dayMax)}–${Math.round(dayMin)} °C, ${rainText}.`;
       return `<div class="fday" title="${dayTitle}">
         <div class="d">${label} <span class="fday-date">${dateStr}</span></div>
@@ -1475,7 +1647,7 @@ async function loadWeather(){
     document.getElementById('forecastRow').innerHTML = rows;
     markRefreshed('forecastRow');
   }catch(e){
-    document.getElementById('forecastRow').innerHTML = `<div class="sub">Předpověď na dny se nepodařilo zobrazit.</div>`;
+    document.getElementById('forecastRow').innerHTML = `<div class="sub">${t('Předpověď na dny se nepodařilo zobrazit.','Failed to display the daily forecast.')}</div>`;
   }
 
   // Index první hodiny v hourly poli, která ještě nenastala — od ní se
@@ -1557,21 +1729,22 @@ async function loadWeather(){
     const labels = hrs.map((h, i) => {
       const dayStart = h.time.getDate() !== lastDate;
       if (dayStart) lastDate = h.time.getDate();
-      const text = i === 0 ? 'teď' : (dayStart ? 'zítra' : String(h.time.getHours()).padStart(2, '0') + 'h');
+      const text = i === 0 ? t('teď','now') : (dayStart ? t('zítra','tomorrow') : String(h.time.getHours()).padStart(2, '0') + 'h');
       return `<span class="h-label${i === 0 ? ' now' : ''}">${text}</span>`;
     }).join('');
     // Skrytý textový ekvivalent grafu pro čtečky obrazovky — graf sám je
     // aria-hidden, ať se nečte bod po bodu, ale stejná data (teplota,
     // srážky, pravděpodobnost) musí zůstat dostupná jako text.
     const srList = hrs.map(h =>
-      `${h.time.toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'})}: ${Math.round(h.temp)} °C, srážky ${h.precip.toFixed(1)} mm (${Math.round(h.prob)} % pravděpodobnost)`
+      t(`${h.time.toLocaleTimeString(LOCALE(), {hour:'2-digit', minute:'2-digit'})}: ${Math.round(h.temp)} °C, srážky ${h.precip.toFixed(1)} mm (${Math.round(h.prob)} % pravděpodobnost)`,
+        `${h.time.toLocaleTimeString(LOCALE(), {hour:'2-digit', minute:'2-digit'})}: ${Math.round(h.temp)} °C, precipitation ${h.precip.toFixed(1)} mm (${Math.round(h.prob)}% probability)`)
     ).join('; ');
 
     document.getElementById('hourlyStrip').innerHTML = `
       <p class="hourly-summary">${escapeHtml(buildHourlySummary(hrs))}</p>
       <div class="hourly-legend-row">
-        <span class="legend-temp">teplota °C</span>
-        <span class="legend-precip">srážky mm</span>
+        <span class="legend-temp">${t('teplota °C','temperature °C')}</span>
+        <span class="legend-precip">${t('srážky mm','precipitation mm')}</span>
       </div>
       <div class="hourly-chart">
         <div class="hourly-plot">
@@ -1590,11 +1763,11 @@ async function loadWeather(){
         </div>
         <div class="hourly-axis">${labels}</div>
       </div>
-      <p class="sr-only">Hodinový průběh teploty a srážek: ${escapeHtml(srList)}.</p>
+      <p class="sr-only">${t('Hodinový průběh teploty a srážek:','Hourly temperature and precipitation:')} ${escapeHtml(srList)}.</p>
     `;
     markRefreshed('hourlyStrip');
   }catch(e){
-    document.getElementById('hourlyStrip').innerHTML = `<div class="sub">Hodinový průběh se nepodařilo zobrazit.</div>`;
+    document.getElementById('hourlyStrip').innerHTML = `<div class="sub">${t('Hodinový průběh se nepodařilo zobrazit.','Failed to display the hourly chart.')}</div>`;
   }
 
   // Rain nowcast v dlaždici Počasí (pás "Teď") — jen když v příštích 3 h
@@ -1627,12 +1800,12 @@ async function loadWeather(){
 // oranžová), bílá jen na červené a fialové — jinak by na světlém podkladu
 // nebyl dost čitelný kontrast.
 const EAQI_BANDS = [
-  {max:20, name:'Dobrá', color:'var(--aqi-1)', textColor:'#262019', desc:'Kvalita ovzduší je vynikající, žádná omezení.'},
-  {max:40, name:'Uspokojivá', color:'var(--aqi-2)', textColor:'#262019', desc:'Kvalita ovzduší je přijatelná pro naprostou většinu lidí.'},
-  {max:60, name:'Střední', color:'var(--aqi-3)', textColor:'#262019', desc:'Citlivější lidé (astmatici, senioři, děti) mohou pociťovat mírné projevy — omezit delší pobyt venku.'},
-  {max:80, name:'Špatná', color:'var(--aqi-4)', textColor:'#262019', desc:'Zvýšené riziko pro citlivé skupiny, doporučeno omezit venkovní aktivity.'},
-  {max:100, name:'Velmi špatná', color:'var(--aqi-5)', textColor:'#fff', desc:'Riziko zdravotních projevů i u zdravých lidí při delším pobytu venku.'},
-  {max:Infinity, name:'Extrémně špatná', color:'var(--aqi-6)', textColor:'#fff', desc:'Vážné zdravotní riziko — omezte pobyt venku na nutné minimum.'},
+  {max:20, name:'Dobrá', nameEn:'Good', color:'var(--aqi-1)', textColor:'#262019', desc:'Kvalita ovzduší je vynikající, žádná omezení.', descEn:'Air quality is excellent, no restrictions.'},
+  {max:40, name:'Uspokojivá', nameEn:'Fair', color:'var(--aqi-2)', textColor:'#262019', desc:'Kvalita ovzduší je přijatelná pro naprostou většinu lidí.', descEn:'Air quality is acceptable for the vast majority of people.'},
+  {max:60, name:'Střední', nameEn:'Moderate', color:'var(--aqi-3)', textColor:'#262019', desc:'Citlivější lidé (astmatici, senioři, děti) mohou pociťovat mírné projevy — omezit delší pobyt venku.', descEn:'Sensitive people (asthmatics, seniors, children) may notice mild effects — limit longer time outdoors.'},
+  {max:80, name:'Špatná', nameEn:'Poor', color:'var(--aqi-4)', textColor:'#262019', desc:'Zvýšené riziko pro citlivé skupiny, doporučeno omezit venkovní aktivity.', descEn:'Increased risk for sensitive groups, outdoor activity reduction recommended.'},
+  {max:100, name:'Velmi špatná', nameEn:'Very poor', color:'var(--aqi-5)', textColor:'#fff', desc:'Riziko zdravotních projevů i u zdravých lidí při delším pobytu venku.', descEn:'Risk of health effects even for healthy people with prolonged time outdoors.'},
+  {max:Infinity, name:'Extrémně špatná', nameEn:'Extremely poor', color:'var(--aqi-6)', textColor:'#fff', desc:'Vážné zdravotní riziko — omezte pobyt venku na nutné minimum.', descEn:'Serious health risk — limit time outdoors to the essential minimum.'},
 ];
 function bandFor(v){ return EAQI_BANDS.find(b => v <= b.max); }
 
@@ -1643,22 +1816,22 @@ function bandFor(v){ return EAQI_BANDS.find(b => v <= b.max); }
 // ("co pro mě znamená"), ne jen jako čísla vůči limitu.
 // Zdroj: WHO Global Air Quality Guidelines 2021.
 const PM25_BANDS = [
-  {max:5, name:'Velmi nízká', level:'good', desc:'Pod ročním doporučením WHO (5 µg/m³) — vzduch prakticky bez jemných částic.'},
-  {max:15, name:'Nízká', level:'good', desc:'Pod 24hodinovým doporučením WHO (15 µg/m³) — bez dopadu na zdravé lidi.'},
-  {max:25, name:'Mírně zvýšená', level:'good', desc:'Nad doporučením WHO, ale pod ročním limitem EU (25 µg/m³) — většina lidí nic nepozná, citlivější mohou při delší zátěži pocítit podráždění.'},
-  {max:50, name:'Zvýšená', level:'warn', desc:'Citelně zvýšená úroveň — omezte delší intenzivní pohyb venku, hlavně děti, senioři a astmatici.'},
-  {max:Infinity, name:'Vysoká', level:'danger', desc:'Vysoké znečištění jemnými částicemi — omezte pobyt venku, zvlášť fyzickou zátěž.'},
+  {max:5, name:'Velmi nízká', nameEn:'Very low', level:'good', desc:'Pod ročním doporučením WHO (5 µg/m³) — vzduch prakticky bez jemných částic.', descEn:'Below the WHO annual guideline (5 µg/m³) — air practically free of fine particles.'},
+  {max:15, name:'Nízká', nameEn:'Low', level:'good', desc:'Pod 24hodinovým doporučením WHO (15 µg/m³) — bez dopadu na zdravé lidi.', descEn:'Below the WHO 24-hour guideline (15 µg/m³) — no impact on healthy people.'},
+  {max:25, name:'Mírně zvýšená', nameEn:'Slightly elevated', level:'good', desc:'Nad doporučením WHO, ale pod ročním limitem EU (25 µg/m³) — většina lidí nic nepozná, citlivější mohou při delší zátěži pocítit podráždění.', descEn:'Above the WHO guideline but below the EU annual limit (25 µg/m³) — most people notice nothing, sensitive people may feel irritation with prolonged exertion.'},
+  {max:50, name:'Zvýšená', nameEn:'Elevated', level:'warn', desc:'Citelně zvýšená úroveň — omezte delší intenzivní pohyb venku, hlavně děti, senioři a astmatici.', descEn:'Noticeably elevated level — limit prolonged intense outdoor activity, especially children, seniors and asthmatics.'},
+  {max:Infinity, name:'Vysoká', nameEn:'High', level:'danger', desc:'Vysoké znečištění jemnými částicemi — omezte pobyt venku, zvlášť fyzickou zátěž.', descEn:'High fine-particle pollution — limit time outdoors, especially physical exertion.'},
 ];
 function bandForPM25(v){ return PM25_BANDS.find(b => v <= b.max); }
 
 // Hrubší prachové částice PM10 — WHO 2021 (roční 15 µg/m³, 24h 45 µg/m³) a
 // denní imisní limit EU (50 µg/m³).
 const PM10_BANDS = [
-  {max:15, name:'Velmi nízká', level:'good', desc:'Pod ročním doporučením WHO (15 µg/m³).'},
-  {max:45, name:'Nízká', level:'good', desc:'Pod 24hodinovým doporučením WHO (45 µg/m³) — bez dopadu na zdravé lidi.'},
-  {max:50, name:'Mírně zvýšená', level:'good', desc:'Blízko dennímu limitu EU (50 µg/m³), citlivější lidé mohou při zátěži pocítit mírné podráždění.'},
-  {max:100, name:'Zvýšená', level:'warn', desc:'Nad denním limitem EU — omezte delší pobyt venku při fyzické zátěži.'},
-  {max:Infinity, name:'Vysoká', level:'danger', desc:'Vysoká úroveň prachových částic — omezte pobyt venku.'},
+  {max:15, name:'Velmi nízká', nameEn:'Very low', level:'good', desc:'Pod ročním doporučením WHO (15 µg/m³).', descEn:'Below the WHO annual guideline (15 µg/m³).'},
+  {max:45, name:'Nízká', nameEn:'Low', level:'good', desc:'Pod 24hodinovým doporučením WHO (45 µg/m³) — bez dopadu na zdravé lidi.', descEn:'Below the WHO 24-hour guideline (45 µg/m³) — no impact on healthy people.'},
+  {max:50, name:'Mírně zvýšená', nameEn:'Slightly elevated', level:'good', desc:'Blízko dennímu limitu EU (50 µg/m³), citlivější lidé mohou při zátěži pocítit mírné podráždění.', descEn:'Close to the EU daily limit (50 µg/m³), sensitive people may feel mild irritation with exertion.'},
+  {max:100, name:'Zvýšená', nameEn:'Elevated', level:'warn', desc:'Nad denním limitem EU — omezte delší pobyt venku při fyzické zátěži.', descEn:'Above the EU daily limit — limit prolonged outdoor time with physical exertion.'},
+  {max:Infinity, name:'Vysoká', nameEn:'High', level:'danger', desc:'Vysoká úroveň prachových částic — omezte pobyt venku.', descEn:'High particulate matter level — limit time outdoors.'},
 ];
 function bandForPM10(v){ return PM10_BANDS.find(b => v <= b.max); }
 
@@ -1666,22 +1839,22 @@ function bandForPM10(v){ return PM10_BANDS.find(b => v <= b.max); }
 // a evropskému imisnímu limitu (120 µg/m³). Stránka ukazuje okamžitou hodnotu,
 // ne 8h průměr, takže je to spíš vodítko než přesný právní stav.
 const O3_BANDS = [
-  {max:60, name:'Nízká', level:'good', desc:'Bez rizika, typická úroveň i mimo dopravní špičku. Nic neomezuj.'},
-  {max:100, name:'Mírně zvýšená', level:'good', desc:'Necítíš to a nic měnit nemusíš — jen lidé s astmatem nebo alergií mohou při náročnějším pohybu venku pocítit mírné podráždění dýchacích cest.'},
-  {max:120, name:'Zvýšená', level:'warn', desc:'Blíží se doporučení WHO (100 µg/m³ za 8 h) — u náročnější fyzické aktivity venku (běh, sport) zvaž přesun na ráno nebo večer, kdy bývá ozonu míň.'},
-  {max:180, name:'Vysoká', level:'warn', desc:'Nad evropským imisním limitem (120 µg/m³) — omezit déletrvající pobyt venku, hlavně sportovní výkon.'},
-  {max:Infinity, name:'Velmi vysoká', level:'danger', desc:'Zdravotní riziko i při krátkodobé zátěži venku — omez pobyt venku na nutné minimum.'},
+  {max:60, name:'Nízká', nameEn:'Low', level:'good', desc:'Bez rizika, typická úroveň i mimo dopravní špičku. Nic neomezuj.', descEn:'No risk, a typical level even outside rush hour. No restrictions needed.'},
+  {max:100, name:'Mírně zvýšená', nameEn:'Slightly elevated', level:'good', desc:'Necítíš to a nic měnit nemusíš — jen lidé s astmatem nebo alergií mohou při náročnějším pohybu venku pocítit mírné podráždění dýchacích cest.', descEn:"You won't notice it and don't need to change anything — only people with asthma or allergies may feel mild airway irritation during strenuous outdoor activity."},
+  {max:120, name:'Zvýšená', nameEn:'Elevated', level:'warn', desc:'Blíží se doporučení WHO (100 µg/m³ za 8 h) — u náročnější fyzické aktivity venku (běh, sport) zvaž přesun na ráno nebo večer, kdy bývá ozonu míň.', descEn:'Approaching the WHO guideline (100 µg/m³ over 8 h) — for strenuous outdoor activity (running, sport) consider moving it to morning or evening, when ozone is usually lower.'},
+  {max:180, name:'Vysoká', nameEn:'High', level:'warn', desc:'Nad evropským imisním limitem (120 µg/m³) — omezit déletrvající pobyt venku, hlavně sportovní výkon.', descEn:'Above the EU limit value (120 µg/m³) — limit prolonged time outdoors, especially athletic performance.'},
+  {max:Infinity, name:'Velmi vysoká', nameEn:'Very high', level:'danger', desc:'Zdravotní riziko i při krátkodobé zátěži venku — omez pobyt venku na nutné minimum.', descEn:'Health risk even with brief outdoor exertion — limit time outdoors to the essential minimum.'},
 ];
 function bandForO3(v){ return O3_BANDS.find(b => v <= b.max); }
 
 // Oxid dusičitý (NO2) — orientační pásma vůči hodinovému imisnímu limitu EU
 // (200 µg/m³). Hlavní zdroj je doprava, proto bývá vyšší u silnic.
 const NO2_BANDS = [
-  {max:40, name:'Nízká', level:'good', desc:'Typická úroveň, odpovídá i ročnímu imisnímu limitu EU. Bez omezení.'},
-  {max:100, name:'Mírná', level:'good', desc:'Běžná úroveň u frekventovanějších silnic, bez zdravotního dopadu pro většinu lidí.'},
-  {max:200, name:'Zvýšená', level:'warn', desc:'Blíží se hodinovému imisnímu limitu EU (200 µg/m³) — citlivější lidé by měli omezit delší pobyt u frekventovaných silnic.'},
-  {max:400, name:'Vysoká', level:'danger', desc:'Nad hodinovým imisním limitem EU — zvýšené riziko pro dýchací cesty, omez pobyt u rušných silnic.'},
-  {max:Infinity, name:'Velmi vysoká', level:'danger', desc:'Vážné krátkodobé zdravotní riziko.'},
+  {max:40, name:'Nízká', nameEn:'Low', level:'good', desc:'Typická úroveň, odpovídá i ročnímu imisnímu limitu EU. Bez omezení.', descEn:'Typical level, also matches the EU annual limit value. No restrictions.'},
+  {max:100, name:'Mírná', nameEn:'Moderate', level:'good', desc:'Běžná úroveň u frekventovanějších silnic, bez zdravotního dopadu pro většinu lidí.', descEn:'Common level near busier roads, no health impact for most people.'},
+  {max:200, name:'Zvýšená', nameEn:'Elevated', level:'warn', desc:'Blíží se hodinovému imisnímu limitu EU (200 µg/m³) — citlivější lidé by měli omezit delší pobyt u frekventovaných silnic.', descEn:'Approaching the EU hourly limit value (200 µg/m³) — sensitive people should limit longer time near busy roads.'},
+  {max:400, name:'Vysoká', nameEn:'High', level:'danger', desc:'Nad hodinovým imisním limitem EU — zvýšené riziko pro dýchací cesty, omez pobyt u rušných silnic.', descEn:'Above the EU hourly limit value — increased risk for airways, limit time near busy roads.'},
+  {max:Infinity, name:'Velmi vysoká', nameEn:'Very high', level:'danger', desc:'Vážné krátkodobé zdravotní riziko.', descEn:'Serious short-term health risk.'},
 ];
 function bandForNO2(v){ return NO2_BANDS.find(b => v <= b.max); }
 
@@ -1707,18 +1880,18 @@ function bandForNO2(v){ return NO2_BANDS.find(b => v <= b.max); }
 // Tráva/ambrózie: sezóna ≥3 zrn/m³, špička ≥50 zrn/m³ (mají nižší práh —
 // vyvolávají příznaky už při menším množství).
 const POLLEN_META = {
-  birch_pollen:   {label:'Bříza',    icon:'🌳', season:10, peak:100},
-  alder_pollen:   {label:'Olše',     icon:'🌲', season:10, peak:100},
-  mugwort_pollen: {label:'Pelyněk',  icon:'🌿', season:10, peak:100},
-  grass_pollen:   {label:'Tráva',    icon:'🌾', season:3,  peak:50},
-  ragweed_pollen: {label:'Ambrózie', icon:'🌱', season:3,  peak:50},
+  birch_pollen:   {label:'Bříza',    labelEn:'Birch',   icon:'🌳', season:10, peak:100},
+  alder_pollen:   {label:'Olše',     labelEn:'Alder',   icon:'🌲', season:10, peak:100},
+  mugwort_pollen: {label:'Pelyněk',  labelEn:'Mugwort', icon:'🌿', season:10, peak:100},
+  grass_pollen:   {label:'Tráva',    labelEn:'Grass',   icon:'🌾', season:3,  peak:50},
+  ragweed_pollen: {label:'Ambrózie', labelEn:'Ragweed', icon:'🌱', season:3,  peak:50},
 };
 const POLLEN_NOTICEABLE = 1; // grains/m³ — pod tím stránka druh vůbec nezmiňuje
 
 function pollenLevel(value, season, peak){
-  if (value < season) return {name:'Zanedbatelné', level:'good'};
-  if (value < peak) return {name:'Zvýšené', level:'warn'};
-  return {name:'Vysoké', level:'danger'};
+  if (value < season) return {name:'Zanedbatelné', nameEn:'Negligible', level:'good'};
+  if (value < peak) return {name:'Zvýšené', nameEn:'Elevated', level:'warn'};
+  return {name:'Vysoké', nameEn:'High', level:'danger'};
 }
 
 function renderPollen(c){
@@ -1734,13 +1907,13 @@ function renderPollen(c){
   // v CSS, takže zůstal viditelný prázdný "balónek"), teď to řekne
   // nahlas, stejný princip jako "✅ Klidno" u dopravy.
   if (items.length === 0){
-    const names = Object.values(POLLEN_META).map(m => m.label).join(', ');
-    el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 Pyl dnes</b><span>CAMS/Copernicus</span></div><div class="pollen-ok">✅ Žádný pyl nad rozlišovací mez stránky (&lt; ${POLLEN_NOTICEABLE} zrn/m³) — sledované druhy: ${escapeHtml(names)}.</div>`;
+    const names = Object.values(POLLEN_META).map(m => bt(m,'label')).join(', ');
+    el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 ${t('Pyl dnes','Pollen today')}</b><span>CAMS/Copernicus</span></div><div class="pollen-ok">✅ ${t(`Žádný pyl nad rozlišovací mez stránky (&lt; ${POLLEN_NOTICEABLE} zrn/m³) — sledované druhy:`, `No pollen above the page's detection threshold (&lt; ${POLLEN_NOTICEABLE} grains/m³) — tracked species:`)} ${escapeHtml(names)}.</div>`;
     return;
   }
   const chips = items.map(p => {
     const lvl = pollenLevel(p.value, p.season, p.peak);
-    const val = p.value.toFixed(1).replace('.', ',');
+    const val = p.value.toFixed(1).replace('.', t(',','.'));
     // Vizuální strop lišty o 50 % nad "špičkou" — i vysoké hodnoty tak
     // vidí, KDE přesně nad špičkou leží, ne jen "lišta je plná".
     const cap = p.peak * 1.5;
@@ -1751,12 +1924,12 @@ function renderPollen(c){
     // hodnota v těch pásmech leží.
     const track = `linear-gradient(to right, var(--line) 0%, var(--line) ${seasonPct}%, var(--warn-soft) ${seasonPct}%, var(--warn-soft) ${peakPct}%, var(--danger-soft) ${peakPct}%, var(--danger-soft) 100%)`;
     return `<div class="pollen-chip">
-      <div class="pollen-chip-row"><span class="pollen-icon">${p.icon}</span><span class="pollen-label">${p.label}</span><span class="pollen-value">${val}</span></div>
-      <div class="pollen-bar" style="background:${track}" title="Sezóna od ${p.season} zrn/m³, špička od ${p.peak} zrn/m³ (EAACI)."><div class="pollen-bar-fill ${lvl.level}" style="width:${valuePct}%"></div></div>
-      <div class="pollen-level ${lvl.level}">${lvl.name}</div>
+      <div class="pollen-chip-row"><span class="pollen-icon">${p.icon}</span><span class="pollen-label">${bt(p,'label')}</span><span class="pollen-value">${val}</span></div>
+      <div class="pollen-bar" style="background:${track}" title="${t(`Sezóna od ${p.season} zrn/m³, špička od ${p.peak} zrn/m³ (EAACI).`, `Season from ${p.season} grains/m³, peak from ${p.peak} grains/m³ (EAACI).`)}"><div class="pollen-bar-fill ${lvl.level}" style="width:${valuePct}%"></div></div>
+      <div class="pollen-level ${lvl.level}">${bt(lvl,'name')}</div>
     </div>`;
   }).join('');
-  el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 Pyl dnes</b><span>zrn/m³ · CAMS/Copernicus · prahy sezóna/špička podle EAACI</span></div><div class="pollen-grid">${chips}</div>`;
+  el.innerHTML = `<div class="aqi-pollen-head"><b>🌼 ${t('Pyl dnes','Pollen today')}</b><span>${t('zrn/m³ · CAMS/Copernicus · prahy sezóna/špička podle EAACI', 'grains/m³ · CAMS/Copernicus · season/peak thresholds per EAACI')}</span></div><div class="pollen-grid">${chips}</div>`;
 }
 
 async function loadAirQuality(){
@@ -1775,31 +1948,31 @@ async function loadAirQuality(){
     document.getElementById('aqiBadge').textContent = eaqi;
     document.getElementById('aqiBadge').style.background = band.color;
     document.getElementById('aqiBadge').style.color = band.textColor;
-    document.getElementById('aqiBadge').title = `${band.name}: ${band.desc}`;
+    document.getElementById('aqiBadge').title = `${bt(band,'name')}: ${bt(band,'desc')}`;
     document.getElementById('nowAirDot').style.background = band.color;
-    document.getElementById('nowAirValue').textContent = `${eaqi} · ${band.name}`;
+    document.getElementById('nowAirValue').textContent = `${eaqi} · ${bt(band,'name')}`;
     document.getElementById('nowAir').style.borderLeftColor = band.color;
     document.getElementById('nowAirSub').textContent = 'EAQI · Open-Meteo';
-    document.getElementById('nowAir').title = `Evropský index kvality ovzduší (EAQI), zdroj Open-Meteo. Stupnice: ${EAQI_BANDS.map(b => b.name).join(' · ')}.`;
-    document.getElementById('aqiBand').textContent = band.name + ' — evropský index kvality ovzduší (EAQI)';
-    document.getElementById('aqiDesc').textContent = band.desc;
+    document.getElementById('nowAir').title = t(`Evropský index kvality ovzduší (EAQI), zdroj Open-Meteo. Stupnice: ${EAQI_BANDS.map(b => b.name).join(' · ')}.`, `European Air Quality Index (EAQI), source Open-Meteo. Scale: ${EAQI_BANDS.map(b => b.nameEn).join(' · ')}.`);
+    document.getElementById('aqiBand').textContent = bt(band,'name') + t(' — evropský index kvality ovzduší (EAQI)',' — European Air Quality Index (EAQI)');
+    document.getElementById('aqiDesc').textContent = bt(band,'desc');
     document.getElementById('aqiMarker').style.left = Math.min(100, eaqi) + '%';
     const metric = (label, value, unit, band) => `
       <div class="aqi-metric">
         <span class="lbl">${label}</span>
         <b>${value}<small>${unit}</small></b>
-        <div class="takeaway ${band.level}">${band.name}</div>
-        <p>${band.desc}</p>
+        <div class="takeaway ${band.level}">${bt(band,'name')}</div>
+        <p>${bt(band,'desc')}</p>
       </div>`;
     document.getElementById('aqiMetrics').innerHTML =
-      metric('PM2,5 — jemné částice', c.pm2_5.toFixed(1), ' µg/m³', pm25Band) +
-      metric('PM10 — prachové částice', c.pm10.toFixed(1), ' µg/m³', pm10Band) +
-      metric('Ozon (O₃)', c.ozone.toFixed(0), ' µg/m³', o3Band) +
-      metric('Oxid dusičitý (NO₂)', c.nitrogen_dioxide.toFixed(1), ' µg/m³', no2Band);
+      metric(t('PM2,5 — jemné částice','PM2.5 — fine particles'), c.pm2_5.toFixed(1), ' µg/m³', pm25Band) +
+      metric(t('PM10 — prachové částice','PM10 — coarse particles'), c.pm10.toFixed(1), ' µg/m³', pm10Band) +
+      metric(t('Ozon (O₃)','Ozone (O₃)'), c.ozone.toFixed(0), ' µg/m³', o3Band) +
+      metric(t('Oxid dusičitý (NO₂)','Nitrogen dioxide (NO₂)'), c.nitrogen_dioxide.toFixed(1), ' µg/m³', no2Band);
     renderPollen(c);
     markRefreshed('aqiCard');
   }catch(e){
-    document.getElementById('aqiCard').innerHTML = `<div class="soon-card">Kvalitu ovzduší se nepodařilo načíst (${e.message}).</div>`;
+    document.getElementById('aqiCard').innerHTML = `<div class="soon-card">${t(`Kvalitu ovzduší se nepodařilo načíst (${e.message}).`, `Failed to load air quality (${e.message}).`)}</div>`;
   }
 }
 
@@ -1807,6 +1980,11 @@ const NACE_LABELS = {
   '43':'Stavebnictví', '41':'Výstavba budov', '47':'Maloobchod', '46':'Velkoobchod',
   '01':'Zemědělství', '94':'Členské organizace', '68':'Nemovitosti', '49':'Doprava',
   '45':'Prodej/opravy vozidel', '25':'Kovovýroba',
+};
+const NACE_LABELS_EN = {
+  '43':'Construction', '41':'Building construction', '47':'Retail', '46':'Wholesale',
+  '01':'Agriculture', '94':'Membership organizations', '68':'Real estate', '49':'Transport',
+  '45':'Vehicle sales/repairs', '25':'Metal manufacturing',
 };
 
 const ARES_TIMEOUT_MS = 10000;
@@ -1825,13 +2003,17 @@ function aresCountContext(count){
   const per1000 = count / ZLONICE_POPULATION * 1000;
   const ratio = per1000 / CZ_ACTIVE_PER_1000;
   const per1000Str = per1000.toFixed(0);
+  const tail = t('Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.', 'Includes sole traders and businesses only formally registered in the village, not just actual premises.');
   if (ratio >= 1.3){
-    return `To je ${per1000Str} na 1000 obyvatel — zhruba ${ratio.toFixed(1).replace('.', ',')}× víc než celostátní průměr (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.`;
+    return t(`To je ${per1000Str} na 1000 obyvatel — zhruba ${ratio.toFixed(1).replace('.', ',')}× víc než celostátní průměr (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). ${tail}`,
+      `That's ${per1000Str} per 1000 residents — roughly ${ratio.toFixed(1)}× the national average (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). ${tail}`);
   }
   if (ratio <= 0.7){
-    return `To je ${per1000Str} na 1000 obyvatel — pod celostátním průměrem (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.`;
+    return t(`To je ${per1000Str} na 1000 obyvatel — pod celostátním průměrem (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). ${tail}`,
+      `That's ${per1000Str} per 1000 residents — below the national average (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). ${tail}`);
   }
-  return `To je ${per1000Str} na 1000 obyvatel — blízko celostátnímu průměru (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.`;
+  return t(`To je ${per1000Str} na 1000 obyvatel — blízko celostátnímu průměru (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). ${tail}`,
+    `That's ${per1000Str} per 1000 residents — close to the national average (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). ${tail}`);
 }
 
 // Jeden dotaz na jednu stránku výsledků, s časovým limitem — bez něj by stránka
@@ -1890,8 +2072,8 @@ async function loadAres(){
     try{
       active = await loadAresLive();
     }catch(e){
-      const msg = e.name === 'AbortError' ? 'vypršel časový limit' : e.message;
-      const errorHtml = `<div class="soon-card">Data z ARESu se nepodařilo načíst (${msg}).</div>`;
+      const msg = e.name === 'AbortError' ? t('vypršel časový limit','the time limit expired') : e.message;
+      const errorHtml = `<div class="soon-card">${t(`Data z ARESu se nepodařilo načíst (${msg}).`, `Failed to load ARES data (${msg}).`)}</div>`;
       document.getElementById('aresBars').innerHTML = errorHtml;
       document.getElementById('aresStats').innerHTML = '';
       return;
@@ -1910,17 +2092,17 @@ async function loadAres(){
     const maxN = Math.max(...top.map(([,n]) => n));
 
     const rows = top.map(([code,n]) => {
-      const label = NACE_LABELS[code] || ('CZ-NACE ' + code);
+      const label = (lang === 'en' ? NACE_LABELS_EN[code] : NACE_LABELS[code]) || ('CZ-NACE ' + code);
       return `<div class="bar-row"><span class="lbl">${label}</span><span class="bar-track"><span class="bar-fill" style="width:${(n/maxN*100).toFixed(0)}%;"></span></span><span class="n">${n}</span></div>`;
     }).join('');
-    document.getElementById('aresBars').innerHTML = rows || '<div class="soon-card">Pro Zlonice se nepodařilo najít žádný obor s firmami.</div>';
+    document.getElementById('aresBars').innerHTML = rows || `<div class="soon-card">${t('Pro Zlonice se nepodařilo najít žádný obor s firmami.','Could not find any business sector for Zlonice.')}</div>`;
     markRefreshed('aresBars');
   }catch(e){
-    document.getElementById('aresBars').innerHTML = `<div class="soon-card">Data z ARESu se nepodařilo zpracovat (${e.message}).</div>`;
+    document.getElementById('aresBars').innerHTML = `<div class="soon-card">${t(`Data z ARESu se nepodařilo zpracovat (${e.message}).`, `Failed to process ARES data (${e.message}).`)}</div>`;
   }
 
   try{
-    const countHtml = `<div class="ares-count"><span class="k">aktivních subjektů</span><span class="v">${active.length}</span><span class="ctx">${aresCountContext(active.length)}</span></div>`;
+    const countHtml = `<div class="ares-count"><span class="k">${t('aktivních subjektů','active entities')}</span><span class="v">${active.length}</span><span class="ctx">${aresCountContext(active.length)}</span></div>`;
 
     const withDate = active.filter(s => s.datumVzniku).sort((a,b) => a.datumVzniku.localeCompare(b.datumVzniku));
     if (withDate.length === 0){
@@ -1930,8 +2112,8 @@ async function loadAres(){
     const oldest = withDate[0], newest = withDate[withDate.length-1];
     document.getElementById('aresStats').innerHTML = countHtml + `
       <div class="ares-history">
-        <div class="stat"><div class="k">nejstarší</div><div class="v">${oldest.obchodniJmeno} · ${oldest.datumVzniku.slice(0,4)}</div></div>
-        <div class="stat"><div class="k">nejnovější</div><div class="v">${newest.obchodniJmeno} · ${newest.datumVzniku.slice(0,4)}</div></div>
+        <div class="stat"><div class="k">${t('nejstarší','oldest')}</div><div class="v">${oldest.obchodniJmeno} · ${oldest.datumVzniku.slice(0,4)}</div></div>
+        <div class="stat"><div class="k">${t('nejnovější','newest')}</div><div class="v">${newest.obchodniJmeno} · ${newest.datumVzniku.slice(0,4)}</div></div>
       </div>
     `;
   }catch(e){
@@ -1977,6 +2159,7 @@ function setNowAlert(active, text){
 }
 
 const SEVERITY_CS = {Extreme:'extrémní', Severe:'vysoká', Moderate:'střední', Minor:'nízká', Unknown:'neznámá'};
+const SEVERITY_EN = {Extreme:'extreme', Severe:'high', Moderate:'moderate', Minor:'low', Unknown:'unknown'};
 
 // Barevný stupeň výstrahy — 3 úrovně (žlutá/oranžová/červená), stejné
 // jako meteoalarm obvykle používá. Používá existující tokeny (--ochre
@@ -1984,11 +2167,11 @@ const SEVERITY_CS = {Extreme:'extrémní', Severe:'vysoká', Moderate:'střední
 // barvy. "Unknown" radši oranžová (opatrně uprostřed), ne rovnou červená
 // — o skutečné závažnosti nevíme nic jistého.
 const ALERT_TIER_MAP = {
-  Minor:   {cls:'caution', label:'žlutá'},
-  Moderate:{cls:'warn',    label:'oranžová'},
-  Severe:  {cls:'danger',  label:'červená'},
-  Extreme: {cls:'danger',  label:'červená'},
-  Unknown: {cls:'warn',    label:'oranžová'},
+  Minor:   {cls:'caution', label:'žlutá', labelEn:'yellow'},
+  Moderate:{cls:'warn',    label:'oranžová', labelEn:'orange'},
+  Severe:  {cls:'danger',  label:'červená', labelEn:'red'},
+  Extreme: {cls:'danger',  label:'červená', labelEn:'red'},
+  Unknown: {cls:'warn',    label:'oranžová', labelEn:'orange'},
 };
 function alertTier(severity){ return ALERT_TIER_MAP[severity] || ALERT_TIER_MAP.Unknown; }
 
@@ -2007,29 +2190,31 @@ function alertTypeIcon(event){
 }
 
 const ALERT_DAYS_SHORT = ['ne','po','út','st','čt','pá','so'];
+const ALERT_DAYS_SHORT_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function alertTimeShort(iso){
   if (!iso) return null;
   const d = new Date(iso);
-  return `${ALERT_DAYS_SHORT[d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  const days = lang === 'en' ? ALERT_DAYS_SHORT_EN : ALERT_DAYS_SHORT;
+  return `${days[d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
 function alertTimeRange(a){
   const onset = alertTimeShort(a.onset);
   const expires = alertTimeShort(a.expires);
   if (onset && expires) return `${onset} – ${expires}`;
-  if (onset) return `od ${onset}`;
-  if (expires) return `do ${expires}`;
+  if (onset) return t(`od ${onset}`, `from ${onset}`);
+  if (expires) return t(`do ${expires}`, `until ${expires}`);
   return null;
 }
 function alertRowHtml(a){
   const tier = alertTier(a.severity);
   const range = alertTimeRange(a);
-  return `<div class="alert-row"><span>${alertTypeIcon(a.event)}</span><span class="alert-row-body"><b>${escapeHtml(a.event)}</b>${range ? ` · ${escapeHtml(range)}` : ''}</span><span class="tag ${tier.cls}">${tier.label}</span></div>`;
+  return `<div class="alert-row"><span>${alertTypeIcon(a.event)}</span><span class="alert-row-body"><b>${escapeHtml(a.event)}</b>${range ? ` · ${escapeHtml(range)}` : ''}</span><span class="tag ${tier.cls}">${bt(tier,'label')}</span></div>`;
 }
 
 function unknownAlertState(reason){
-  setAlertBanner('unknown', 'warn', 'nelze ověřit',
-    'Aktuální výstrahy nelze ověřit',
-    `${escapeHtml(reason)} Zkontroluj prosím oficiální zdroj přímo: <a href="https://vystrahy-cr.chmi.cz/" target="_blank" rel="noopener">vystrahy-cr.chmi.cz</a>.`);
+  setAlertBanner('unknown', 'warn', t('nelze ověřit','cannot verify'),
+    t('Aktuální výstrahy nelze ověřit','Current alerts cannot be verified'),
+    `${escapeHtml(reason)} ${t('Zkontroluj prosím oficiální zdroj přímo:','Please check the official source directly:')} <a href="https://vystrahy-cr.chmi.cz/" target="_blank" rel="noopener">vystrahy-cr.chmi.cz</a>.`);
   setNowAlert(false, '—');
 }
 
@@ -2041,17 +2226,18 @@ async function loadAlerts(){
 
     const ageMs = Date.now() - new Date(data.updated).getTime();
     if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > ALERT_STALE_MS){
-      unknownAlertState('Automatická kontrola ČHMÚ výstrah teď neběží nebo selhala.');
+      unknownAlertState(t('Automatická kontrola ČHMÚ výstrah teď neběží nebo selhala.','The automatic ČHMÚ alert check isn\'t running right now or has failed.'));
       return;
     }
 
     if (!data.hasActive){
-      const checked = new Date(data.updated).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
-      const tracked = `<br><span class="alert-tracked">sledujeme: bouřky, vítr, mráz, vedro, povodně, sníh · <a href="https://vystrahy-cr.chmi.cz/" target="_blank" rel="noopener">ČHMÚ ↗</a></span>`;
-      setAlertBanner('', 'live', 'ověřeno',
-        'Beze zvláštních výstrah',
-        `ČHMÚ pro Zlonice (ORP Slaný) aktuálně nehlásí žádnou výstrahu. Ověřeno ${checked}.${tracked}`);
-      setNowAlert(false, 'Bez výstrah ČHMÚ');
+      const checked = new Date(data.updated).toLocaleString(LOCALE(), {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+      const tracked = `<br><span class="alert-tracked">${t('sledujeme: bouřky, vítr, mráz, vedro, povodně, sníh','tracked: storms, wind, frost, heat, floods, snow')} · <a href="https://vystrahy-cr.chmi.cz/" target="_blank" rel="noopener">ČHMÚ ↗</a></span>`;
+      setAlertBanner('', 'live', t('ověřeno','verified'),
+        t('Beze zvláštních výstrah','No active alerts'),
+        t(`ČHMÚ pro Zlonice (ORP Slaný) aktuálně nehlásí žádnou výstrahu. Ověřeno ${checked}.${tracked}`,
+          `ČHMÚ currently reports no alert for Zlonice (ORP Slaný). Verified ${checked}.${tracked}`));
+      setNowAlert(false, t('Bez výstrah ČHMÚ','No ČHMÚ alerts'));
       return;
     }
 
@@ -2065,15 +2251,15 @@ async function loadAlerts(){
     // náhradního textu by banner zůstal skoro prázdný, jen s odkazem.
     const context = worst.headline
       ? escapeHtml(worst.headline)
-      : `úroveň závažnosti: ${SEVERITY_CS[worst.severity] || worst.severity}`;
-    let detail = `${context} — <a href="${worst.web}" target="_blank" rel="noopener">více info (ČHMÚ)</a>`;
+      : t(`úroveň závažnosti: ${SEVERITY_CS[worst.severity] || worst.severity}`, `severity level: ${SEVERITY_EN[worst.severity] || worst.severity}`);
+    let detail = `${context} — <a href="${worst.web}" target="_blank" rel="noopener">${t('více info (ČHMÚ)','more info (ČHMÚ)')}</a>`;
     if (data.alerts.length > 1){
       detail += `<div class="alert-list">${data.alerts.map(alertRowHtml).join('')}</div>`;
     }
-    setAlertBanner(tier.cls, tier.cls, data.alerts.length > 1 ? `${data.alerts.length} výstrahy · ${tier.label}` : tier.label, mainLine, detail);
+    setAlertBanner(tier.cls, tier.cls, data.alerts.length > 1 ? `${data.alerts.length} ${t('výstrahy','alerts')} · ${bt(tier,'label')}` : bt(tier,'label'), mainLine, detail);
     setNowAlert(true, names);
   }catch(e){
-    unknownAlertState(`Nepodařilo se načíst data o výstrahách (${e.message}).`);
+    unknownAlertState(t(`Nepodařilo se načíst data o výstrahách (${e.message}).`, `Failed to load alert data (${e.message}).`));
   }
 }
 
@@ -2089,13 +2275,13 @@ const TRAFFIC_STALE_MS = 60 * 60 * 1000; // pipeline běží co 15 min, klidná 
 // silnici/uzavírka/kolony jsou obvykle plánované nebo informační (jantarová).
 // Cíl: člověk pozná stav i bez čtení textu, jen z barvy a ikony.
 function trafficTypeInfo(type){
-  const t = String(type || '').toLowerCase();
-  if (t.includes('accident')) return {label:'Nehoda', icon:'💥', level:'danger'};
-  if (t.includes('obstruction')) return {label:'Překážka na silnici', icon:'⚠️', level:'danger'};
-  if (t.includes('roadworks') || t.includes('maintenance') || t.includes('construction')) return {label:'Práce na silnici', icon:'🚧', level:'warn'};
-  if (t.includes('management') || t.includes('closure') || t.includes('restriction')) return {label:'Uzavírka/omezení', icon:'⛔', level:'warn'};
-  if (t.includes('abnormaltraffic')) return {label:'Kolony/mimořádný provoz', icon:'🐢', level:'warn'};
-  return {label:'Dopravní situace', icon:'ℹ️', level:'warn'};
+  const tt = String(type || '').toLowerCase();
+  if (tt.includes('accident')) return {label:t('Nehoda','Accident'), icon:'💥', level:'danger'};
+  if (tt.includes('obstruction')) return {label:t('Překážka na silnici','Road obstruction'), icon:'⚠️', level:'danger'};
+  if (tt.includes('roadworks') || tt.includes('maintenance') || tt.includes('construction')) return {label:t('Práce na silnici','Roadworks'), icon:'🚧', level:'warn'};
+  if (tt.includes('management') || tt.includes('closure') || tt.includes('restriction')) return {label:t('Uzavírka/omezení','Closure/restriction'), icon:'⛔', level:'warn'};
+  if (tt.includes('abnormaltraffic')) return {label:t('Kolony/mimořádný provoz','Congestion/abnormal traffic'), icon:'🐢', level:'warn'};
+  return {label:t('Dopravní situace','Traffic situation'), icon:'ℹ️', level:'warn'};
 }
 
 function setTrafficBanner(cls, tagCls, tagText, headline, detailHtml){
@@ -2108,9 +2294,9 @@ function setTrafficBanner(cls, tagCls, tagText, headline, detailHtml){
 }
 
 function unknownTrafficState(reason){
-  setTrafficBanner('unknown', 'warn', 'nelze ověřit',
-    '❓ Dopravní situaci nelze ověřit',
-    `${escapeHtml(reason)} Zkontroluj prosím oficiální zdroj přímo: <a href="https://dopravniinfo.cz" target="_blank" rel="noopener">dopravniinfo.cz</a>.`);
+  setTrafficBanner('unknown', 'warn', t('nelze ověřit','cannot verify'),
+    '❓ ' + t('Dopravní situaci nelze ověřit','Traffic situation cannot be verified'),
+    `${escapeHtml(reason)} ${t('Zkontroluj prosím oficiální zdroj přímo:','Please check the official source directly:')} <a href="https://dopravniinfo.cz" target="_blank" rel="noopener">dopravniinfo.cz</a>.`);
   document.getElementById('trafficList').innerHTML = '';
 }
 
@@ -2122,25 +2308,26 @@ async function loadTraffic(){
     const data = await res.json();
 
     if (data.status === 'pending_access'){
-      setTrafficBanner('unknown', 'soon', 'čeká se na přístup',
-        '⏳ Čeká se na přístup k dopravním datům',
-        escapeHtml(data.note || 'Čekáme na schválení přístupu k datům ŘSD/NDIC.'));
+      setTrafficBanner('unknown', 'soon', t('čeká se na přístup','awaiting access'),
+        '⏳ ' + t('Čeká se na přístup k dopravním datům','Awaiting access to traffic data'),
+        escapeHtml(data.note || t('Čekáme na schválení přístupu k datům ŘSD/NDIC.','Awaiting approval of access to ŘSD/NDIC data.')));
       list.innerHTML = '';
       return;
     }
 
     const ageMs = Date.now() - new Date(data.updated).getTime();
     if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > TRAFFIC_STALE_MS){
-      unknownTrafficState('Automatická kontrola dopravních dat ŘSD/NDIC teď neběží nebo selhala.');
+      unknownTrafficState(t('Automatická kontrola dopravních dat ŘSD/NDIC teď neběží nebo selhala.','The automatic ŘSD/NDIC traffic data check isn\'t running right now or has failed.'));
       return;
     }
 
-    const checked = new Date(data.updated).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+    const checked = new Date(data.updated).toLocaleString(LOCALE(), {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
 
     if (data.situations.length === 0){
-      setTrafficBanner('', 'live', 'ověřeno',
-        '✅ Klidno, žádné dopravní problémy',
-        `ŘSD/NDIC aktuálně nehlásí žádnou dopravní situaci do ${data.radiusKm} km od Zlonic. Ověřeno ${checked}.`);
+      setTrafficBanner('', 'live', t('ověřeno','verified'),
+        '✅ ' + t('Klidno, žádné dopravní problémy','All clear, no traffic problems'),
+        t(`ŘSD/NDIC aktuálně nehlásí žádnou dopravní situaci do ${data.radiusKm} km od Zlonic. Ověřeno ${checked}.`,
+          `ŘSD/NDIC currently reports no traffic situation within ${data.radiusKm} km of Zlonice. Verified ${checked}.`));
       list.innerHTML = '';
       return;
     }
@@ -2150,28 +2337,28 @@ async function loadTraffic(){
     const count = data.situations.length;
     const headlineIcon = worstLevel === 'danger' ? '🚨' : '🚧';
     const headlineText = worstLevel === 'danger'
-      ? (count > 1 ? `Pozor, ${count} dopravní situace v okolí` : 'Pozor, nehoda v okolí')
-      : (count > 1 ? `${count} dopravní situace v okolí` : '1 dopravní situace v okolí');
-    setTrafficBanner(worstLevel, worstLevel, count > 1 ? `${count} situace` : '1 situace',
+      ? (count > 1 ? t(`Pozor, ${count} dopravní situace v okolí`, `Watch out, ${count} traffic situations nearby`) : t('Pozor, nehoda v okolí','Watch out, accident nearby'))
+      : (count > 1 ? t(`${count} dopravní situace v okolí`, `${count} traffic situations nearby`) : t('1 dopravní situace v okolí','1 traffic situation nearby'));
+    setTrafficBanner(worstLevel, worstLevel, count > 1 ? `${count} ${t('situace','situations')}` : t('1 situace','1 situation'),
       `${headlineIcon} ${headlineText}`,
-      `Ověřeno ${checked}, okruh ${data.radiusKm} km od Zlonic.`);
+      t(`Ověřeno ${checked}, okruh ${data.radiusKm} km od Zlonic.`, `Verified ${checked}, ${data.radiusKm} km radius around Zlonice.`));
 
     list.innerHTML = data.situations.map(s => {
       const info = trafficTypeInfo(s.type);
       const comment = s.comment ? escapeHtml(s.comment) : '';
-      const dist = s.distanceKm.toFixed(1).replace('.', ',');
-      const start = s.startTime ? new Date(s.startTime).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'}) : null;
+      const dist = s.distanceKm.toFixed(1).replace('.', t(',','.'));
+      const start = s.startTime ? new Date(s.startTime).toLocaleString(LOCALE(), {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'}) : null;
       return `<div class="traffic-row">
         <div class="traffic-row-icon">${info.icon}</div>
         <div class="traffic-row-body">
-          <div class="traffic-head"><span class="takeaway ${info.level}">${escapeHtml(info.label)}</span><span class="traffic-dist">${dist} km od Zlonic</span></div>
+          <div class="traffic-head"><span class="takeaway ${info.level}">${escapeHtml(info.label)}</span><span class="traffic-dist">${dist} km ${t('od Zlonic','from Zlonice')}</span></div>
           ${comment ? `<div class="traffic-comment">${comment}</div>` : ''}
-          ${start ? `<div class="traffic-time">platí od ${start}</div>` : ''}
+          ${start ? `<div class="traffic-time">${t('platí od','in effect from')} ${start}</div>` : ''}
         </div>
       </div>`;
     }).join('');
   }catch(e){
-    unknownTrafficState(`Dopravní data se nepodařilo načíst (${e.message}).`);
+    unknownTrafficState(t(`Dopravní data se nepodařilo načíst (${e.message}).`, `Failed to load traffic data (${e.message}).`));
   }
 }
 
@@ -2218,28 +2405,31 @@ function setWinterBanner(cls, headline, detailHtml){
 }
 
 function unknownWinterState(reason){
-  setWinterBanner('unknown', '❓ Sjízdnost silnic nelze ověřit',
-    `${escapeHtml(reason)} Zkontroluj prosím oficiální zdroj přímo: <a href="https://dopravniinfo.cz" target="_blank" rel="noopener">dopravniinfo.cz</a>.`);
+  setWinterBanner('unknown', '❓ ' + t('Sjízdnost silnic nelze ověřit','Road conditions cannot be verified'),
+    `${escapeHtml(reason)} ${t('Zkontroluj prosím oficiální zdroj přímo:','Please check the official source directly:')} <a href="https://dopravniinfo.cz" target="_blank" rel="noopener">dopravniinfo.cz</a>.`);
   document.getElementById('winterList').innerHTML = '';
 }
 
+// tr() překládá jen uzavřenou slovní zásobu (viz GLOSSARY) — area/weather/
+// extra jsou text přímo od ŘSD, nikdy nevymýšlíme, co slovník nepokrývá
+// (zůstane česky, viz komentář u GLOSSARY výš).
 function winterReportCard(r){
   const roadChips = (r.roads || []).map((road) => {
     const warn = isRoadRestricted(road.condition);
-    return `<span class="winter-chip${warn ? ' warn' : ''}">${escapeHtml(road.type)}: ${escapeHtml(road.condition)}</span>`;
+    return `<span class="winter-chip${warn ? ' warn' : ''}">${escapeHtml(tr(road.type))}: ${escapeHtml(tr(road.condition))}</span>`;
   }).join('');
-  const validTo = r.validTo ? new Date(r.validTo).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'}) : null;
-  const weatherLine = isWeatherNotable(r.weather) ? `<div class="traffic-comment">${escapeHtml(r.weather)}</div>` : '';
-  const extra = (r.extra && r.extra.length) ? `<div class="traffic-comment">${escapeHtml(r.extra.join(' · '))}</div>` : '';
+  const validTo = r.validTo ? new Date(r.validTo).toLocaleString(LOCALE(), {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'}) : null;
+  const weatherLine = isWeatherNotable(r.weather) ? `<div class="traffic-comment">${escapeHtml(tr(r.weather))}</div>` : '';
+  const extra = (r.extra && r.extra.length) ? `<div class="traffic-comment">${escapeHtml(tr(r.extra.join(' · ')))}</div>` : '';
 
   return `<div class="traffic-row">
       <div class="traffic-row-icon">${winterIcon(r)}</div>
       <div class="traffic-row-body">
-        <div class="traffic-head"><span class="takeaway">${escapeHtml(r.area || 'Hlášení ŘSD/NDIC')}</span></div>
+        <div class="traffic-head"><span class="takeaway">${escapeHtml(tr(r.area) || t('Hlášení ŘSD/NDIC','ŘSD/NDIC report'))}</span></div>
         ${weatherLine}
         <div class="winter-roads-list">${roadChips}</div>
         ${extra}
-        ${validTo ? `<div class="traffic-time">platí do ${validTo}</div>` : ''}
+        ${validTo ? `<div class="traffic-time">${t('platí do','in effect until')} ${validTo}</div>` : ''}
       </div>
     </div>`;
 }
@@ -2252,23 +2442,24 @@ async function loadWinter(){
     const data = await res.json();
 
     if (data.status === 'pending_access'){
-      setWinterBanner('unknown', '⏳ Čeká se na přístup k datům o sjízdnosti',
-        escapeHtml(data.note || 'Čekáme na schválení přístupu k datům ŘSD/NDIC.'));
+      setWinterBanner('unknown', '⏳ ' + t('Čeká se na přístup k datům o sjízdnosti','Awaiting access to road condition data'),
+        escapeHtml(data.note || t('Čekáme na schválení přístupu k datům ŘSD/NDIC.','Awaiting approval of access to ŘSD/NDIC data.')));
       list.innerHTML = '';
       return;
     }
 
     const ageMs = Date.now() - new Date(data.updated).getTime();
     if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > WINTER_STALE_MS){
-      unknownWinterState('Automatická kontrola sjízdnosti silnic ŘSD/NDIC teď neběží nebo selhala.');
+      unknownWinterState(t('Automatická kontrola sjízdnosti silnic ŘSD/NDIC teď neběží nebo selhala.','The automatic ŘSD/NDIC road conditions check isn\'t running right now or has failed.'));
       return;
     }
 
-    const checked = new Date(data.updated).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+    const checked = new Date(data.updated).toLocaleString(LOCALE(), {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
 
     if (data.reports.length === 0){
-      setWinterBanner('', '✅ Žádná hlášení o sjízdnosti',
-        `ŘSD/NDIC aktuálně nic nehlásí pro okolí Zlonic (mimo zimní sezónu zdroj data ani nemá). Ověřeno ${checked}.`);
+      setWinterBanner('', '✅ ' + t('Žádná hlášení o sjízdnosti','No road condition reports'),
+        t(`ŘSD/NDIC aktuálně nic nehlásí pro okolí Zlonic (mimo zimní sezónu zdroj data ani nemá). Ověřeno ${checked}.`,
+          `ŘSD/NDIC currently reports nothing for the Zlonice area (outside winter season the source has no data at all). Verified ${checked}.`));
       list.innerHTML = '';
       return;
     }
@@ -2276,16 +2467,17 @@ async function loadWinter(){
     const anySnowIce = data.reports.some((r) => winterIcon(r) === '❄️');
     const anyRestricted = data.reports.some((r) => (r.roads || []).some((road) => isRoadRestricted(road.condition)));
     if (anySnowIce){
-      setWinterBanner('warn', '❄️ Sníh/náledí v okolí', `Ověřeno ${checked}.`);
+      setWinterBanner('warn', '❄️ ' + t('Sníh/náledí v okolí','Snow/ice nearby'), `${t('Ověřeno','Verified')} ${checked}.`);
     } else if (anyRestricted){
-      setWinterBanner('warn', '⚠️ Omezená sjízdnost v okolí', `Ověřeno ${checked}.`);
+      setWinterBanner('warn', '⚠️ ' + t('Omezená sjízdnost v okolí','Restricted road conditions nearby'), `${t('Ověřeno','Verified')} ${checked}.`);
     } else {
-      setWinterBanner('', '🛣️ Sjízdnost bez omezení', `ŘSD/NDIC hlásí sjízdno v okolí Zlonic. Ověřeno ${checked}.`);
+      setWinterBanner('', '🛣️ ' + t('Sjízdnost bez omezení','Roads passable, no restrictions'),
+        t(`ŘSD/NDIC hlásí sjízdno v okolí Zlonic. Ověřeno ${checked}.`, `ŘSD/NDIC reports roads passable around Zlonice. Verified ${checked}.`));
     }
 
     list.innerHTML = data.reports.map(winterReportCard).join('');
   }catch(e){
-    unknownWinterState(`Data o sjízdnosti se nepodařilo načíst (${e.message}).`);
+    unknownWinterState(t(`Data o sjízdnosti se nepodařilo načíst (${e.message}).`, `Failed to load road condition data (${e.message}).`));
   }
 }
 
@@ -2295,6 +2487,8 @@ async function loadWinter(){
 // dne v týdnu, ne z předpočítaného seznamu — pipeline běží jednou denně,
 // ale "za kolik minut" musí být vždycky čerstvé vůči hodinám návštěvníka.
 const DAY_LABELS = ['dnes', 'zítra'];
+const DAY_LABELS_EN = ['today', 'tomorrow'];
+function dayLabelFor(i){ return lang === 'en' ? DAY_LABELS_EN[i] : DAY_LABELS[i]; }
 
 function ymd(date){
   return `${date.getFullYear()}${String(date.getMonth()+1).padStart(2,'0')}${String(date.getDate()).padStart(2,'0')}`;
@@ -2371,10 +2565,10 @@ function liveStatusFor(tripId){
   if (!liveDelaysByTrip) return null;
   const live = tripId ? liveDelaysByTrip[tripId] : null;
   if (!live) return null;
-  if (live.isCanceled) return {level:'danger', text:'zrušeno'};
+  if (live.isCanceled) return {level:'danger', text:t('zrušeno','cancelled')};
   if (!live.delayAvailable || live.delayMinutes == null) return null;
   const mins = live.delayMinutes;
-  if (mins <= 1) return {level:'good', text:'na čase'};
+  if (mins <= 1) return {level:'good', text:t('na čase','on time')};
   if (mins <= 5) return {level:'warn', text:`+${mins} min`};
   return {level:'danger', text:`+${mins} min`};
 }
@@ -2382,10 +2576,10 @@ function liveStatusFor(tripId){
 function formatDeparture(dep, now){
   const h = String(Math.floor(dep.minutes/60)).padStart(2,'0');
   const m = String(dep.minutes%60).padStart(2,'0');
-  let rel = DAY_LABELS[dep.dayOffset];
+  let rel = dayLabelFor(dep.dayOffset);
   if (dep.dayOffset === 0){
     const inMin = dep.minutes - (now.getHours()*60 + now.getMinutes());
-    rel = inMin <= 0 ? 'teď' : (inMin < 60 ? `za ${inMin} min` : `za ${(Math.round(inMin/60*10)/10).toFixed(1).replace('.', ',')} h`);
+    rel = inMin <= 0 ? t('teď','now') : (inMin < 60 ? t(`za ${inMin} min`, `in ${inMin} min`) : t(`za ${(Math.round(inMin/60*10)/10).toFixed(1).replace('.', ',')} h`, `in ${(Math.round(inMin/60*10)/10).toFixed(1)} h`));
   }
   return {h, m, rel};
 }
@@ -2398,7 +2592,7 @@ function renderDepartures(depData, stopName){
   const list = document.getElementById('depList');
   if (deps.length === 0){
     next.innerHTML = '';
-    list.innerHTML = '<div class="sub">Pro tuhle zastávku a nejbližší dny stránka nenašla žádný spoj linek 590/591/594.</div>';
+    list.innerHTML = `<div class="sub">${t('Pro tuhle zastávku a nejbližší dny stránka nenašla žádný spoj linek 590/591/594.','No departures found for lines 590/591/594 at this stop for the coming days.')}</div>`;
     return;
   }
 
@@ -2425,7 +2619,7 @@ function renderDepartures(depData, stopName){
     let dayLabel = '';
     if (dep.dayOffset !== lastDayOffset){
       lastDayOffset = dep.dayOffset;
-      dayLabel = `<div class="dep-day-label">${DAY_LABELS[dep.dayOffset]}</div>`;
+      dayLabel = `<div class="dep-day-label">${dayLabelFor(dep.dayOffset)}</div>`;
     }
     const st = liveStatusFor(dep.tripId);
     return `${dayLabel}<div class="dep-table-row">
@@ -2438,6 +2632,8 @@ function renderDepartures(depData, stopName){
   markRefreshed('depCard');
 }
 
+let departuresData = null; // sdílené napříč voláními loadDepartures, viz komentář u select listeneru níž
+
 async function loadDepartures(){
   const card = document.getElementById('depCard');
   const select = document.getElementById('depStopSelect');
@@ -2449,9 +2645,19 @@ async function loadDepartures(){
     if (data.status !== 'ok') throw new Error(data.message || 'neznámá chyba');
 
     const stopNames = Object.keys(data.stops).sort((a,b) => a === 'Zlonice' ? -1 : b === 'Zlonice' ? 1 : a.localeCompare(b, 'cs'));
+    const prevStop = select.value; // zachovat výběr zastávky přes přepnutí jazyka (loadDepartures se volá znovu)
     select.innerHTML = stopNames.map(name => `<option value="${name}">${fixStopName(name)}</option>`).join('');
-    select.value = stopNames.includes('Zlonice') ? 'Zlonice' : stopNames[0];
-    select.addEventListener('change', () => renderDepartures(data, select.value));
+    select.value = stopNames.includes(prevStop) ? prevStop : (stopNames.includes('Zlonice') ? 'Zlonice' : stopNames[0]);
+    // select element přežívá napříč voláními loadDepartures (jen .innerHTML
+    // možností se mění) — posluchač se proto připojuje jen jednou, jinak by
+    // se po každém přepnutí jazyka (viz přepínač na konci souboru) hromadily
+    // duplicitní listenery a změna zastávky by renderDepartures zavolala
+    // vícekrát najednou.
+    if (!select.dataset.listenerAttached){
+      select.dataset.listenerAttached = '1';
+      select.addEventListener('change', () => renderDepartures(departuresData, select.value));
+    }
+    departuresData = data;
 
     // Málo zastávek (běžný případ u jedné obce) → segmentový přepínač místo
     // <select>u, je to rychlejší na dotek a jde vidět všechny možnosti
@@ -2481,14 +2687,14 @@ async function loadDepartures(){
         document.getElementById('nowBusDest').textContent = fixStopName(next.headsign);
         if (next.dayOffset === 0){
           const inMin = next.minutes - (new Date().getHours()*60 + new Date().getMinutes());
-          document.getElementById('nowBusSub').textContent = inMin <= 0 ? 'teď' : `za ${inMin} min`;
+          document.getElementById('nowBusSub').textContent = inMin <= 0 ? t('teď','now') : t(`za ${inMin} min`, `in ${inMin} min`);
         } else {
-          document.getElementById('nowBusSub').textContent = 'zítra';
+          document.getElementById('nowBusSub').textContent = t('zítra','tomorrow');
         }
       }
     }catch(e){ /* dlaždice zůstane na výchozí "—" */ }
   }catch(e){
-    card.innerHTML = `<div class="soon-card">Jízdní řád se nepodařilo načíst (${e.message}).</div>`;
+    card.innerHTML = `<div class="soon-card">${t(`Jízdní řád se nepodařilo načíst (${e.message}).`, `Failed to load the timetable (${e.message}).`)}</div>`;
   }
 }
 
@@ -2502,11 +2708,11 @@ const WATER_STALE_MS = 90 * 60 * 1000; // pipeline běží každých 15 min
 // (28 °C, nařízení vlády 401/2015 Sb.) a typickému letnímu rozmezí
 // nížinného toku. Teplejší voda = méně rozpuštěného kyslíku pro ryby.
 const WATER_TEMP_BANDS = [
-  {max:15, name:'Chladná', level:'good', desc:'Chladnější než letní průměr nížinného potoka.'},
-  {max:20, name:'Normální', level:'good', desc:'Typická letní teplota pro nížinný tok, jako je Bakovský potok.'},
-  {max:24, name:'Teplejší', level:'warn', desc:'Nad letním průměrem — teplejší voda má míň rozpuštěného kyslíku, náročnější pro ryby.'},
-  {max:28, name:'Vysoká', level:'warn', desc:'Blíží se zákonnému limitu pro kaprové vody (28 °C) — znatelná zátěž pro vodní život.'},
-  {max:Infinity, name:'Extrémní', level:'danger', desc:'Na hranici nebo nad zákonným limitem pro kaprové vody — riziko nedostatku kyslíku a úhynu ryb.'},
+  {max:15, name:'Chladná', nameEn:'Cold', level:'good', desc:'Chladnější než letní průměr nížinného potoka.', descEn:'Colder than the summer average for a lowland stream.'},
+  {max:20, name:'Normální', nameEn:'Normal', level:'good', desc:'Typická letní teplota pro nížinný tok, jako je Bakovský potok.', descEn:'Typical summer temperature for a lowland stream like the Bakovský stream.'},
+  {max:24, name:'Teplejší', nameEn:'Warmer', level:'warn', desc:'Nad letním průměrem — teplejší voda má míň rozpuštěného kyslíku, náročnější pro ryby.', descEn:'Above the summer average — warmer water holds less dissolved oxygen, harder for fish.'},
+  {max:28, name:'Vysoká', nameEn:'High', level:'warn', desc:'Blíží se zákonnému limitu pro kaprové vody (28 °C) — znatelná zátěž pro vodní život.', descEn:'Approaching the legal limit for cyprinid waters (28 °C) — noticeable stress on aquatic life.'},
+  {max:Infinity, name:'Extrémní', nameEn:'Extreme', level:'danger', desc:'Na hranici nebo nad zákonným limitem pro kaprové vody — riziko nedostatku kyslíku a úhynu ryb.', descEn:'At or above the legal limit for cyprinid waters — risk of oxygen shortage and fish kill.'},
 ];
 function waterTempBand(c){ return WATER_TEMP_BANDS.find(b => c <= b.max); }
 
@@ -2515,24 +2721,24 @@ function waterTempBand(c){ return WATER_TEMP_BANDS.find(b => c <= b.max); }
 // ne odhad. Bez toho by "Průtok" v stránce byla holá čísla bez kontextu.
 function flowBand(flowM3s, th){
   if (!th || !(th.dry > 0)) return null;
-  if (flowM3s < th.dry) return {name:'Sucho', level:'warn', desc:`Pod hranicí sucha ČHMÚ pro tuhle stanici (${(th.dry*1000).toFixed(0)} l/s) — tok je znatelně vyschlý.`};
-  if (flowM3s < th.spa1) return {name:'Normální', level:'good', desc:'Běžný průtok pro tuhle stanici, bez sucha i bez zvýšené aktivity.'};
-  if (flowM3s < th.spa2) return {name:'Zvýšený', level:'warn', desc:'1. stupeň povodňové aktivity podle průtoku — ČHMÚ sleduje vývoj, zatím bez rizika pro okolí.'};
-  if (flowM3s < th.spa3) return {name:'Vysoký', level:'danger', desc:'2. stupeň povodňové aktivity podle průtoku — sledujte oficiální zdroje ČHMÚ.'};
-  return {name:'Extrémní', level:'danger', desc:'3. stupeň povodňové aktivity podle průtoku — nejvyšší stupeň, sledujte oficiální zdroje a pokyny obce.'};
+  if (flowM3s < th.dry) return {name:t('Sucho','Dry'), level:'warn', desc:t(`Pod hranicí sucha ČHMÚ pro tuhle stanici (${(th.dry*1000).toFixed(0)} l/s) — tok je znatelně vyschlý.`, `Below the ČHMÚ drought threshold for this station (${(th.dry*1000).toFixed(0)} l/s) — the stream is noticeably low.`)};
+  if (flowM3s < th.spa1) return {name:t('Normální','Normal'), level:'good', desc:t('Běžný průtok pro tuhle stanici, bez sucha i bez zvýšené aktivity.','Normal flow for this station, neither drought nor elevated activity.')};
+  if (flowM3s < th.spa2) return {name:t('Zvýšený','Elevated'), level:'warn', desc:t('1. stupeň povodňové aktivity podle průtoku — ČHMÚ sleduje vývoj, zatím bez rizika pro okolí.','1st degree of flood activity by flow — ČHMÚ is monitoring, no risk to the area yet.')};
+  if (flowM3s < th.spa3) return {name:t('Vysoký','High'), level:'danger', desc:t('2. stupeň povodňové aktivity podle průtoku — sledujte oficiální zdroje ČHMÚ.','2nd degree of flood activity by flow — follow official ČHMÚ sources.')};
+  return {name:t('Extrémní','Extreme'), level:'danger', desc:t('3. stupeň povodňové aktivity podle průtoku — nejvyšší stupeň, sledujte oficiální zdroje a pokyny obce.','3rd degree of flood activity by flow — the highest level, follow official sources and municipal instructions.')};
 }
 
 function waterStageFor(level, th){
-  if (level < th.dry) return {name:'Sucho', color:'var(--warn)', pct: Math.max(0, Math.min(20, level/th.dry*20)),
-    desc:`pod hranicí sucha (${th.dry} cm). Není to extrém ani povodňové riziko, ale tok je momentálně znatelně vyschlý.`};
-  if (level < th.spa1) return {name:'Normální', color:'var(--good)', pct: 20 + (level-th.dry)/(th.spa1-th.dry)*20,
-    desc:'v běžném rozmezí, bez sucha i bez zvýšené aktivity.'};
-  if (level < th.spa2) return {name:'1. stupeň — bdělost', color:'var(--warn)', pct: 40 + (level-th.spa1)/(th.spa2-th.spa1)*20,
-    desc:'zvýšený stav, ČHMÚ sleduje vývoj. Není to ještě povodňové riziko pro okolí.'};
-  if (level < th.spa3) return {name:'2. stupeň — pohotovost', color:'var(--danger)', pct: 60 + (level-th.spa2)/(th.spa3-th.spa2)*20,
-    desc:'vyšší povodňová aktivita, sledujte oficiální zdroje ČHMÚ.'};
-  return {name:'3. stupeň — ohrožení', color:'var(--danger)', pct: Math.min(100, 80 + (level-th.spa3)/(th.spa3-th.spa2)*20),
-    desc:'nejvyšší stupeň povodňové aktivity — sledujte oficiální zdroje a pokyny obce.'};
+  if (level < th.dry) return {name:t('Sucho','Dry'), color:'var(--warn)', pct: Math.max(0, Math.min(20, level/th.dry*20)),
+    desc:t(`pod hranicí sucha (${th.dry} cm). Není to extrém ani povodňové riziko, ale tok je momentálně znatelně vyschlý.`, `below the drought threshold (${th.dry} cm). Not an extreme or flood risk, but the stream is currently noticeably low.`)};
+  if (level < th.spa1) return {name:t('Normální','Normal'), color:'var(--good)', pct: 20 + (level-th.dry)/(th.spa1-th.dry)*20,
+    desc:t('v běžném rozmezí, bez sucha i bez zvýšené aktivity.','within the normal range, neither drought nor elevated activity.')};
+  if (level < th.spa2) return {name:t('1. stupeň — bdělost','1st degree — alert'), color:'var(--warn)', pct: 40 + (level-th.spa1)/(th.spa2-th.spa1)*20,
+    desc:t('zvýšený stav, ČHMÚ sleduje vývoj. Není to ještě povodňové riziko pro okolí.','elevated level, ČHMÚ is monitoring. Not yet a flood risk to the area.')};
+  if (level < th.spa3) return {name:t('2. stupeň — pohotovost','2nd degree — readiness'), color:'var(--danger)', pct: 60 + (level-th.spa2)/(th.spa3-th.spa2)*20,
+    desc:t('vyšší povodňová aktivita, sledujte oficiální zdroje ČHMÚ.','higher flood activity, follow official ČHMÚ sources.')};
+  return {name:t('3. stupeň — ohrožení','3rd degree — danger'), color:'var(--danger)', pct: Math.min(100, 80 + (level-th.spa3)/(th.spa3-th.spa2)*20),
+    desc:t('nejvyšší stupeň povodňové aktivity — sledujte oficiální zdroje a pokyny obce.','the highest degree of flood activity — follow official sources and municipal instructions.')};
 }
 
 async function loadWater(){
@@ -2545,17 +2751,17 @@ async function loadWater(){
     const ageMs = Date.now() - new Date(data.updated).getTime();
     if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > WATER_STALE_MS){
       tag.className = 'tag warn';
-      tag.innerHTML = '<span class="dot"></span>nelze ověřit';
-      document.getElementById('waterStage').textContent = 'Aktuální stav nelze ověřit';
+      tag.innerHTML = `<span class="dot"></span>${t('nelze ověřit','cannot verify')}`;
+      document.getElementById('waterStage').textContent = t('Aktuální stav nelze ověřit','Current level cannot be verified');
       document.getElementById('waterStage').style.color = 'var(--ink-soft)';
-      document.getElementById('waterDesc').textContent = 'Automatická kontrola dat ČHMÚ teď neběží nebo selhala. Poslední známá hodnota by mohla být zastaralá.';
+      document.getElementById('waterDesc').textContent = t('Automatická kontrola dat ČHMÚ teď neběží nebo selhala. Poslední známá hodnota by mohla být zastaralá.', 'The automatic ČHMÚ data check isn\'t running right now or has failed. The last known value may be outdated.');
       document.getElementById('waterMarker').style.display = 'none';
       document.getElementById('waterExtra').innerHTML = '';
       return;
     }
 
     tag.className = 'tag live';
-    tag.innerHTML = `<span class="dot"></span>živě · stanice ${data.station} (16 km)`;
+    tag.innerHTML = `<span class="dot"></span>${t(`živě · stanice ${data.station} (16 km)`, `live · ${data.station} station (16 km)`)}`;
 
     const th = data.thresholds;
     const level = data.level.value;
@@ -2565,7 +2771,7 @@ async function loadWater(){
     stageEl.style.color = stage.color;
     stageEl.innerHTML = `${stage.name} <span class="val">${level} cm</span>`;
     stageEl.title = stage.desc;
-    document.getElementById('waterDesc').textContent = `Stanice ${data.station}, tok ${data.stream} — ${stage.desc}`;
+    document.getElementById('waterDesc').textContent = t(`Stanice ${data.station}, tok ${data.stream} — ${stage.desc}`, `${data.station} station, ${data.stream} stream — ${stage.desc}`);
 
     const marker = document.getElementById('waterMarker');
     marker.style.display = '';
@@ -2574,34 +2780,51 @@ async function loadWater(){
     document.getElementById('nowWaterValue').textContent = `${stage.name} · ${level} cm`;
     document.getElementById('nowWater').style.borderLeftColor = stage.color;
     document.getElementById('nowWaterSub').textContent = `${data.stream} · ČHMÚ`;
-    const observedShort = new Date(data.level.observedAt).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
-    document.getElementById('nowWater').title = `Stanice ${data.station}, tok ${data.stream} (ČHMÚ). ${stage.desc} Naměřeno ${observedShort}.`;
+    const observedShort = new Date(data.level.observedAt).toLocaleString(LOCALE(), {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+    document.getElementById('nowWater').title = t(`Stanice ${data.station}, tok ${data.stream} (ČHMÚ). ${stage.desc} Naměřeno ${observedShort}.`, `${data.station} station, ${data.stream} stream (ČHMÚ). ${stage.desc} Measured ${observedShort}.`);
 
     const extra = document.getElementById('waterExtra');
     const parts = [];
     if (data.temperature){
-      const t = data.temperature.value;
-      const band = waterTempBand(t);
-      parts.push(`<div>Teplota vody<b>${t.toFixed(1).replace('.', ',')} °C</b><div class="takeaway ${band.level}" title="${band.desc}">${band.name}</div></div>`);
+      const waterTempC = data.temperature.value;
+      const band = waterTempBand(waterTempC);
+      parts.push(`<div>${t('Teplota vody','Water temperature')}<b>${waterTempC.toFixed(1).replace('.', t(',','.'))} °C</b><div class="takeaway ${band.level}" title="${band.desc}">${band.name}</div></div>`);
     }
     if (data.flow){
       const ls = data.flow.value * 1000;
       const fBand = flowBand(data.flow.value, data.thresholdsFlow);
       const fBadge = fBand ? `<div class="takeaway ${fBand.level}" title="${fBand.desc}">${fBand.name}</div>` : '';
-      parts.push(`<div>Průtok<b>${ls.toFixed(1).replace('.', ',')} l/s</b>${fBadge}</div>`);
+      parts.push(`<div>${t('Průtok','Flow')}<b>${ls.toFixed(1).replace('.', t(',','.'))} l/s</b>${fBadge}</div>`);
     }
     extra.innerHTML = parts.join('');
 
-    const observed = new Date(data.level.observedAt).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
-    document.getElementById('waterFooter').textContent = `Stanice ${data.station}, tok ${data.stream} — nejbližší reálná stanice ČHMÚ, 16 km po proudu od Zlonic. Naměřeno ${observed}.`;
+    const observed = new Date(data.level.observedAt).toLocaleString(LOCALE(), {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'});
+    document.getElementById('waterFooter').textContent = t(`Stanice ${data.station}, tok ${data.stream} — nejbližší reálná stanice ČHMÚ, 16 km po proudu od Zlonic. Naměřeno ${observed}.`, `${data.station} station, ${data.stream} stream — nearest real ČHMÚ station, 16 km downstream from Zlonice. Measured ${observed}.`);
     markRefreshed('waterCard');
   }catch(e){
     tag.className = 'tag warn';
-    tag.innerHTML = '<span class="dot"></span>nelze ověřit';
-    document.getElementById('waterStage').textContent = 'Aktuální stav nelze ověřit';
-    document.getElementById('waterDesc').textContent = `Data o vodě se nepodařilo načíst (${e.message}).`;
+    tag.innerHTML = `<span class="dot"></span>${t('nelze ověřit','cannot verify')}`;
+    document.getElementById('waterStage').textContent = t('Aktuální stav nelze ověřit','Current level cannot be verified');
+    document.getElementById('waterDesc').textContent = t(`Data o vodě se nepodařilo načíst (${e.message}).`, `Failed to load water data (${e.message}).`);
     document.getElementById('waterMarker').style.display = 'none';
   }
+}
+
+// Anglické popisky oborů — pevná množina ~20 kategorií z
+// scripts/update-tradespeople.mjs (PREDMET_TO_CATEGORY), ne odhad. Klíče
+// musí sedět s `id` v data/tradespeople.json → categories.
+const TRADE_CATEGORY_EN = {
+  zednik:'Bricklayer', truhlar:'Carpenter, flooring', pokryvac:'Roofer, carpenter',
+  klempir:'Tinsmith, body shop', malir:'Painter, varnisher', zamecnik:'Locksmith, toolmaker',
+  kominik:'Chimney sweep', instalater:'Plumber, heating engineer', plynar:'Gas fitter',
+  elektrikar:'Electrician', stavebni:'Construction company', projektant:'Designer/planner',
+  pekar:'Baker, confectioner', automechanik:'Car mechanic', strojni:'Machine/equipment repair',
+  elektroopravy:'Appliance repair', kadernik:'Hairdresser, barber', kosmetika:'Beautician',
+  pedikura:'Pedicure, manicure',
+};
+function tradeCategoryLabel(id, categories){
+  if (lang === 'en' && TRADE_CATEGORY_EN[id]) return TRADE_CATEGORY_EN[id];
+  return categories[id]?.label;
 }
 
 // Řemeslníci a služby — stránka sama na ARES/OSM nevolá stovky dotazů (to
@@ -2625,7 +2848,7 @@ function tradeContactHtml(person, categoryLabel){
     return `<a class="trade-contact-btn" href="${telHref}">${escapeHtml(person.phone)}</a>`;
   }
   const q = encodeURIComponent(`${person.name} ${person.village || 'Zlonice'} ${categoryLabel}`.trim());
-  return `<a class="trade-contact-btn" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Kontakt</a>`;
+  return `<a class="trade-contact-btn" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">${t('Kontakt','Contact')}</a>`;
 }
 
 // Čtverec s ikonou kategorie; když kategorie žádnou ikonu nemá, iniciály
@@ -2638,7 +2861,7 @@ function tradeIconHtml(categories, catId, fallbackLabel){
 }
 
 function tradeRowHtml(p, categories){
-  const catLabels = p.categories.map(id => categories[id]?.label).filter(Boolean);
+  const catLabels = p.categories.map(id => tradeCategoryLabel(id, categories)).filter(Boolean);
   const iconHtml = tradeIconHtml(categories, p.categories[0], catLabels[0]);
   const meta = [catLabels.join(', '), p.village].filter(Boolean).join(' · ');
   return `<div class="trade-row">
@@ -2658,7 +2881,7 @@ function peopleMatchingSearch(people, categories, query){
   if (!query) return people;
   const q = query.toLowerCase();
   return people.filter(p => {
-    const catLabels = p.categories.map(id => categories[id]?.label).filter(Boolean).join(' ').toLowerCase();
+    const catLabels = p.categories.map(id => tradeCategoryLabel(id, categories)).filter(Boolean).join(' ').toLowerCase();
     return p.name.toLowerCase().includes(q) || (p.village || '').toLowerCase().includes(q) || catLabels.includes(q);
   });
 }
@@ -2668,14 +2891,14 @@ function renderTradeGrid(people, categories){
   let filtered = tradeActiveCat === 'all' ? people : people.filter(p => p.categories.includes(tradeActiveCat));
   filtered = peopleMatchingSearch(filtered, categories, tradeSearchQuery);
   if (filtered.length === 0){
-    grid.innerHTML = '<div class="soon-card trade-empty">Stránka nikoho nenašla — zkus jiné hledání nebo obor.</div>';
+    grid.innerHTML = `<div class="soon-card trade-empty">${t('Stránka nikoho nenašla — zkus jiné hledání nebo obor.','No one found — try a different search or trade.')}</div>`;
     return;
   }
   const capped = !tradeShowAll && filtered.length > TRADE_DEFAULT_CAP;
   const shown = capped ? filtered.slice(0, TRADE_DEFAULT_CAP) : filtered;
   const rows = shown.map(p => tradeRowHtml(p, categories)).join('');
   const moreBtn = capped
-    ? `<button type="button" class="trade-more" id="tradeShowAllBtn">Zobrazit dalších ${filtered.length - TRADE_DEFAULT_CAP} →</button>`
+    ? `<button type="button" class="trade-more" id="tradeShowAllBtn">${t(`Zobrazit dalších ${filtered.length - TRADE_DEFAULT_CAP} →`, `Show ${filtered.length - TRADE_DEFAULT_CAP} more →`)}</button>`
     : '';
   grid.innerHTML = rows + moreBtn;
   markRefreshed('tradeGrid');
@@ -2702,20 +2925,22 @@ function renderTradeFilters(people, categories){
   const chip = (id, label, icon, n, active) =>
     `<button type="button" class="trade-chip${active ? ' active' : ''}" data-cat="${id}">${icon ? icon + ' ' : ''}${escapeHtml(label)} <span class="n">${n}</span></button>`;
 
-  let html = chip('all', 'Vše', '', people.length, tradeActiveCat === 'all') +
-    visibleIds.map(id => chip(id, categories[id].label, categories[id].icon, counts[id] || 0, tradeActiveCat === id)).join('');
+  let html = chip('all', t('Vše','All'), '', people.length, tradeActiveCat === 'all') +
+    visibleIds.map(id => chip(id, tradeCategoryLabel(id, categories), categories[id].icon, counts[id] || 0, tradeActiveCat === id)).join('');
 
   if (restIds.length > 0){
     const restActive = restIds.includes(tradeActiveCat);
-    const label = restActive ? categories[tradeActiveCat].label : 'Další obory';
+    const label = restActive ? tradeCategoryLabel(tradeActiveCat, categories) : t('Další obory','More trades');
     html += `<details class="trade-more-cats"${restActive ? ' open' : ''}>
       <summary>${escapeHtml(label)} ▾</summary>
-      <div class="trade-more-list">${restIds.map(id => chip(id, categories[id].label, categories[id].icon, counts[id] || 0, tradeActiveCat === id)).join('')}</div>
+      <div class="trade-more-list">${restIds.map(id => chip(id, tradeCategoryLabel(id, categories), categories[id].icon, counts[id] || 0, tradeActiveCat === id)).join('')}</div>
     </details>`;
   }
 
   document.getElementById('tradeFilters').innerHTML = html;
 }
+
+let tradespeopleData = null; // sdílené napříč voláními, viz komentář u listenerů níž
 
 async function loadTradespeople(){
   const tag = document.getElementById('tradeTag');
@@ -2726,36 +2951,48 @@ async function loadTradespeople(){
 
     const ageMs = Date.now() - new Date(data.updated).getTime();
     if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > TRADE_STALE_MS){
-      throw new Error('data jsou zastaralá nebo se poslední aktualizace nepovedla');
+      throw new Error(t('data jsou zastaralá nebo se poslední aktualizace nepovedla','data is outdated or the last update failed'));
     }
 
     tag.className = 'tag snapshot';
-    tag.innerHTML = '<span class="dot"></span>aktualizace týdně · ARES';
+    tag.innerHTML = `<span class="dot"></span>${t('aktualizace týdně · ARES','weekly update · ARES')}`;
 
+    tradespeopleData = data;
     const { people, categories } = data;
     renderTradeFilters(people, categories);
     renderTradeGrid(people, categories);
 
-    document.getElementById('tradeFilters').addEventListener('click', (e) => {
-      const btn = e.target.closest('.trade-chip');
-      if (!btn) return;
-      tradeShowAll = false;
-      tradeActiveCat = btn.dataset.cat;
-      renderTradeFilters(people, categories);
-      renderTradeGrid(people, categories);
-    });
+    // #tradeFilters/#tradeSearch přežívají napříč voláními loadTradespeople
+    // (jen jejich obsah/hodnota se mění) — posluchače se proto připojují
+    // jen jednou, jinak by se po každém přepnutí jazyka hromadily
+    // duplicitní listenery (viz stejný komentář u select v loadDepartures).
+    if (!document.getElementById('tradeFilters').dataset.listenerAttached){
+      document.getElementById('tradeFilters').dataset.listenerAttached = '1';
+      document.getElementById('tradeFilters').addEventListener('click', (e) => {
+        const btn = e.target.closest('.trade-chip');
+        if (!btn || !tradespeopleData) return;
+        tradeShowAll = false;
+        tradeActiveCat = btn.dataset.cat;
+        renderTradeFilters(tradespeopleData.people, tradespeopleData.categories);
+        renderTradeGrid(tradespeopleData.people, tradespeopleData.categories);
+      });
+    }
 
-    document.getElementById('tradeSearch').addEventListener('input', (e) => {
-      tradeShowAll = false;
-      tradeSearchQuery = e.target.value.trim();
-      renderTradeGrid(people, categories);
-    });
+    if (!document.getElementById('tradeSearch').dataset.listenerAttached){
+      document.getElementById('tradeSearch').dataset.listenerAttached = '1';
+      document.getElementById('tradeSearch').addEventListener('input', (e) => {
+        if (!tradespeopleData) return;
+        tradeShowAll = false;
+        tradeSearchQuery = e.target.value.trim();
+        renderTradeGrid(tradespeopleData.people, tradespeopleData.categories);
+      });
+    }
   }catch(e){
     tag.className = 'tag warn';
-    tag.innerHTML = '<span class="dot"></span>nelze ověřit';
+    tag.innerHTML = `<span class="dot"></span>${t('nelze ověřit','cannot verify')}`;
     document.getElementById('tradeFilters').innerHTML = '';
     document.getElementById('tradeGrid').innerHTML =
-      `<div class="soon-card trade-empty">Seznam řemeslníků se nepodařilo načíst (${escapeHtml(e.message)}). Zkuste to prosím později.</div>`;
+      `<div class="soon-card trade-empty">${t(`Seznam řemeslníků se nepodařilo načíst (${escapeHtml(e.message)}). Zkuste to prosím později.`, `Failed to load the tradespeople list (${escapeHtml(e.message)}). Please try again later.`)}</div>`;
   }
 }
 
@@ -2804,22 +3041,27 @@ async function loadUredniDeska(){
 
     const ageMs = Date.now() - new Date(data.updated).getTime();
     if (data.status !== 'ok' || !(ageMs >= 0) || ageMs > BOARD_STALE_MS){
-      throw new Error('data jsou zastaralá nebo se poslední aktualizace nepovedla');
+      throw new Error(t('data jsou zastaralá nebo se poslední aktualizace nepovedla','data is outdated or the last update failed'));
     }
 
     tag.className = 'tag live';
-    tag.innerHTML = '<span class="dot"></span>živě · zlonice.cz';
+    tag.innerHTML = `<span class="dot"></span>${t('živě · zlonice.cz','live · zlonice.cz')}`;
 
     const recent = data.items.slice(0, BOARD_ITEM_COUNT);
 
     if (recent.length === 0){
-      list.innerHTML = '<div class="board-empty">Zatím žádné položky.</div>';
+      list.innerHTML = `<div class="board-empty">${t('Zatím žádné položky.','No items yet.')}</div>`;
       return;
     }
 
+    // POZOR: obsah úřední desky (title/note/souhrn z RSS) zůstává vždy
+    // česky, i v anglickém zobrazení — viz komentář v HTML (sekce #board,
+    // "Jak to funguje") a CLAUDE.md. Překládají se jen vlastní popisky
+    // appky kolem obsahu (odznak "Nejnovější", nadpisy souhrnu Příjmy/
+    // Výdaje, "Zobrazit úryvek").
     list.className = 'board-list';
     list.innerHTML = recent.map((item, i) => {
-      const date = item.pubDate ? new Date(item.pubDate).toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric', year:'numeric'}) : '';
+      const date = item.pubDate ? new Date(item.pubDate).toLocaleDateString(LOCALE(), {day:'numeric', month:'numeric', year:'numeric'}) : '';
       const featured = i === 0;
       // Exekuční příkazy a dražební vyhlášky bývají v názvu z RSS doplněné
       // konkrétní adresou/místní částí (dotčená nemovitost) — u téhle
@@ -2831,12 +3073,12 @@ async function loadUredniDeska(){
         ? sensitiveMatch[0].charAt(0).toUpperCase() + sensitiveMatch[0].slice(1)
         : item.title;
       const body = sensitiveMatch ? '' : (item.type === 'rozpocet' && item.summary)
-        ? `<div class="board-chips">${boardChip('Příjmy', item.summary.prijmy)}${boardChip('Výdaje', item.summary.vydaje)}</div>`
-        : (item.note ? `<details class="how-details"><summary>Zobrazit úryvek</summary><div class="board-note">${escapeHtml(item.note)}</div></details>` : '');
+        ? `<div class="board-chips">${boardChip(t('Příjmy','Income'), item.summary.prijmy)}${boardChip(t('Výdaje','Expenses'), item.summary.vydaje)}</div>`
+        : (item.note ? `<details class="how-details"><summary>${t('Zobrazit úryvek','Show excerpt')}</summary><div class="board-note">${escapeHtml(item.note)}</div></details>` : '');
       return `<div class="board-card${featured ? ' featured' : ''}">
         <div class="board-icon">${boardCategoryIcon(item.title)}</div>
         <div class="board-body">
-          ${featured ? '<span class="board-featured-tag">Nejnovější</span>' : ''}
+          ${featured ? `<span class="board-featured-tag">${t('Nejnovější','Newest')}</span>` : ''}
           <div class="board-head">
             <h3 class="board-title"><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener">${escapeHtml(displayTitle)}</a></h3>
             <span class="board-date">${date}</span>
@@ -2848,8 +3090,8 @@ async function loadUredniDeska(){
     markRefreshed('boardList');
   }catch(e){
     tag.className = 'tag warn';
-    tag.innerHTML = '<span class="dot"></span>nelze ověřit';
-    list.innerHTML = `<div class="soon-card">Úřední deska se nepodařilo načíst (${escapeHtml(e.message)}).</div>`;
+    tag.innerHTML = `<span class="dot"></span>${t('nelze ověřit','cannot verify')}`;
+    list.innerHTML = `<div class="soon-card">${t(`Úřední deska se nepodařilo načíst (${escapeHtml(e.message)}).`, `Failed to load the notice board (${escapeHtml(e.message)}).`)}</div>`;
   }
 }
 
@@ -2879,6 +3121,33 @@ loadUredniDeska();
     document.documentElement.setAttribute('data-theme', next);
     try{ localStorage.setItem('theme', next); }catch(e){}
     syncIcon(next);
+  });
+})();
+
+// Přepínač jazyka — na rozdíl od tmavého režimu (jen CSS proměnné) musí
+// znovu proběhnout i vykreslení dynamického obsahu (load* funkce skládají
+// spoustu Vět přímo v JS, viz komentář u `lang` výš) — nejjednodušší a
+// nejspolehlivější je nechat je prostě běžet znovu, zdrojové JSON soubory
+// jsou malé a `cache:'no-store'`, takže žádné zbytečné zatížení.
+// loadUredniDeska() se volá znovu taky (kvůli vlastním popiskům/chybovým
+// hláškám), ale OBSAH úřední desky zůstává vždycky česky, viz komentáře
+// přímo v té funkci.
+(function(){
+  const toggle = document.getElementById('langToggle');
+  function syncToggle(){
+    toggle.setAttribute('data-lang', lang);
+    document.getElementById('langToggleCs').classList.toggle('active', lang === 'cs');
+    document.getElementById('langToggleEn').classList.toggle('active', lang === 'en');
+  }
+  syncToggle();
+  toggle.addEventListener('click', () => {
+    lang = lang === 'cs' ? 'en' : 'cs';
+    try{ localStorage.setItem('zlonice-lang', lang); }catch(e){}
+    syncToggle();
+    applyI18n();
+    renderClock();
+    loadAlerts(); loadWater(); loadWeather(); loadAirQuality(); loadAres();
+    loadDepartures(); loadTraffic(); loadWinter(); loadTradespeople(); loadUredniDeska();
   });
 })();
 
