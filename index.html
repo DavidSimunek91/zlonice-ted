@@ -2208,7 +2208,8 @@ function alertTimeRange(a){
 function alertRowHtml(a){
   const tier = alertTier(a.severity);
   const range = alertTimeRange(a);
-  return `<div class="alert-row"><span>${alertTypeIcon(a.event)}</span><span class="alert-row-body"><b>${escapeHtml(a.event)}</b>${range ? ` · ${escapeHtml(range)}` : ''}</span><span class="tag ${tier.cls}">${bt(tier,'label')}</span></div>`;
+  const label = t(a.event, a.eventEn || a.event);
+  return `<div class="alert-row"><span>${alertTypeIcon(a.event)}</span><span class="alert-row-body"><b>${escapeHtml(label)}</b>${range ? ` · ${escapeHtml(range)}` : ''}</span><span class="tag ${tier.cls}">${bt(tier,'label')}</span></div>`;
 }
 
 function unknownAlertState(reason){
@@ -2243,14 +2244,19 @@ async function loadAlerts(){
 
     const worst = data.alerts.reduce((a,b) => (SEVERITY_RANK[b.severity] ?? 0) > (SEVERITY_RANK[a.severity] ?? 0) ? b : a);
     const tier = alertTier(worst.severity);
-    const names = data.alerts.map(a => a.event).join(' · ');
+    const names = data.alerts.map(a => t(a.event, a.eventEn || a.event)).join(' · ');
     const worstRange = alertTimeRange(worst);
-    const mainLine = `${alertTypeIcon(worst.event)} ${escapeHtml(worst.event)}${worstRange ? ` · ${escapeHtml(worstRange)}` : ''}`;
+    const worstLabel = t(worst.event, worst.eventEn || worst.event);
+    const mainLine = `${alertTypeIcon(worst.event)} ${escapeHtml(worstLabel)}${worstRange ? ` · ${escapeHtml(worstRange)}` : ''}`;
 
     // Headline z ČHMÚ chybí pro spoustu typů jevů (např. požáry) — bez
     // náhradního textu by banner zůstal skoro prázdný, jen s odkazem.
-    const context = worst.headline
-      ? escapeHtml(worst.headline)
+    // Anglický headlineEn jde ze stejného páru jako eventEn (přímo ze
+    // zdroje, viz scripts/update-alerts.mjs) — chybí-li, appka ukáže
+    // český headline i v anglickém zobrazení, ne vymyšlený text.
+    const worstHeadline = t(worst.headline, worst.headlineEn || worst.headline);
+    const context = worstHeadline
+      ? escapeHtml(worstHeadline)
       : t(`úroveň závažnosti: ${SEVERITY_CS[worst.severity] || worst.severity}`, `severity level: ${SEVERITY_EN[worst.severity] || worst.severity}`);
     let detail = `${context} — <a href="${worst.web}" target="_blank" rel="noopener">${t('více info (ČHMÚ)','more info (ČHMÚ)')}</a>`;
     if (data.alerts.length > 1){
@@ -2345,7 +2351,8 @@ async function loadTraffic(){
 
     list.innerHTML = data.situations.map(s => {
       const info = trafficTypeInfo(s.type);
-      const comment = s.comment ? escapeHtml(s.comment) : '';
+      const commentText = t(s.comment, s.commentEn || s.comment);
+      const comment = commentText ? escapeHtml(commentText) : '';
       const dist = s.distanceKm.toFixed(1).replace('.', t(',','.'));
       const start = s.startTime ? new Date(s.startTime).toLocaleString(LOCALE(), {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'}) : null;
       return `<div class="traffic-row">
