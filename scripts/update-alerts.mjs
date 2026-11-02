@@ -54,6 +54,20 @@ const CISORP_ZLONICE = '2124';
 // kategorii — tohle NEJSOU aktivní výstrahy, i když mají vlastní <info> blok.
 const NO_WARNING_PREFIXES = ['Žádná výstraha', 'Žádný výhled', 'Výhled jevů'];
 
+// ČHMÚ publikuje ke KAŽDÉMU <info> bloku (cs) hned za ním párový anglický
+// blok (language en-GB) se stejným onset/severity/area — ověřeno přímo na
+// živém souboru (36 bloků = 18 kategorií × 2 jazyky, cs vždy bezprostředně
+// následovaný en-GB). Appka tak může ukázat anglický text přímo ze zdroje
+// místo vlastního (nutně neúplného/hádaného) slovníku — viz loadAlerts()
+// v index.html. Když pár chybí/neodpovídá, vrátí null a appka ukáže jen
+// český text i v anglickém zobrazení (bezpečnější než si anglický text
+// domýšlet).
+function findEnglishPair(infos, csInfo) {
+  const idx = infos.indexOf(csInfo);
+  const candidate = infos[idx + 1];
+  return candidate && candidate.language === 'en-GB' ? candidate : null;
+}
+
 function isRealWarning(event) {
   return !NO_WARNING_PREFIXES.some(p => event.startsWith(p));
 }
@@ -113,16 +127,21 @@ async function main() {
     if (new Date(start) > now) return false; // ještě nezačalo platit
     if (info.expires && new Date(info.expires) < now) return false; // už vypršelo
     return true;
-  }).map(info => ({
-    event: info.event,
-    severity: info.severity,       // Extreme | Severe | Moderate | Minor | Unknown
-    urgency: info.urgency,
-    certainty: info.certainty,
-    headline: info.headline || null,
-    onset: info.onset || null,
-    expires: info.expires || null,
-    web: info.web || 'https://vystrahy-cr.chmi.cz/',
-  }));
+  }).map(info => {
+    const en = findEnglishPair(infos, info);
+    return {
+      event: info.event,
+      eventEn: en?.event || null,
+      severity: info.severity,       // Extreme | Severe | Moderate | Minor | Unknown
+      urgency: info.urgency,
+      certainty: info.certainty,
+      headline: info.headline || null,
+      headlineEn: en?.headline || null,
+      onset: info.onset || null,
+      expires: info.expires || null,
+      web: info.web || 'https://vystrahy-cr.chmi.cz/',
+    };
+  });
 
   const output = {
     status: 'ok',

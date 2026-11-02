@@ -36,6 +36,14 @@ stejně snadno jako Open-Meteo.
   (haversine, souřadnice ze `situationRecord` → `groupOfLocations` →
   `locationForDisplay`) a ukazuje jen ty do 20 km. Situace bez zjistitelné
   polohy v odpovědi appka záměrně přeskakuje, ne odhaduje.
+- **Anglická verze (`commentEn`):** `generalPublicComment` v DATEX II
+  umí mít víc jazykových verzí zároveň (atribut `lang`) — appka proto
+  zkusí vzít tu s `lang="en"`, pokud existuje, pro přepínač CZ/EN. Na
+  rozdíl od ČHMÚ výstrah (strojově generované, vždy dvojjazyčné) tenhle
+  komentář píše ručně konkrétní operátor ŘSD k dané situaci, takže
+  anglická verze typicky nebude vyplněná — `commentEn` pak zůstane `null`
+  a appka v anglickém zobrazení ukáže český text, nikdy ho sama
+  nepřekládá/nedomýšlí.
 - **Neověřeno proti živé odpovědi:** parser v `scripts/update-traffic.mjs`
   je napsaný podle standardní struktury DATEX II v2.3 "Situation
   Publication", ale nebyl při implementaci ověřený proti skutečné
@@ -107,6 +115,14 @@ stejně snadno jako Open-Meteo.
     (stalo se nám to u GitHub Pages, může se to stát i tady), appka
     přestane věřit starým datům a ukáže "nelze ověřit", ne poslední
     známý stav.
+- **Anglická verze (`eventEn`/`headlineEn`):** ČHMÚ publikuje ke KAŽDÉMU
+  českému `<info>` bloku bezprostředně za ním párový anglický (`en-GB`,
+  ověřeno na živém souboru — 18 kategorií × 2 jazyky, vždy cs pak en-GB).
+  Appka proto anglický text pro přepínač CZ/EN (viz `index.html`) nehádá
+  vlastním slovníkem, ale bere ho přímo ze zdroje — `findEnglishPair()`
+  najde sousední `en-GB` blok podle pozice v poli. Když pár chybí/
+  neodpovídá, pole zůstane `null` a appka v anglickém zobrazení ukáže
+  český text místo vymyšleného — stejná zásada jako jinde v repu.
 
 ## Autobusy (`departures.json`)
 

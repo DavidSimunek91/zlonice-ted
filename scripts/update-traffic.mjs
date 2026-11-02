@@ -128,6 +128,24 @@ export function extractComment(record) {
   return fallback;
 }
 
+// Stejné pole, jen hledá lang="en" — ŘSD operátor komentář k nehodě/
+// uzavírce píše ručně, takže anglická verze typicky nebude vyplněná
+// (na rozdíl od ČHMÚ výstrah, které jsou strojově generované ve dvou
+// jazycích vždy). Schéma to ale umožňuje, takže appka ho zkusí vzít,
+// pokud tam náhodou je, místo aby si anglický text sama vymýšlela — když
+// není, vrátí null a appka v anglickém zobrazení ukáže český text (viz
+// loadTraffic() v index.html).
+export function extractCommentEn(record) {
+  const comments = asArray(record?.generalPublicComment);
+  for (const c of comments) {
+    for (const v of asArray(c?.comment?.values?.value)) {
+      const text = typeof v === 'string' ? v : v?.['#text'];
+      if (text && v?.['@_lang'] === 'en') return text;
+    }
+  }
+  return null;
+}
+
 // DATEX II má na "kde to je" víc variant podle typu lokace — zkoušíme
 // nejběžnější tvary, které obsahují přímo souřadnice pro zobrazení.
 // Situace odkázané jen přes tabulku předdefinovaných poloh (bez lat/lon
@@ -196,6 +214,7 @@ async function main() {
       nearby.push({
         type: situationRecordType(record),
         comment: extractComment(record),
+        commentEn: extractCommentEn(record),
         validityStatus: record?.validity?.validityStatus || null,
         startTime: record?.validity?.validityTimeSpecification?.overallStartTime || null,
         endTime: record?.validity?.validityTimeSpecification?.overallEndTime || null,
