@@ -223,6 +223,35 @@ stejně snadno jako Open-Meteo.
   adresa **místa podnikání** (ne nutně trvalého bydliště), jak ji sám
   živnostník při registraci uvedl.
 
+### Obohacení důvěryhodnosti (`tradespeople-enrichment.json`)
+
+- **Proč:** samotný zápis v živnostenském rejstříku neznamená, že
+  živnostník aktivně podniká — klidně to může být nevyužitá živnost
+  z roku 2015. Appka proto ukazuje i signál "podařilo se najít nezávislou
+  stopu mimo samotný rejstřík", ale **nikdy jako tvrdé mazání** — chybějící
+  online stopa sama o sobě neznamená, že člověk nepodniká (malá obec, práce
+  od úst k ústům), jen appka takový záznam vizuálně utiší/odsune níž, ne
+  schová.
+- **NENÍ součástí týdenní ARES pipeline** — samostatný, ručně/občas
+  aktualizovaný soubor (IČO → `confidence`/`sourceType`/`source`/
+  `website`/`note`), commitovaný zvlášť. Důvod: dohledávání nezávislé
+  stopy pro ~130 lidí přes web search je pomalé a nedává smysl dělat při
+  každém týdenním běhu — a přidat do pipeline další placenou externí
+  závislost (vyhledávací API + secret) jen pro tenhle bonus nestálo za to.
+  Aktualizuje se příležitostně (ručně přes Claude, ne automatizovaně).
+- **Standard pro `confidence: "confirmed"`:** vyžaduje skutečně NEZÁVISLÝ
+  signál aktivity (vlastní web, recenze/hodnocení na nezávislém webu,
+  sociální síť, tisk) — pouhý nález na **zrcadle rejstříku** (mesec.cz,
+  hlidacstatu.cz, penize.cz/rejstrik.penize.cz, holý záznam na
+  zivefirmy.cz/kurzy.cz bez dalšího obsahu) se NEPOČÍTÁ, protože jen
+  opakuje tutéž informaci, co appka už má z vlastního ARES zdroje —
+  nepřidává žádnou novou jistotu o skutečné aktivitě. Z 134 lidí takhle
+  vyšli jen 4 jako `confirmed` (vlastní web) — to je očekávaný, ne
+  podezřelý výsledek pro malou obec.
+- **Appka ho čte jako doplněk, ne náhradu** `tradespeople.json` — spáruje
+  se podle `ico`. Chybějící záznam v enrichment souboru = stejné jako
+  `unconfirmed` (appka nikdy nepředpokládá `confirmed` jako výchozí stav).
+
 ## Místní firmy podle oboru (`firms.json`)
 
 - **Zdroj:** [ARES](https://ares.gov.cz) — stejný endpoint a stejné

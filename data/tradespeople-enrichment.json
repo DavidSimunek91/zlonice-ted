@@ -1,0 +1,944 @@
+{
+  "generatedAt": "2026-11-02",
+  "method": "Manual web research (WebSearch) per tradesperson, IČO+name as primary query against Czech business directories, cross-checked against address/village. Confirmed only when independent activity signal found (own website, genuine reviews/ratings, social media, press) -- a bare hit on a registry-mirror site (mesec.cz, hlidacstatu.cz, penize.cz, zivefirmy.cz/kurzy.cz listing with no added content) does not count as confirmation, since it just echoes the same ARES/justice.cz data already in data/tradespeople.json. Refreshed periodically by hand, not part of the automated weekly ARES pipeline.",
+  "people": {
+    "10902295": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "44299079": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "15377075": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "71029486": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Only found on registry-mirror sites (mesec.cz) restating the same ARES/justice.cz data we already have — not independent corroboration of actual activity."
+    },
+    "15754685": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "21094489": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "01759582": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "70121257": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Common name; a Kratochvíl sole-trader entry exists in nearby Unhošť but trade unclear, not confirmed as same person."
+    },
+    "70354693": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "15000702": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "66320631": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Name collides with a well-known Czech architect/actor; no connection found to a Zlonice bakery."
+    },
+    "67930263": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "26695189": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "07777205": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "27223094": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "zivefirmy.cz lists matching IČO/address but it's a justice.cz registry mirror, not independent confirmation of activity."
+    },
+    "14352290": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "12389641": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "05680239": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "A 'Kuchyně Houžvíček' kitchen business exists in Zlonice but could not confirm it's the same person/same trade."
+    },
+    "62434756": {
+      "confidence": "confirmed",
+      "sourceType": "directory",
+      "source": "https://www.ceskestavby.cz/firmy/ing-petr-sklenicka-stavebni-projekty.html",
+      "website": "https://www.stavebni-projekty.cz",
+      "note": "Listed as 'Ing. Petr Sklenička – stavební projekty' under designers/architects, Kladno district, Zlonice (Pejšova street) — matches registered address, with its own phone/email/website, not just a registry mirror."
+    },
+    "88662187": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Other Ivan Pipash business-registry entries exist (Plzeň, Drahlín) but with different IČOs — not this person."
+    },
+    "07418965": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "09128123": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "70121401": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "88059251": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "49857657": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "16144929": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Listed as a registered sole trader under matching IČO 16144929 on mesec.cz business register index."
+    },
+    "44714904": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Hlídač státu business registry entry for matching IČO 44714904, founded 9 March 1993."
+    },
+    "62982761": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "66322227": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "05668557": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "63662442": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Listed as sole trader based in Zlonice under matching IČO 63662442 on mesec.cz business register index."
+    },
+    "87589371": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "67923569": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "03355373": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "74839071": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "17587611": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "46430237": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Listed as sole trader with registered seat in Zlonice under matching IČO 46430237 on mesec.cz business register index."
+    },
+    "45847941": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "07769202": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "74793462": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Business register listing for matching IČO 74793462 shows address Kpt. Jaroše 568, Zlonice, matching our record exactly."
+    },
+    "09259791": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "17158478": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "87619601": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "67296777": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "66774543": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "26407191": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "87264731": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "04061292": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "04313879": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "23458208": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "66775566": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "19096585": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Business-registry aggregator lists this IČO together with 62974653 under the same name and Zlonice address."
+    },
+    "62974653": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Same aggregator page as IČO 19096585, same name and Zlonice address, both IČOs listed together."
+    },
+    "09297740": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "44717539": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "88210294": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "69774498": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "71030972": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "05387710": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "21501521": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "01740130": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "74627805": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Registry entry matches IČO and Zlonice address, lists 3 active trade licences (vehicle repair, wholesale/retail, taxi)."
+    },
+    "45857776": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Registry entry matches IČO and address Jiráskova 376, 273 71 Zlonice exactly."
+    },
+    "12254550": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "74748581": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "67927181": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "07978758": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Distinctive company name 'Mirek Majer Servis manipulační techniky s.r.o.' listed with a Zlonice seat on the registry aggregator."
+    },
+    "49259318": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "69007888": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "48694509": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "10919261": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "43777741": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "71030140": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "A mesec.cz registry listing shows this exact IČO but gives no address or trade to confirm it's the Zlonice-area Miroslav Pospíšil (common name)."
+    },
+    "71403825": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "27629481": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "09834362": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "25115626": {
+      "confidence": "confirmed",
+      "sourceType": "directory",
+      "source": "https://www.ceskestavby.cz/firmy/oknavorlicek.html",
+      "website": "https://www.oknavorlicek.cz",
+      "note": "Listed on ceskestavby.cz, zivefirmy.cz and firmy.cz (rated 3.5/5, 25 reviews) at matching address K Vypichu 551, Zlonice; managing director Roman Vorlíček."
+    },
+    "21474893": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "19338813": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "05003920": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "22499610": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "03956661": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "25676610": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Not to be confused with PANEL - PROJEKT s.r.o. (different IČO 28540930, same Zlonice address) -- no listing found specifically for this company/IČO."
+    },
+    "28540930": {
+      "confidence": "confirmed",
+      "sourceType": "directory",
+      "source": "https://rejstrik-firem.kurzy.cz/28540930",
+      "website": "https://www.panel-projekt.cz",
+      "note": "Listed on ceskestavby.cz, estav.cz and kurzy.cz rejstrik-firem at matching address K Vypichu 551, 273 71 Zlonice; design/engineering firm specializing in panel-building renovation."
+    },
+    "40909301": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "75334445": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "03967140": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "61086932": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "12571580": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "A mesec.cz registry listing shows this exact IČO with a Zlonice seat but no trade/address detail to corroborate independently."
+    },
+    "48713121": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "A mesec.cz registry listing shows this exact IČO with a Zlonice seat but no trade/address detail to corroborate independently."
+    },
+    "66321450": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "46429115": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): \"Kuchyně Houžvíček\" listed on ceskestavby.cz under Zlonice/Kladno district, kitchens category -- matches surname, town, and plausible trade (woodworking/furniture), though the listing itself gives no first name or address to cross-check."
+    },
+    "71028773": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): mesec.cz register entry matches this exact IČO, sole trader seated in Zlonice (Nádražní 494), trade since 2002, carpentry/site-prep activities."
+    },
+    "67771157": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "71933042": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): Exact IČO listed on mesec.cz's business-register name index for Petr Svatoš; no address/trade detail surfaced beyond the IČO match."
+    },
+    "22119566": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "67922686": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "87580951": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "69337004": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "71406085": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "61888052": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "63408384": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "05305934": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Search engine declined this specific query (treated IČO+name pairing as a possible privacy-sensitive lookup); not retried with an alternate phrasing."
+    },
+    "02771071": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "A same-named Sergiy Balan appears in Irish press coverage, but nothing ties that person to this IČO or to Zlonice -- treated as a different person, not corroboration."
+    },
+    "17387531": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "69007985": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "75558998": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "73836664": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): mesec.cz lists sole trader Stanislav Král, IČO 73836664, seated in Zlonice -- matches our record's name, IČO and village."
+    },
+    "23600241": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "17156785": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): penize.cz register entry matches this exact IČO, sole trader seated at Zlonice 27 / Zlonice-Lisovice -- matches our record's village (Lisovice)."
+    },
+    "76430847": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "05762545": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "A mesec.cz snippet appeared to pair this IČO with a Zlonice seat, but the search summary itself flagged the page layout as jumbled/uncertain for this very common name -- not confirmed to the conservative bar."
+    },
+    "65257782": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "21997756": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "24540919": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "71852026": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "A same-named sole trader in Prague (refrigeration/heat-pump trade) and an actor turned up, but neither could be confirmed as this specific Zlonice IČO."
+    },
+    "88057143": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "27370682": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "22047255": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Common name; several same-named registry entries exist elsewhere in Czechia but none matched this IČO."
+    },
+    "24470431": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "67924280": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "Found on a registry-mirror site only (no independent activity signal): ŽiveFirmy.cz listing with matching IČO 67924280, owner Viktor Mucha, offering klempířské (sheet-metal), tesařské (carpentry) and pokrývačské (roofing) práce — matches the registered categories exactly."
+    },
+    "07241771": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "17602521": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "87875179": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "65256841": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": "A same-named sole trader exists in Prague (driving school/cleaning), unrelated trade and no Zlonice link — not treated as a match."
+    },
+    "08625603": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "70054118": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "12251895": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "01693611": {
+      "confidence": "confirmed",
+      "sourceType": "directory",
+      "source": "https://rejstrik-firem.kurzy.cz/01693611",
+      "website": "https://autoservis-imbr.cz",
+      "note": "Živnostenský rejstřík entry with matching IČO 01693611, Zlonice (Jiráskova street) address, vehicle-repair trade since 2016, and a listed business website."
+    },
+    "67930212": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "14468034": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "76621286": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "05708273": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    },
+    "06407790": {
+      "confidence": "unconfirmed",
+      "sourceType": null,
+      "source": null,
+      "website": null,
+      "note": null
+    }
+  }
+}
