@@ -488,14 +488,26 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .today-tip.warn svg{color:var(--warn);}
 .today-tip.danger svg{color:var(--danger);}
 .today-tip b{color:var(--ink);font-weight:600;}
-/* vlhkost půdy v zahradním řádku (kolo 2) — stejný vzor jako dřív v kartě
-   Vlhkost vzduchu (jen přesunutý sem, viz kolo 1 bod 7), žádné nové barvy */
-.garden-soil{margin-top:.7rem;font-size:var(--fs-12);color:var(--ink-soft);cursor:help;}
-.garden-soil-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
-.garden-soil-row .takeaway{margin-left:auto;}
-.garden-soil .mini-scale{margin-top:.4rem;width:100%;height:6px;border-radius:3px;overflow:hidden;}
-.garden-soil .mini-scale-fill{height:100%;border-radius:3px;background:var(--ink);opacity:.55;}
-.garden-soil-sentence{margin:.4rem 0 0;font-size:var(--fs-12);color:var(--text-2);}
+/* vlhkost půdy v zahradním řádku (kolo 2, přepracováno kolo 3 bod 4) —
+   nejdůležitější je verdikt (sucho/vlhko/nasyceno), ne samotné číslo, tak
+   dostal vlastní barevný blok místo drobného odznaku v rohu. Škála pod
+   ním ukazuje barevná pásma (sucho/vlhko/nasyceno) naplno — dřív je
+   překrýval tmavý poloprůhledný "fill" zleva (vypadal jako obyčejný
+   neutrální posuvník), teď jen tenká značka ukáže KDE přesně dnešní
+   hodnota na škále leží, barvy pásem zůstanou čitelné. */
+.garden-soil{margin-top:.7rem;font-size:var(--fs-12);color:var(--ink-soft);}
+.garden-soil-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;cursor:help;}
+.garden-soil-verdict{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin-top:.5rem;padding:.45rem .7rem;border-radius:var(--r-btn);}
+.garden-soil-verdict.good{background:var(--good-soft);}
+.garden-soil-verdict.warn{background:var(--warn-soft);}
+.garden-soil-verdict.danger{background:var(--danger-soft);}
+.garden-soil-verdict .band-name{font-weight:700;font-size:var(--fs-14);}
+.garden-soil-verdict.good .band-name{color:var(--green-text);}
+.garden-soil-verdict.warn .band-name{color:var(--warn);}
+.garden-soil-verdict.danger .band-name{color:var(--danger);}
+.garden-soil-verdict .sentence{font-size:var(--fs-12);color:var(--ink-soft);}
+.garden-soil .mini-scale{margin-top:.6rem;position:relative;width:100%;height:8px;border-radius:4px;cursor:help;}
+.garden-soil .mini-scale-marker{position:absolute;top:50%;width:4px;height:14px;border-radius:2px;background:var(--ink);transform:translate(-50%,-50%);box-shadow:0 0 0 2px var(--bg-page);}
 
 /* air quality scale */
 .aqi-top{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:1.1rem;}
@@ -578,7 +590,15 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .board-card{display:flex;gap:.8rem;padding:.9rem 1rem;border-radius:var(--r-card);background:var(--bg-page);border:none;position:relative;min-width:0;}
 .board-card.featured{background:var(--gold-soft);}
 .board-icon{flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--fs-20);background:var(--surface);}
-.board-body{flex:1 1 auto;min-width:0;}
+/* V 3sloupcové mřížce (viz main.page .board-list níž) grid stretchne
+   všechny karty na výšku té nejvyšší (typicky "Nejnovější" s odznakem
+   navíc) — .board-body samo ale obsah nerozprostře, takže kratším
+   kartám zbývalo nevyužité místo POD obsahem a "Zobrazit úryvek"/chips
+   pak v každé kartě seděly jinde. display:flex column + margin-top:auto
+   na poslední blok ho přišpendlí ke spodku karty napříč všemi sloupci. */
+.board-body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
+.board-body > .how-details,
+.board-body > .board-chips{margin-top:auto;}
 .board-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;}
 .board-title{font-weight:600;font-size:var(--fs-16);line-height:1.3;margin:0;min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 /* na mobilu ellipsis na jednom řádku zbytečně uřízne i krátké názvy —
@@ -642,6 +662,10 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 @media (max-width:720px){.obec-grid{grid-template-columns:1fr;}}
 .story p{max-width:58ch;margin:0 0 .9rem;}
 .story .cite{font-size:var(--fs-12);color:var(--ink-soft);font-style:italic;}
+.story-facts{list-style:none;margin:0;padding:0;max-width:58ch;}
+.story-facts li{font-size:var(--fs-14);line-height:1.5;padding-top:.8rem;margin-top:.8rem;border-top:1px dashed var(--line);}
+.story-facts li:first-child{padding-top:0;margin-top:0;border-top:none;}
+.story-facts .cite-inline{display:block;margin-top:.3rem;font-size:var(--fs-12);color:var(--ink-soft);font-style:italic;}
 .dateline{display:inline-block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:var(--fs-12);font-weight:600;letter-spacing:.02em;background:var(--gold-soft);color:var(--ochre-text);border-radius:5px;padding:.05rem .4rem;margin:0 .1rem;white-space:nowrap;}
 .obec-data-card{background:var(--bg-page);border:none;border-radius:var(--r-card);padding:1.1rem 1.2rem;}
 .bars{display:flex;flex-direction:column;gap:.5rem;}
@@ -758,10 +782,10 @@ footer a{color:var(--footer-link);text-decoration:underline;}
   </button>
   <div class="hero-inner">
     <div class="hero-text">
-      <span class="eyebrow"><span class="dot"></span><span data-i18n-en="village overview — unofficial, community project">obecní přehled — neoficiální, komunitní projekt</span></span>
+      <span class="eyebrow"><span class="dot"></span><span data-i18n-en="town overview — unofficial, community project">obecní přehled — neoficiální, komunitní projekt</span></span>
       <span class="eyebrow-rule"></span>
       <h1 class="display">Ve Zlonicích</h1>
-      <p class="hero-sub" data-i18n-en="One page with what's happening in and around the village right now — weather, air quality, water and a few facts about Zlonice. No sign-up, no app, just open and look.">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
+      <p class="hero-sub" data-i18n-en="One page with what's happening in and around town right now — weather, air quality, water and a few facts about Zlonice. No sign-up, no app, just open and look.">Jedna stránka s tím, co se právě děje v okolí a kolem obce — počasí, ovzduší, voda a pár zajímavostí o Zlonicích. Bez registrace, bez aplikace, jen otevřít a mrknout.</p>
     </div>
     <svg class="hero-illustration" viewBox="0 0 400 180" fill="none" aria-hidden="true">
       <path d="M0 140 H400" stroke="currentColor" stroke-width="1.5"/>
@@ -815,7 +839,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
     <a href="#board" class="nav-pill" data-target="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg><span data-i18n-en="Notice board">Úřední deska</span></a>
     <a href="#air" class="nav-pill" data-target="air"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.6M3 12h15a2.5 2.5 0 1 1-2.2 3.7M3 16h9"/></svg><span data-i18n-en="Air quality">Ovzduší</span></a>
     <a href="#water" class="nav-pill" data-target="water"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7.2 6 11.5a6 6 0 0 1-12 0C6 10.2 12 3 12 3Z"/></svg><span data-i18n-en="Water">Voda</span></a>
-    <a href="#obec" class="nav-pill" data-target="obec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg><span data-i18n-en="Village">Obec</span></a>
+    <a href="#obec" class="nav-pill" data-target="obec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10l3-2v2h2V8l3-2 3 2v2h2V8l3 2v10H4Z"/><path d="M9 20v-5h6v5"/></svg><span data-i18n-en="Town">Obec</span></a>
     <a href="#tradespeople" class="nav-pill" data-target="tradespeople"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3 18.4 10l2.4-2.4a5 5 0 0 1-6.7 6.7L7.3 21a2 2 0 0 1-2.8-2.8l6.7-6.7a5 5 0 0 1 6.7-6.7L14.7 6.3Z"/></svg><span data-i18n-en="Services">Řemeslníci</span></a>
   </div>
 </nav>
@@ -996,7 +1020,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
         <div class="hero-facts">
           <div class="fact">
             <span class="k" data-i18n-en="population">obyvatel</span><span class="v">2 294</span>
-            <span class="ctx" data-i18n-en="villages over 1000 residents are only a quarter of all Czech municipalities">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
+            <span class="ctx" data-i18n-en="municipalities over 1000 residents are only a quarter of all Czech municipalities">obce nad 1000 obyvatel tvoří jen čtvrtinu všech obcí v ČR</span>
           </div>
           <div class="fact">
             <span class="k" data-i18n-en="elevation">nadmořská výška</span><span class="v">223 m</span>
@@ -1007,6 +1031,16 @@ footer a{color:var(--footer-link);text-decoration:underline;}
           <p data-i18n-en="Zlonice Chateau, protected as a cultural monument since 1978, is linked to Antonín Dvořák — between 1853–1856 the young composer learned to play violin and piano here under teacher Antonín Liehmann. The chateau's former poorhouse today hosts the Antonín Dvořák Memorial.">Zlonický zámek, chráněný jako kulturní památka od roku 1978, je spjatý s Antonínem Dvořákem — v letech <span class="dateline">1853–1856</span> se tu mladý skladatel za vedení kantora Antonína Liehmanna učil hrát na housle a klavír. Bývalý zámecký chudobinec dnes hostí Památník Antonína Dvořáka.</p>
           <p class="cite"><span data-i18n-en="Source:">Zdroj:</span> Národní památkový ústav, antonin-dvorak.cz</p>
         </div>
+        <ul class="story-facts">
+          <li>
+            <span data-i18n-en="The baroque Church of the Assumption of the Virgin Mary (1727–1735) was built for the Kinský counts to a design by František Maxmilián Kaňka — one of the leading architects of Czech Baroque. Its towers were added in 1744 by Kilián Ignác Dientzenhofer, interior woodwork is by sculptor Josef Klein, ceiling paintings by Adolf Liebscher.">Barokní kostel Nanebevzetí Panny Marie (1727–1735) nechali pro hrabata Kinské postavit podle návrhu Františka Maxmiliána Kaňky — jednoho z předních architektů českého baroka. Věže roku 1744 přidal Kilián Ignác Dientzenhofer, interiérové řezby jsou dílem sochaře Josefa Kleina, stropní malby Adolfa Liebschera.</span>
+            <span class="cite-inline"><span data-i18n-en="Source:">Zdroj:</span> kudyznudy.cz</span>
+          </li>
+          <li>
+            <span data-i18n-en="The Zlonice Railway Museum in the local part of Lisovice holds a collection of sugar-beet-railway locomotives, including the smallest surviving standard-gauge steam locomotive in the Czech Republic (Orenstein &amp; Koppel, 1913) — a legacy of the sugar refinery that once stood here.">V místní části Lisovice sídlí Železniční muzeum Zlonice se sbírkou lokomotiv cukrovarských železnic — mimo jiné nejmenší dochovanou normálněrozchodnou parní lokomotivou v ČR (Orenstein &amp; Koppel, 1913), památkou na zdejší bývalý cukrovar.</span>
+            <span class="cite-inline"><span data-i18n-en="Source:">Zdroj:</span> turistika.cz</span>
+          </li>
+        </ul>
       </div>
       <div class="obec-data-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;">
@@ -1520,10 +1554,13 @@ function renderGardenSoil(c){
   );
   return `
     <div class="garden-soil-row" title="${title}">
-      ${t('Půda (0–1 cm)','Soil (0–1 cm)')} <b>${soilPct} %</b><span class="takeaway ${band.level}">${bt(band,'name')}</span>
+      ${t('Půda (0–1 cm)','Soil (0–1 cm)')} <b>${soilPct} %</b>
     </div>
-    <div class="mini-scale" style="background:${bar.track}" title="${barTitle}"><div class="mini-scale-fill" style="width:${bar.valuePct}%"></div></div>
-    <p class="garden-soil-sentence">${sentence}</p>
+    <div class="garden-soil-verdict ${band.level}">
+      <span class="band-name">${bt(band,'name')}</span>
+      <span class="sentence">${sentence}</span>
+    </div>
+    <div class="mini-scale" style="background:${bar.track}" title="${barTitle}"><div class="mini-scale-marker" style="left:${bar.valuePct}%"></div></div>
   `;
 }
 
@@ -2003,7 +2040,7 @@ function aresCountContext(count){
   const per1000 = count / ZLONICE_POPULATION * 1000;
   const ratio = per1000 / CZ_ACTIVE_PER_1000;
   const per1000Str = per1000.toFixed(0);
-  const tail = t('Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.', 'Includes sole traders and businesses only formally registered in the village, not just actual premises.');
+  const tail = t('Počítá i OSVČ a firmy jen formálně sídlící v obci, ne jen provozovny.', 'Includes sole traders and businesses only formally registered in town, not just actual premises.');
   if (ratio >= 1.3){
     return t(`To je ${per1000Str} na 1000 obyvatel — zhruba ${ratio.toFixed(1).replace('.', ',')}× víc než celostátní průměr (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). ${tail}`,
       `That's ${per1000Str} per 1000 residents — roughly ${ratio.toFixed(1)}× the national average (~${Math.round(CZ_ACTIVE_PER_1000)}, ČSÚ). ${tail}`);
@@ -2575,7 +2612,7 @@ function liveStatusFor(tripId){
   if (live.isCanceled) return {level:'danger', text:t('zrušeno','cancelled')};
   if (!live.delayAvailable || live.delayMinutes == null) return null;
   const mins = live.delayMinutes;
-  if (mins <= 1) return {level:'good', text:t('na čase','on time')};
+  if (mins <= 1) return {level:'good', text:t('jede včas','on time')};
   if (mins <= 5) return {level:'warn', text:`+${mins} min`};
   return {level:'danger', text:`+${mins} min`};
 }
