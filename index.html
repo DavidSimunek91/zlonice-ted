@@ -2191,6 +2191,26 @@ function isRoadRestricted(condition){
   return !/bez omezení/i.test(condition || '');
 }
 
+// Počasí appka ukazuje jen když je neobvyklé (srážky/zhoršená
+// viditelnost) — běžné "oblačno, bez srážek, viditelnost bez omezení"
+// nic nového neříká (teplotu i stav oblohy pro okolí Zlonic appka má v
+// sekci Počasí výš, netřeba duplikovat).
+function isWeatherNotable(weather){
+  if (!weather) return false;
+  const calm = /bez srážek/i.test(weather) && /viditelnost bez omezení/i.test(weather);
+  return !calm;
+}
+
+// ❄️ jen pro skutečný sníh/náledí/mráz — ⚠️ pro jiné omezení (mokro,
+// zhoršená viditelnost...) — jinak neutrální ikona silnice, ať sněhová
+// vločka neznamená "normální suchá silnice v listopadu".
+function winterIcon(r){
+  const combined = [r.weather, ...(r.roads || []).map((x) => x.condition)].filter(Boolean).join(' ');
+  if (/sníh|sněž|náledí|namrz|zmrzl|kluzk/i.test(combined)) return '❄️';
+  if ((r.roads || []).some((road) => isRoadRestricted(road.condition)) || isWeatherNotable(r.weather)) return '⚠️';
+  return '🛣️';
+}
+
 function setWinterBanner(cls, headline, detailHtml){
   document.getElementById('winterBanner').className = 'banner traffic-banner' + (cls ? ' ' + cls : '');
   document.getElementById('winterHeadline').textContent = headline;
@@ -2204,20 +2224,19 @@ function unknownWinterState(reason){
 }
 
 function winterReportCard(r){
-  const temp = (r.tempFrom != null && r.tempTo != null)
-    ? `<span class="winter-chip">🌡️ ${r.tempFrom} až ${r.tempTo} °C</span>` : '';
   const roadChips = (r.roads || []).map((road) => {
     const warn = isRoadRestricted(road.condition);
-    return `<span class="winter-chip${warn ? ' warn' : ''}">🛣️ ${escapeHtml(road.type)}: ${escapeHtml(road.condition)}</span>`;
+    return `<span class="winter-chip${warn ? ' warn' : ''}">${escapeHtml(road.type)}: ${escapeHtml(road.condition)}</span>`;
   }).join('');
   const validTo = r.validTo ? new Date(r.validTo).toLocaleString('cs-CZ', {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'}) : null;
+  const weatherLine = isWeatherNotable(r.weather) ? `<div class="traffic-comment">${escapeHtml(r.weather)}</div>` : '';
   const extra = (r.extra && r.extra.length) ? `<div class="traffic-comment">${escapeHtml(r.extra.join(' · '))}</div>` : '';
 
   return `<div class="traffic-row">
-      <div class="traffic-row-icon">❄️</div>
+      <div class="traffic-row-icon">${winterIcon(r)}</div>
       <div class="traffic-row-body">
-        <div class="traffic-head"><span class="takeaway">${escapeHtml(r.area || 'Hlášení ŘSD/NDIC')}</span>${temp}</div>
-        ${r.weather ? `<div class="traffic-comment">${escapeHtml(r.weather)}</div>` : ''}
+        <div class="traffic-head"><span class="takeaway">${escapeHtml(r.area || 'Hlášení ŘSD/NDIC')}</span></div>
+        ${weatherLine}
         <div class="winter-roads-list">${roadChips}</div>
         ${extra}
         ${validTo ? `<div class="traffic-time">platí do ${validTo}</div>` : ''}
@@ -2254,11 +2273,14 @@ async function loadWinter(){
       return;
     }
 
+    const anySnowIce = data.reports.some((r) => winterIcon(r) === '❄️');
     const anyRestricted = data.reports.some((r) => (r.roads || []).some((road) => isRoadRestricted(road.condition)));
-    if (anyRestricted){
-      setWinterBanner('warn', '🚧 Omezená sjízdnost v okolí', `Ověřeno ${checked}.`);
+    if (anySnowIce){
+      setWinterBanner('warn', '❄️ Sníh/náledí v okolí', `Ověřeno ${checked}.`);
+    } else if (anyRestricted){
+      setWinterBanner('warn', '⚠️ Omezená sjízdnost v okolí', `Ověřeno ${checked}.`);
     } else {
-      setWinterBanner('', '❄️ Sjízdnost bez omezení', `ŘSD/NDIC hlásí sjízdno v okolí Zlonic. Ověřeno ${checked}.`);
+      setWinterBanner('', '🛣️ Sjízdnost bez omezení', `ŘSD/NDIC hlásí sjízdno v okolí Zlonic. Ověřeno ${checked}.`);
     }
 
     list.innerHTML = data.reports.map(winterReportCard).join('');

@@ -187,6 +187,27 @@ export function extractValidity(strings) {
   return { validFrom: times[0], validTo: times[times.length - 1] };
 }
 
+// ŘSD posílá víc časových snímků za tutéž oblast (viz commit, co tohle
+// přidal — "Obvod 01 Slaný" se objevovalo 2× i 3× za sebou). Appka chce
+// vidět aktuální stav, ne historii dne, takže necháváme jen nejnovější
+// záznam (podle validFrom) na jednu oblast. Záznamy bez `area` (vzácný
+// fallback z main() níž) se nededupují vůbec — nemáme podle čeho.
+export function dedupeByArea(reports) {
+  const byArea = new Map();
+  const noArea = [];
+  for (const r of reports) {
+    if (!r.area) {
+      noArea.push(r);
+      continue;
+    }
+    const existing = byArea.get(r.area);
+    if (!existing || (r.validFrom ?? '') > (existing.validFrom ?? '')) {
+      byArea.set(r.area, r);
+    }
+  }
+  return [...byArea.values(), ...noArea];
+}
+
 function matchesArea(area, fallbackText) {
   const haystack = (area ?? fallbackText ?? '').toLowerCase();
   return AREA_KEYWORDS.some((kw) => haystack.includes(kw));
@@ -280,13 +301,15 @@ async function main() {
     }
   }
 
+  const deduped = dedupeByArea(reports);
+
   const output = {
     status: 'ok',
     updated: new Date().toISOString(),
-    reports,
+    reports: deduped,
   };
   writeFileSync(OUT_PATH, JSON.stringify(output) + '\n');
-  console.log(`Hotovo: ${reports.length} hlášení o sjízdnosti v okolí Zlonic.`);
+  console.log(`Hotovo: ${deduped.length} hlášení o sjízdnosti v okolí Zlonic (z ${reports.length} před deduplikací).`);
 }
 
 main().catch((err) => {
