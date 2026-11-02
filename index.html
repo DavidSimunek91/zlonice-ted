@@ -710,6 +710,11 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .trade-row-body{flex:1 1 auto;min-width:0;}
 .trade-row-name{font-size:var(--fs-16);font-weight:600;margin:0;line-height:1.3;}
 .trade-row-meta{font-size:var(--fs-14);color:var(--ink-soft);margin-top:.1rem;}
+/* Řemeslníci bez dohledatelné nezávislé stopy (viz data/tradespeople-
+   enrichment.json) se nemažou, jen se vizuálně utiší a appka je řadí níž
+   — ne chybí, jen nejistota, viz "Jak to funguje". */
+.trade-row.unconfirmed{opacity:.68;}
+.trade-row.unconfirmed:hover{opacity:1;}
 .trade-contact-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:40px;padding:0 .9rem;border-radius:var(--r-btn);background:var(--good-soft);color:var(--green-text);font-weight:600;font-size:var(--fs-14);text-decoration:none;}
 .trade-empty{}
 .trade-more{display:block;width:100%;margin-top:.5rem;padding:.7rem;min-height:44px;border-radius:var(--r-btn);background:var(--surface);border:1px dashed var(--line);color:var(--green-text);font-weight:600;font-size:var(--fs-14);cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
@@ -1070,7 +1075,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
       <p class="section-foot"><span data-i18n-en="Source:">Zdroj:</span> <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> · <span data-i18n-en="weekly update">aktualizace týdně</span></p>
       <details class="how-details">
         <summary data-i18n-en="How it works">Jak to funguje</summary>
-        <p data-i18n-en="Who to call for a bricklayer, electrician or seamstress? A list from the trade licence register (ARES) — who in Zlonice is actively trading in a specific craft or regulated trade. The page only shows a phone/website where it managed to find one on OpenStreetMap — for the rest, try the &quot;find contact&quot; link.">Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web stránka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt".</p>
+        <p data-i18n-en="Who to call for a bricklayer, electrician or seamstress? A list from the trade licence register (ARES) — who in Zlonice is actively trading in a specific craft or regulated trade. The page only shows a phone/website where it managed to find one on OpenStreetMap — for the rest, try the &quot;find contact&quot; link. A few names look slightly faded and sort lower in the list — that just means no independent trace of them (website, reviews, social media) turned up beyond the bare registry entry. It doesn't mean they're not real or not working — plenty of small local trades run entirely by word of mouth — it's shown lower only because the page couldn't double-check it another way.">Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web stránka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt". Pár jmen je lehce vybledlých a appka je řadí níž — znamená to jen, že se u nich nepodařilo najít žádnou nezávislou stopu (web, recenze, sociální síť) mimo samotný rejstřík. Neznamená to, že nepodnikají nebo neexistují — spousta malých místních řemeslníků funguje čistě od úst k ústům — jen appka takový záznam nemohla jinak ověřit.</p>
       </details>
     </div>
   </section>
@@ -2908,7 +2913,8 @@ function tradeRowHtml(p, categories){
   const catLabels = p.categories.map(id => tradeCategoryLabel(id, categories)).filter(Boolean);
   const iconHtml = tradeIconHtml(categories, p.categories[0], catLabels[0]);
   const meta = [catLabels.join(', '), p.village].filter(Boolean).join(' · ');
-  return `<div class="trade-row">
+  const rowCls = p.confidence === 'confirmed' ? 'trade-row' : 'trade-row unconfirmed';
+  return `<div class="${rowCls}">
     ${iconHtml}
     <div class="trade-row-body">
       <h3 class="trade-row-name">${escapeHtml(p.name)}</h3>
@@ -2916,6 +2922,15 @@ function tradeRowHtml(p, categories){
     </div>
     ${tradeContactHtml(p, catLabels[0] || '')}
   </div>`;
+}
+
+// Řadí potvrzené napřed (viz data/tradespeople-enrichment.json) — appka
+// nikdy nikoho neschovává, jen dává přednost tomu, u koho se podařilo
+// najít nezávislou stopu mimo samotný rejstřík. Array.sort je stabilní
+// (moderní JS motory), takže pořadí uvnitř každé skupiny (abecední, jak
+// přišlo z dat) zůstává zachované.
+function sortByConfidence(people){
+  return [...people].sort((a, b) => (a.confidence === 'confirmed' ? 0 : 1) - (b.confidence === 'confirmed' ? 0 : 1));
 }
 
 // Hledání je čistě klientské (žádný další fetch) — filtruje podle jména,
@@ -2934,6 +2949,7 @@ function renderTradeGrid(people, categories){
   const grid = document.getElementById('tradeGrid');
   let filtered = tradeActiveCat === 'all' ? people : people.filter(p => p.categories.includes(tradeActiveCat));
   filtered = peopleMatchingSearch(filtered, categories, tradeSearchQuery);
+  filtered = sortByConfidence(filtered);
   if (filtered.length === 0){
     grid.innerHTML = `<div class="soon-card trade-empty">${t('Stránka nikoho nenašla — zkus jiné hledání nebo obor.','No one found — try a different search or trade.')}</div>`;
     return;
@@ -3001,8 +3017,21 @@ async function loadTradespeople(){
     tag.className = 'tag snapshot';
     tag.innerHTML = `<span class="dot"></span>${t('aktualizace týdně · ARES','weekly update · ARES')}`;
 
+    // Doplňkový, ručně/občas aktualizovaný signál důvěryhodnosti (viz
+    // data/README.md) — NENÍ součástí hlavní ARES pipeline výš, proto
+    // samostatný fetch a vlastní, tiché selhání: když soubor chybí/je
+    // nedostupný, appka prostě ukáže všechny řemeslníky stejně (bez
+    // odstupňování), ne že by kvůli tomuhle doplňku přestala fungovat
+    // celá sekce.
+    let enrichment = {};
+    try{
+      const enrichRes = await fetch('./data/tradespeople-enrichment.json', {cache:'no-store'});
+      if (enrichRes.ok) enrichment = (await enrichRes.json())?.people || {};
+    }catch(e){ /* volitelný doplněk, chybu ignorujeme */ }
+
     tradespeopleData = data;
     const { people, categories } = data;
+    people.forEach(p => { p.confidence = enrichment[p.ico]?.confidence === 'confirmed' ? 'confirmed' : 'unconfirmed'; });
     renderTradeFilters(people, categories);
     renderTradeGrid(people, categories);
 
