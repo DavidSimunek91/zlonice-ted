@@ -1,7 +1,47 @@
 {
   "status": "ok",
-  "updated": "2026-11-02T06:07:03.696Z",
+  "updated": "2026-11-03T06:07:03.409Z",
   "items": [
+    {
+      "id": 1265,
+      "title": "„Novostavba RD na p.č. 274/14 v k. ú. Lisovice“",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1265&action=detail",
+      "pubDate": "2026-11-01T23:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "„ Novostavba RD na p.č. 274/14 v k. ú. Lisovice “",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14027189"
+    },
+    {
+      "id": 1264,
+      "title": "„Novostavba RD na p.č. 274/13 v k. ú. Lisovice“",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1264&action=detail",
+      "pubDate": "2026-11-01T23:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "„ Novostavba RD na p.č. 274/13 v k. ú. Lisovice “",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14026912"
+    },
+    {
+      "id": 1263,
+      "title": "„Novostavba RD na p.č. 274/13 v k. ú. Lisovice“",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1263&action=detail",
+      "pubDate": "2026-11-01T23:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "„ Novostavba RD na p.č. 274/13 v k. ú. Lisovice “",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14026912"
+    },
+    {
+      "id": 1262,
+      "title": "„Novostavba RD na p.č. 274/13 v k. ú. Lisovice“",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1262&action=detail",
+      "pubDate": "2026-11-01T23:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "„ Novostavba RD na p.č. 274/13 v k. ú. Lisovice “",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14026912"
+    },
     {
       "id": 1261,
       "title": "Svolání zastupitelstva - ustavující 1/2026",
@@ -61,46 +101,6 @@
       "summary": null,
       "note": "ZÁPIS O VÝSLEDKU VOLEB DO ZASTUPITELSTVA OBCE Ve volbách do zastupitelstva obce (městysu, města, městské…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13956369"
-    },
-    {
-      "id": 1255,
-      "title": "Rozhodnutí „Vestavba podkroví Dřínov č.p. 72“",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1255&action=detail",
-      "pubDate": "2026-10-07T22:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Rozhodnutí - Stavební povolení „Vestavba podkroví Dřínov č.p. 72“",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13942193"
-    },
-    {
-      "id": 1254,
-      "title": "Záměr prodeje - hasičký vůz",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1254&action=detail",
-      "pubDate": "2026-10-07T08:51:45.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "ZÁMĚR PRODEJE MOVITÉHO MAJETKU formou obálkové metody TATRA 815 CAS 24 TERNO 1 Technické údaje…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13938004"
-    },
-    {
-      "id": 1253,
-      "title": "Dražební vyhláška - Uherská Hradiště",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1253&action=detail",
-      "pubDate": "2026-10-05T22:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Dražební vyhláška nemovitosti v Uherském Hradišti. Důvodem zveřejnění je vlastník, jenž má sídlo ve Zlonicích.",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13932185"
-    },
-    {
-      "id": 1252,
-      "title": "Zásady územního rozvoje kraje - 17. aktualizace",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1252&action=detail",
-      "pubDate": "2026-09-28T22:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "VEŘEJNÁ VYHLÁŠKA Krajský úřad Středočeského kraje, Odbor územního plánování a krajský stavební úřad (dále jen…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13903326"
     }
   ]
 }
