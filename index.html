@@ -581,9 +581,21 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .traffic-comment{margin-top:.4rem;font-size:var(--fs-14);}
 .traffic-time{margin-top:.25rem;font-size:var(--fs-12);color:var(--ink-soft);}
 .traffic-subhead{margin:1.4rem 0 .8rem;padding-top:1.1rem;border-top:1px dashed var(--line);font-weight:600;font-size:var(--fs-16);display:flex;align-items:center;gap:.5rem;}
-.winter-roads-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;}
-.winter-chip{font-size:var(--fs-12);font-family:var(--font-sans);background:var(--gold-soft);color:var(--ochre-text);border-radius:var(--r-pill);padding:.25rem .6rem;white-space:nowrap;}
-.winter-chip.warn{background:var(--warn-soft);color:var(--warn);}
+.winter-card{margin-top:.8rem;padding:.9rem 1rem 1rem;border:1px solid var(--line);border-radius:var(--r-card);background:var(--bg-page);}
+.winter-area{font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);}
+.winter-hazards{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.6rem;}
+.winter-hazard{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:var(--r-pill);background:var(--warn-soft);color:var(--warn);font-family:var(--font-sans);font-size:var(--fs-14);font-weight:600;}
+.winter-hazard span:first-child{font-size:var(--fs-18);line-height:1;}
+.winter-roads{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:.6rem;margin-top:.7rem;}
+.winter-road{padding:.7rem .85rem;border-radius:var(--r-btn);background:var(--good-soft);border-left:4px solid var(--good);}
+.winter-road.caution{background:var(--warn-soft);border-left-color:var(--warn);}
+.winter-road.bad{background:var(--danger-soft);border-left-color:var(--danger);}
+.winter-road-type{font-size:var(--fs-12);letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);}
+.winter-road-pass{margin-top:.2rem;font-family:var(--font-sans);font-size:var(--fs-16);font-weight:700;line-height:1.3;color:var(--green-text);}
+.winter-road.caution .winter-road-pass{color:var(--warn);}
+.winter-road.bad .winter-road-pass{color:var(--danger);}
+.winter-road-surface{margin-top:.25rem;font-size:var(--fs-14);color:var(--text-2);}
+.winter-until{margin-top:.7rem;font-size:var(--fs-12);color:var(--text-3);}
 
 /* úřední deska */
 .board-list{display:flex;flex-direction:column;gap:.7rem;}
@@ -710,6 +722,11 @@ h1{font-weight:700;font-size:var(--fs-56);line-height:1.05;letter-spacing:-.01em
 .trade-row-body{flex:1 1 auto;min-width:0;}
 .trade-row-name{font-size:var(--fs-16);font-weight:600;margin:0;line-height:1.3;}
 .trade-row-meta{font-size:var(--fs-14);color:var(--ink-soft);margin-top:.1rem;}
+/* Řemeslníci bez dohledatelné nezávislé stopy (viz data/tradespeople-
+   enrichment.json) se nemažou, jen se vizuálně utiší a appka je řadí níž
+   — ne chybí, jen nejistota, viz "Jak to funguje". */
+.trade-row.unconfirmed{opacity:.68;}
+.trade-row.unconfirmed:hover{opacity:1;}
 .trade-contact-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:40px;padding:0 .9rem;border-radius:var(--r-btn);background:var(--good-soft);color:var(--green-text);font-weight:600;font-size:var(--fs-14);text-decoration:none;}
 .trade-empty{}
 .trade-more{display:block;width:100%;margin-top:.5rem;padding:.7rem;min-height:44px;border-radius:var(--r-btn);background:var(--surface);border:1px dashed var(--line);color:var(--green-text);font-weight:600;font-size:var(--fs-14);cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
@@ -1070,7 +1087,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
       <p class="section-foot"><span data-i18n-en="Source:">Zdroj:</span> <a href="https://ares.gov.cz" target="_blank" rel="noopener">ARES</a> · <span data-i18n-en="weekly update">aktualizace týdně</span></p>
       <details class="how-details">
         <summary data-i18n-en="How it works">Jak to funguje</summary>
-        <p data-i18n-en="Who to call for a bricklayer, electrician or seamstress? A list from the trade licence register (ARES) — who in Zlonice is actively trading in a specific craft or regulated trade. The page only shows a phone/website where it managed to find one on OpenStreetMap — for the rest, try the &quot;find contact&quot; link.">Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web stránka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt".</p>
+        <p data-i18n-en="Who to call for a bricklayer, electrician or seamstress? A list from the trade licence register (ARES) — who in Zlonice is actively trading in a specific craft or regulated trade. The page only shows a phone/website where it managed to find one on OpenStreetMap — for the rest, try the &quot;find contact&quot; link. A few names look slightly faded and sort lower in the list — that just means no independent trace of them (website, reviews, social media) turned up beyond the bare registry entry. It doesn't mean they're not real or not working — plenty of small local trades run entirely by word of mouth — it's shown lower only because the page couldn't double-check it another way.">Koho zavolat, když je potřeba zedník, elektrikář nebo švadlena? Seznam z živnostenského rejstříku (ARES) — kdo v Zlonicích aktivně podniká v konkrétním řemeslném nebo vázaném oboru. Telefon/web stránka ukazuje jen tam, kde se ho podařilo dohledat na OpenStreetMap — u ostatních zkuste odkaz "najít kontakt". Pár jmen je lehce vybledlých a appka je řadí níž — znamená to jen, že se u nich nepodařilo najít žádnou nezávislou stopu (web, recenze, sociální síť) mimo samotný rejstřík. Neznamená to, že nepodnikají nebo neexistují — spousta malých místních řemeslníků funguje čistě od úst k ústům — jen appka takový záznam nemohla jinak ověřit.</p>
       </details>
     </div>
   </section>
@@ -1187,6 +1204,9 @@ const GLOSSARY = [
   ['vydatné srážky', 'heavy precipitation'],
   ['déšť', 'rain'],
   ['sněžení', 'snowfall'],
+  ['déšť se sněhem', 'sleet'],
+  ['mrholení', 'drizzle'],
+  ['sníh', 'snow'],
   ['bezvětří', 'calm, no wind'],
   ['slabý vítr', 'light wind'],
   ['mírný vítr', 'moderate wind'],
@@ -2408,39 +2428,34 @@ async function loadTraffic(){
 
 // Zimní sjízdnost silnic — samostatný odběr ŘSD/NDIC (DDR formát, jen v
 // zimní sezóně), viz scripts/update-winter-roads.mjs a data/README.md.
-// Každé hlášení nese oblast, teplotu, počasí a sjízdnost po typu silnice
-// (dálnice/silnice I. třídy...) — appka to ukazuje jako krátké přehledné
-// "chips", ne surový text ze zdroje.
+// Hlášení nese oblast a sjízdnost po typu silnice (dálnice/silnice I.
+// třídy...) plus rizika z počasí (mlha, srážky...). Obecné počasí (oblačno,
+// slabý vítr) appka NEukazuje — teplotu i oblohu má sekce Počasí výš. Nejdůležitější
+// je sjízdnost ("se zvýšenou opatrností") a mlha, proto jsou vidět první
+// a barevně; surový text ze zdroje se nezobrazuje.
 const WINTER_STALE_MS = 2 * 60 * 60 * 1000; // pipeline běží co 30 min, klidná rezerva
+const WINTER_LEVEL_RANK = {ok:0, caution:1, bad:2};
 
-// "Obvod 01 Slaný" hlásí stav prakticky pořád (i v klidu, i když je
-// všude sjízdno) — přítomnost hlášení tedy sama o sobě neznamená problém.
-// Závažnost appka pozná jen z textu stavu silnice: cokoli, co NEobsahuje
-// "bez omezení", bereme jako omezení (opatrně, ne naopak — raději
-// upozornit navíc, než přehlédnout skutečné omezení).
-function isRoadRestricted(condition){
-  return !/bez omezení/i.test(condition || '');
+// Úroveň sjízdnosti určuje skript (road.level). Chybí-li (starší data),
+// bereme opatrně: jen "bez omezení" je ok, vše ostatní caution.
+function roadLevel(road){
+  return road.level || (/bez omezení/i.test(road.passability || road.condition || '') ? 'ok' : 'caution');
 }
 
-// Počasí appka ukazuje jen když je neobvyklé (srážky/zhoršená
-// viditelnost) — běžné "oblačno, bez srážek, viditelnost bez omezení"
-// nic nového neříká (teplotu i stav oblohy pro okolí Zlonic appka má v
-// sekci Počasí výš, netřeba duplikovat).
-function isWeatherNotable(weather){
-  if (!weather) return false;
-  const calm = /bez srážek/i.test(weather) && /viditelnost bez omezení/i.test(weather);
-  return !calm;
+function hazardIcon(h){
+  if (/mlh/i.test(h)) return '🌫️';
+  if (/sníh|sněž|sněh/i.test(h)) return '🌨️';
+  if (/náled|námraz|zmrz|kluzk|mráz/i.test(h)) return '🧊';
+  if (/déšť|mrholen|srážk|bouř/i.test(h)) return '🌧️';
+  if (/vítr|větr|vichř/i.test(h)) return '💨';
+  return '⚠️';
 }
 
-// ❄️ jen pro skutečný sníh/náledí/mráz — ⚠️ pro jiné omezení (mokro,
-// zhoršená viditelnost...) — jinak neutrální ikona silnice, ať sněhová
-// vločka neznamená "normální suchá silnice v listopadu".
-function winterIcon(r){
-  const combined = [r.weather, ...(r.roads || []).map((x) => x.condition)].filter(Boolean).join(' ');
-  if (/sníh|sněž|náledí|namrz|zmrzl|kluzk/i.test(combined)) return '❄️';
-  if ((r.roads || []).some((road) => isRoadRestricted(road.condition)) || isWeatherNotable(r.weather)) return '⚠️';
-  return '🛣️';
+function roadLevelIcon(level){
+  return level === 'bad' ? '⛔' : level === 'caution' ? '⚠️' : '✅';
 }
+
+function ucFirst(x){ return x ? x.charAt(0).toUpperCase() + x.slice(1) : x; }
 
 function setWinterBanner(cls, headline, detailHtml){
   document.getElementById('winterBanner').className = 'banner traffic-banner' + (cls ? ' ' + cls : '');
@@ -2454,27 +2469,32 @@ function unknownWinterState(reason){
   document.getElementById('winterList').innerHTML = '';
 }
 
-// tr() překládá jen uzavřenou slovní zásobu (viz GLOSSARY) — area/weather/
+// tr() překládá jen uzavřenou slovní zásobu (viz GLOSSARY) — area/hazards/
 // extra jsou text přímo od ŘSD, nikdy nevymýšlíme, co slovník nepokrývá
 // (zůstane česky, viz komentář u GLOSSARY výš).
 function winterReportCard(r){
-  const roadChips = (r.roads || []).map((road) => {
-    const warn = isRoadRestricted(road.condition);
-    return `<span class="winter-chip${warn ? ' warn' : ''}">${escapeHtml(tr(road.type))}: ${escapeHtml(tr(road.condition))}</span>`;
+  const hazards = (r.hazards || []).map((h) =>
+    `<span class="winter-hazard"><span aria-hidden="true">${hazardIcon(h)}</span><span>${escapeHtml(ucFirst(tr(h)))}</span></span>`).join('');
+  // Nejhorší sjízdnost nahoře — to je to, co čtenář hledá.
+  const roads = [...(r.roads || [])].sort((a, b) => WINTER_LEVEL_RANK[roadLevel(b)] - WINTER_LEVEL_RANK[roadLevel(a)]);
+  const roadTiles = roads.map((road) => {
+    const level = roadLevel(road);
+    const pass = road.passability || road.condition || '';
+    return `<div class="winter-road ${level}">
+        <div class="winter-road-type">${escapeHtml(tr(road.type))}</div>
+        <div class="winter-road-pass"><span aria-hidden="true">${roadLevelIcon(level)}</span> ${escapeHtml(ucFirst(tr(pass)))}</div>
+        ${road.surface ? `<div class="winter-road-surface">${escapeHtml(ucFirst(tr(road.surface)))}</div>` : ''}
+      </div>`;
   }).join('');
   const validTo = r.validTo ? new Date(r.validTo).toLocaleString(LOCALE(), {hour:'2-digit', minute:'2-digit', day:'numeric', month:'numeric'}) : null;
-  const weatherLine = isWeatherNotable(r.weather) ? `<div class="traffic-comment">${escapeHtml(tr(r.weather))}</div>` : '';
   const extra = (r.extra && r.extra.length) ? `<div class="traffic-comment">${escapeHtml(tr(r.extra.join(' · ')))}</div>` : '';
 
-  return `<div class="traffic-row">
-      <div class="traffic-row-icon">${winterIcon(r)}</div>
-      <div class="traffic-row-body">
-        <div class="traffic-head"><span class="takeaway">${escapeHtml(tr(r.area) || t('Hlášení ŘSD/NDIC','ŘSD/NDIC report'))}</span></div>
-        ${weatherLine}
-        <div class="winter-roads-list">${roadChips}</div>
-        ${extra}
-        ${validTo ? `<div class="traffic-time">${t('platí do','in effect until')} ${validTo}</div>` : ''}
-      </div>
+  return `<div class="winter-card">
+      <div class="winter-area">${escapeHtml(tr(r.area) || t('Hlášení ŘSD/NDIC','ŘSD/NDIC report'))}</div>
+      ${hazards ? `<div class="winter-hazards">${hazards}</div>` : ''}
+      ${roadTiles ? `<div class="winter-roads">${roadTiles}</div>` : ''}
+      ${extra}
+      ${validTo ? `<div class="winter-until">${t('platí do','in effect until')} ${validTo}</div>` : ''}
     </div>`;
 }
 
@@ -2508,14 +2528,24 @@ async function loadWinter(){
       return;
     }
 
-    const anySnowIce = data.reports.some((r) => winterIcon(r) === '❄️');
-    const anyRestricted = data.reports.some((r) => (r.roads || []).some((road) => isRoadRestricted(road.condition)));
-    if (anySnowIce){
-      setWinterBanner('warn', '❄️ ' + t('Sníh/náledí v okolí','Snow/ice nearby'), `${t('Ověřeno','Verified')} ${checked}.`);
-    } else if (anyRestricted){
-      setWinterBanner('warn', '⚠️ ' + t('Omezená sjízdnost v okolí','Restricted road conditions nearby'), `${t('Ověřeno','Verified')} ${checked}.`);
+    const allRoads = data.reports.flatMap((r) => r.roads || []);
+    const worst = allRoads.reduce((w, road) => Math.max(w, WINTER_LEVEL_RANK[roadLevel(road)]), 0);
+    const hazards = [...new Set(data.reports.flatMap((r) => r.hazards || []))];
+    const hazardText = hazards.map((h) => tr(h)).join(', ');
+    const affected = [...new Set(allRoads.filter((road) => roadLevel(road) !== 'ok').map((road) => tr(road.type)))].join(', ');
+    const detail = [affected, hazardText].filter(Boolean).map(ucFirst).join(' · ');
+    const verified = `${t('Ověřeno','Verified')} ${checked}.`;
+    const hazardIco = hazards.length ? hazardIcon(hazards[0]) : '';
+    if (worst === 2){
+      setWinterBanner('danger', '⛔ ' + t('Nesjízdné úseky v okolí','Impassable roads nearby'), `${escapeHtml(detail)}${detail ? '. ' : ''}${verified}`);
+    } else if (worst === 1){
+      const cautionOnly = allRoads.some((road) => /zvýšenou opatrností/i.test(road.passability || road.condition || ''));
+      setWinterBanner('warn', '⚠️ ' + (cautionOnly ? t('Sjízdné se zvýšenou opatrností','Passable with increased caution') : t('Omezená sjízdnost v okolí','Restricted road conditions nearby')),
+        `${escapeHtml(detail)}. ${verified}`);
+    } else if (hazards.length){
+      setWinterBanner('caution', hazardIco + ' ' + ucFirst(hazardText), `${t('Silnice sjízdné bez omezení','Roads passable, no restrictions')}. ${verified}`);
     } else {
-      setWinterBanner('', '🛣️ ' + t('Sjízdnost bez omezení','Roads passable, no restrictions'),
+      setWinterBanner('', '✅ ' + t('Sjízdnost bez omezení','Roads passable, no restrictions'),
         t(`ŘSD/NDIC hlásí sjízdno v okolí Zlonic. Ověřeno ${checked}.`, `ŘSD/NDIC reports roads passable around Zlonice. Verified ${checked}.`));
     }
 
@@ -2908,7 +2938,8 @@ function tradeRowHtml(p, categories){
   const catLabels = p.categories.map(id => tradeCategoryLabel(id, categories)).filter(Boolean);
   const iconHtml = tradeIconHtml(categories, p.categories[0], catLabels[0]);
   const meta = [catLabels.join(', '), p.village].filter(Boolean).join(' · ');
-  return `<div class="trade-row">
+  const rowCls = p.confidence === 'confirmed' ? 'trade-row' : 'trade-row unconfirmed';
+  return `<div class="${rowCls}">
     ${iconHtml}
     <div class="trade-row-body">
       <h3 class="trade-row-name">${escapeHtml(p.name)}</h3>
@@ -2916,6 +2947,15 @@ function tradeRowHtml(p, categories){
     </div>
     ${tradeContactHtml(p, catLabels[0] || '')}
   </div>`;
+}
+
+// Řadí potvrzené napřed (viz data/tradespeople-enrichment.json) — appka
+// nikdy nikoho neschovává, jen dává přednost tomu, u koho se podařilo
+// najít nezávislou stopu mimo samotný rejstřík. Array.sort je stabilní
+// (moderní JS motory), takže pořadí uvnitř každé skupiny (abecední, jak
+// přišlo z dat) zůstává zachované.
+function sortByConfidence(people){
+  return [...people].sort((a, b) => (a.confidence === 'confirmed' ? 0 : 1) - (b.confidence === 'confirmed' ? 0 : 1));
 }
 
 // Hledání je čistě klientské (žádný další fetch) — filtruje podle jména,
@@ -2934,6 +2974,7 @@ function renderTradeGrid(people, categories){
   const grid = document.getElementById('tradeGrid');
   let filtered = tradeActiveCat === 'all' ? people : people.filter(p => p.categories.includes(tradeActiveCat));
   filtered = peopleMatchingSearch(filtered, categories, tradeSearchQuery);
+  filtered = sortByConfidence(filtered);
   if (filtered.length === 0){
     grid.innerHTML = `<div class="soon-card trade-empty">${t('Stránka nikoho nenašla — zkus jiné hledání nebo obor.','No one found — try a different search or trade.')}</div>`;
     return;
@@ -3001,8 +3042,21 @@ async function loadTradespeople(){
     tag.className = 'tag snapshot';
     tag.innerHTML = `<span class="dot"></span>${t('aktualizace týdně · ARES','weekly update · ARES')}`;
 
+    // Doplňkový, ručně/občas aktualizovaný signál důvěryhodnosti (viz
+    // data/README.md) — NENÍ součástí hlavní ARES pipeline výš, proto
+    // samostatný fetch a vlastní, tiché selhání: když soubor chybí/je
+    // nedostupný, appka prostě ukáže všechny řemeslníky stejně (bez
+    // odstupňování), ne že by kvůli tomuhle doplňku přestala fungovat
+    // celá sekce.
+    let enrichment = {};
+    try{
+      const enrichRes = await fetch('./data/tradespeople-enrichment.json', {cache:'no-store'});
+      if (enrichRes.ok) enrichment = (await enrichRes.json())?.people || {};
+    }catch(e){ /* volitelný doplněk, chybu ignorujeme */ }
+
     tradespeopleData = data;
     const { people, categories } = data;
+    people.forEach(p => { p.confidence = enrichment[p.ico]?.confidence === 'confirmed' ? 'confirmed' : 'unconfirmed'; });
     renderTradeFilters(people, categories);
     renderTradeGrid(people, categories);
 
