@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "updated": "2026-11-05T11:49:50.130Z",
+  "updated": "2026-11-06T11:44:50.372Z",
   "active": [
     {
       "czNace2008": [
@@ -1364,16 +1364,6 @@
       ],
       "datumVzniku": "1993-01-01",
       "obchodniJmeno": "Milan Kučaba"
-    },
-    {
-      "czNace2008": [
-        "28",
-        "33120",
-        "461",
-        "471"
-      ],
-      "datumVzniku": "1992-09-17",
-      "obchodniJmeno": "Ing. Jaroslav Schuster"
     },
     {
       "czNace2008": [
