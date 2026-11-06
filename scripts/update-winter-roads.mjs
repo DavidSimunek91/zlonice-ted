@@ -26,7 +26,7 @@
 // zůstává obecný), ale víme teď jistě, jaký TEXTOVÝ tvar jednotlivé
 // záznamy mají. Každý záznam obsahuje mj. jeden "popis" řetězec v tvaru:
 //   "<OBLAST> - Teplota od <X> do <Y>°C; Počasí: <...>; Dálnice: <...>;
-//   Silnice I. třídy: <...>; ..."
+//   Silnice I. třídy: <...>; ..."   (nebo jen "Teplota -2°C")
 // (<OBLAST> je buď správní obvod ŘSD, např. "Obvod 01 Slaný", nebo výčet
 // čísel silnic + okres, např. "I/14, I/16, I/37 - okres Trutnov"). Tenhle
 // jeden řetězec nese VŠECHNO podstatné pohromadě a dobře se parsuje
@@ -35,7 +35,7 @@
 // srážky, vítr, viditelnost, sjízdnost po typu silnice) — ty se objeví v
 // collectStrings() jako DALŠÍ, redundantní řetězce. Řešení: extractPopis()
 // níž z nalezených řetězců vybere jen ten jeden nejbohatší "popis" (podle
-// vzoru "Teplota od"), ignoruje zbytek — tím zmizí duplicity bez nutnosti
+// vzoru "Teplota"/"Počasí:"), ignoruje zbytek — tím zmizí duplicity bez nutnosti
 // cokoli ručně deduplikovat.
 //
 // Filtrování: tenhle zdroj hlásí sjízdnost podle oblastí/úseků silnic, ne
@@ -127,24 +127,80 @@ function collectStrings(node, out) {
 }
 
 // Z posbíraných řetězců vybere ten jeden "popis" (nejbohatší shoda se
-// vzorem "Teplota od X do Y°C; ..."), viz komentář o struktuře nahoře.
-// Když nic takového není, vrátí null — main() pak pro ten záznam spadne
-// zpět na obecné spojení všech řetězců (viz volání níž), ne na vymyšlenou
-// strukturu.
+// vzorem "<oblast> - Teplota …; Počasí: …; Dálnice: …"), viz komentář o
+// struktuře nahoře. Kotvíme na "Počasí:" nebo "Teplota" (NE na "Teplota od"
+// — živá data mívají i jedinou hodnotu "Teplota -2°C", s "od X do Y" jsme
+// se spletli a záznam skončil jako surový výpis). Když nic takového není,
+// vrátí null — main() pak spadne zpět na očištěný surový text, ne na
+// vymyšlenou strukturu.
 export function extractPopis(strings) {
-  const candidates = strings.filter((s) => /Teplota od/.test(s) && s.includes(';'));
+  const candidates = strings.filter((s) => /(Teplota|Počasí:)/.test(s) && s.includes(';'));
   if (candidates.length === 0) return null;
   return candidates.reduce((a, b) => (b.length > a.length ? b : a));
 }
 
-// Rozdělí "popis" na oblast + jednotlivé položky (teplota/počasí/silnice).
-// Vzor viz komentář o struktuře nahoře. Co nerozpozná (jiný tvar položky,
-// než počítáme), nezahodí — přidá do `extra`, ať appka ukáže aspoň
-// surový text místo mlčení o reálné informaci.
+// Části počasí, které NEJSOU důvod k upozornění (klidné počasí). Cokoli
+// jiného (mlhavo, sněžení, déšť, námraza, silný vítr, …) bereme jako
+// riziko a ukážeme — raději jedno upozornění navíc než přehlédnout
+// skutečné (stejná zásada jako u sjízdnosti). Obecné počasí (oblačnost,
+// slabý vítr, bez srážek) se nezobrazuje vůbec.
+const BENIGN_WEATHER = new Set([
+  'jasno', 'skoro jasno', 'polojasno', 'polooblačno', 'oblačno', 'zataženo', 'skoro zataženo',
+  'bez srážek', 'bezvětří', 'slabý vítr', 'mírný vítr', 'viditelnost bez omezení',
+]);
+const WIND_DIRECTIONS = new Set([
+  'severní', 'jižní', 'východní', 'západní',
+  'severovýchodní', 'severozápadní', 'jihovýchodní', 'jihozápadní',
+  'proměnlivý', 'proměnlivého směru',
+]);
+
+// "polojasno, bez srážek, slabý vítr, západní, mlhavo" → ["mlhavo"].
+// Směr větru je samostatná čárkou oddělená část hned za větrem — patří k
+// němu (u silného větru ho necháme: "silný vítr, západní").
+export function extractHazards(weather) {
+  if (!weather) return [];
+  const parts = weather.split(',').map((p) => p.trim()).filter(Boolean);
+  const hazards = [];
+  let lastWasWind = false;
+  let lastWindBenign = true;
+  for (const part of parts) {
+    const key = part.toLowerCase();
+    if (WIND_DIRECTIONS.has(key) && lastWasWind) {
+      if (!lastWindBenign) hazards[hazards.length - 1] += `, ${part}`;
+      continue;
+    }
+    const benign = BENIGN_WEATHER.has(key);
+    lastWasWind = /vítr|větr/i.test(part);
+    lastWindBenign = benign;
+    if (!benign) hazards.push(part);
+  }
+  return hazards;
+}
+
+// "holé suché, sjízdné se zvýšenou opatrností" → povrch + sjízdnost.
+// Sjízdnost je ta část, co obsahuje (ne)sjízdn-/(ne)průjezdn-; zbytek je
+// povrch. Úroveň (level) určujeme konzervativně: jedině "bez omezení" je
+// ok, jasné "ne…" je bad, cokoli jiného (včetně neznámého) caution.
+export function parseRoadCondition(condition) {
+  const parts = condition.split(',').map((p) => p.trim()).filter(Boolean);
+  const isPass = (p) => /(sjízdn|průjezdn|uzavř)/i.test(p);
+  const passability = parts.filter(isPass).join(', ') || null;
+  const surface = parts.filter((p) => !isPass(p)).join(', ') || null;
+  let level = 'caution';
+  if (passability) {
+    if (/(nesjízdn|neprůjezdn|uzavř)/i.test(passability)) level = 'bad';
+    else if (/bez omezení/i.test(passability)) level = 'ok';
+  }
+  return { surface, passability, level };
+}
+
+// Rozdělí "popis" na oblast + teplotu + rizika z počasí + silnice.
+// Co nerozpozná (jiný tvar položky, než počítáme), nezahodí — přidá do
+// `extra`, ať appka ukáže aspoň surový text místo mlčení o reálné informaci.
 export function parsePopis(popis) {
-  const areaIdx = popis.indexOf(' - Teplota od');
-  const area = areaIdx === -1 ? null : popis.slice(0, areaIdx).trim();
-  const rest = areaIdx === -1 ? popis : popis.slice(areaIdx + 3).trim();
+  const m = popis.match(/^(.*?)\s+-\s+(Teplota\b[\s\S]*)$/);
+  const area = m ? m[1].trim() : null;
+  const rest = m ? m[2] : popis;
 
   const segments = rest.split(';').map((s) => s.trim()).filter(Boolean);
   let tempFrom = null;
@@ -154,10 +210,10 @@ export function parsePopis(popis) {
   const extra = [];
 
   for (const seg of segments) {
-    const tempMatch = seg.match(/^Teplota od (-?\d+) do (-?\d+)\s*°C$/);
+    const tempMatch = seg.match(/^Teplota\s+(?:od\s+)?(-?\d+)(?:\s*(?:do|až)\s*(-?\d+))?\s*°\s*C$/);
     if (tempMatch) {
       tempFrom = Number(tempMatch[1]);
-      tempTo = Number(tempMatch[2]);
+      tempTo = tempMatch[2] != null ? Number(tempMatch[2]) : tempFrom;
       continue;
     }
     const weatherMatch = seg.match(/^Počasí:\s*(.+)$/);
@@ -167,13 +223,22 @@ export function parsePopis(popis) {
     }
     const roadMatch = seg.match(/^([^:]+):\s*(.+)$/);
     if (roadMatch) {
-      roads.push({ type: roadMatch[1].trim(), condition: roadMatch[2].trim() });
+      roads.push({ type: roadMatch[1].trim(), ...parseRoadCondition(roadMatch[2].trim()) });
       continue;
     }
     extra.push(seg);
   }
 
-  return { area, tempFrom, tempTo, weather, roads, extra };
+  return { area, tempFrom, tempTo, hazards: extractHazards(weather), roads, extra };
+}
+
+// Fallback pro záznam bez rozpoznatelného popisu: bez ISO časů a bez
+// textů, které jsou jen kopií (podřetězcem) jiného, delšího řetězce —
+// ŘSD ukládá tentýž údaj víckrát (celý popis + jednotlivé části).
+export function cleanFallbackStrings(strings) {
+  const isoTime = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/;
+  const unique = [...new Set(strings.filter((s) => !isoTime.test(s)))];
+  return unique.filter((s) => !unique.some((o) => o !== s && o.includes(s)));
 }
 
 // Každý záznam nese 3 ISO časy — vznik záznamu, platnost od, platnost do
@@ -288,15 +353,16 @@ async function main() {
       if (popis) {
         const parsed = parsePopis(popis);
         if (!matchesArea(parsed.area, popis)) continue;
-        reports.push({ area: parsed.area, validFrom, validTo, tempFrom: parsed.tempFrom, tempTo: parsed.tempTo, weather: parsed.weather, roads: parsed.roads, extra: parsed.extra });
+        reports.push({ area: parsed.area, validFrom, validTo, tempFrom: parsed.tempFrom, tempTo: parsed.tempTo, hazards: parsed.hazards, roads: parsed.roads, extra: parsed.extra });
       } else {
         // Záznam neodpovídá očekávanému tvaru "popisu" — nezahazujeme ho
         // tiše, jen nemáme jak ho rozparsovat na pole. Filtr na oblast tu
         // musí být nutně hrubší (celý spojený text), ať se takový záznam
         // vůbec nemůže dostat dál bez jakékoli kontroly na okolí Zlonic.
-        const joined = strings.join(' — ');
+        const cleaned = cleanFallbackStrings(strings);
+        const joined = cleaned.join(' — ');
         if (!matchesArea(null, joined)) continue;
-        reports.push({ area: null, validFrom, validTo, tempFrom: null, tempTo: null, weather: null, roads: [], extra: [joined] });
+        reports.push({ area: null, validFrom, validTo, tempFrom: null, tempTo: null, hazards: [], roads: [], extra: cleaned });
       }
     }
   }

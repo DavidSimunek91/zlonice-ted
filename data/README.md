@@ -93,6 +93,22 @@ stejně snadno jako Open-Meteo.
   struktury XML v hlášce — po prvním ostrém běhu (až budou secrety
   nastavené) bude pravděpodobně potřeba doladit `findRecordArrays`/
   filtrování podle toho, co ŘSD skutečně vrátí.
+- **Tvar výstupu (po ověření na živých datech):** každé hlášení je
+  `{area, validFrom, validTo, tempFrom, tempTo, hazards[], roads[], extra[]}`.
+  Zdroj posílá jeden "popis" tvaru `"Obvod 01 Slaný - Teplota -2°C; Počasí:
+  …; Dálnice: holé suché, sjízdné se zvýšenou opatrností; Silnice I. třídy:
+  …"` (teplota může být i jediná hodnota, ne jen "od X do Y").
+  - `hazards[]` = části `Počasí:`, které NEJSOU klidné počasí (mlhavo,
+    sněžení, déšť, silný vítr…). Obecné počasí (oblačno, slabý vítr, bez
+    srážek) se zahazuje — appka ho nezobrazuje (sekce Počasí ho má jinde).
+    Whitelist klidných frází je `BENIGN_WEATHER` ve skriptu; co v něm není,
+    je riziko (raději upozornit navíc než přehlédnout mlhu/náledí).
+  - `roads[]` = `{type, surface, passability, level}` po typu silnice.
+    `level` je `ok` (jen "sjízdné bez omezení"), `bad` (nesjízdné/
+    neprůjezdné/uzavřeno) nebo `caution` (cokoli jiného, vč. "se zvýšenou
+    opatrností" a neznámých textů). Appka řadí nejhorší první.
+  - `extra[]` = cokoli, co parser nerozpoznal; u záznamu bez rozpoznatelného
+    popisu je tu očištěný text (bez ISO časů a duplicit).
 - **Proxy:** jede přes stejný domácí proxy na MSI notebooku jako Doprava
   (`home-proxy/server.mjs`) — ten vybírá cílovou ŘSD URL podle cesty
   požadavku (`/` nebo `/traffic` → dopravní endpoint, `/winter` → tenhle),
