@@ -1,7 +1,20 @@
 {
   "status": "ok",
-  "updated": "2026-11-10T14:00:16.312Z",
-  "sourceFile": "alert_cap_50_100934.xml",
-  "hasActive": false,
-  "alerts": []
+  "updated": "2026-11-10T14:10:04.731Z",
+  "sourceFile": "alert_cap_70_101200.xml",
+  "hasActive": true,
+  "alerts": [
+    {
+      "event": "Stav sucha",
+      "eventEn": "Drought",
+      "severity": "Moderate",
+      "urgency": "Immediate",
+      "certainty": "Observed",
+      "headline": null,
+      "headlineEn": null,
+      "onset": "2026-11-10T13:00:00+01:00",
+      "expires": null,
+      "web": "https://hamr.chmi.cz/"
+    }
+  ]
 }
