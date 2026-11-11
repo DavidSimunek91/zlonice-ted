@@ -36,9 +36,11 @@
 # Autobusy — jízdní řád jednou denně v 6:00 UTC
 0 6 * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-departures.mjs data/departures.json "Update bus departures" >> $HOME/zlonice-ted-cron.log 2>&1
 
-# Autobusy — živé zpoždění každých 5 minut (jen když je GOLEMIO_API_KEY
-# nastavený v env souboru; jinak skript sám nic nedělá)
-*/5 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-live-departures.mjs data/live-departures.json "Update live bus delays" >> $HOME/zlonice-ted-cron.log 2>&1
+# Autobusy — živé zpoždění každých 15 minut (dřív 5; každá změna dat je
+# commit do main = jeden deploy GitHub Pages, a při 5 minutách jich bylo
+# tolik, že Pages občas padaly na startup_failure). Jen když je
+# GOLEMIO_API_KEY nastavený v env souboru; jinak skript sám nic nedělá.
+*/15 * * * * . <CESTA_K_ENV_SOUBORU> && <CESTA_K_REPU>/infra/do-pipelines/run-and-push.sh scripts/update-live-departures.mjs data/live-departures.json "Update live bus delays" >> $HOME/zlonice-ted-cron.log 2>&1
 
 # Návštěvnost webu — každých 15 minut. Nepotřebuje žádné tajné hodnoty v
 # env souboru (VISIT_LOG_PATH má rozumný default), ale vyžaduje běžící

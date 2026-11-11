@@ -170,8 +170,8 @@ stejně snadno jako Open-Meteo.
   s živým zpožděním (`predicted` vs. `scheduled` čas, `delay.minutes`,
   `is_canceled`, `is_at_stop`), ne surová GTFS-RT protobuf data, která by
   se musela dekódovat.
-- **Aktualizace:** `.github/workflows/update-live-departures.yml`, každých
-  5 minut.
+- **Aktualizace:** droplet cron (`infra/do-pipelines/crontab.example`), každých
+  15 minut (dřív 5 — viz komentář tamtéž, důvod: počet deployů GitHub Pages).
 - **Vyžaduje:** repo secret `GOLEMIO_API_KEY` — na rozdíl od ŘSD/NDIC je
   registrace samoobslužná a okamžitá (jen e-mailové ověření), zdarma na
   [api.golemio.cz/api-keys](https://api.golemio.cz/api-keys).
