@@ -916,7 +916,7 @@ footer a{color:var(--footer-link);text-decoration:underline;}
       <p class="section-foot"><span data-i18n-en="Source:">Zdroj:</span> <a href="https://pid.cz" target="_blank" rel="noopener">PID</a>, <a href="https://golemio.cz" target="_blank" rel="noopener">Golemio</a> · <span data-i18n-en="live">živě</span></p>
       <details class="how-details">
         <summary data-i18n-en="How it works">Jak to funguje</summary>
-        <p data-i18n-en="Timetable (lines 590/591/594) updates once a day. Delay for individual services is live (Golemio, checked every 5 minutes) — a green/yellow/red badge means a confirmed service status. A grey &quot;no live data yet&quot; badge means the service hasn't departed yet and Golemio isn't tracking it yet — not that it's on time. A grey &quot;no delay data&quot; badge means live delay tracking isn't working for the page right now (an outage), not that services are on time. The page doesn't show route closures.">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 5 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "žádná data o zpoždění" znamená, že live zpoždění teď stránce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky stránka neukazuje.</p>
+        <p data-i18n-en="Timetable (lines 590/591/594) updates once a day. Delay for individual services is live (Golemio, checked every 15 minutes) — a green/yellow/red badge means a confirmed service status. A grey &quot;no live data yet&quot; badge means the service hasn't departed yet and Golemio isn't tracking it yet — not that it's on time. A grey &quot;no delay data&quot; badge means live delay tracking isn't working for the page right now (an outage), not that services are on time. The page doesn't show route closures.">Jízdní řád (linky 590/591/594) se aktualizuje jednou denně. Zpoždění u jednotlivých spojů je živé (Golemio, kontrola co 15 minut) — zelený/žlutý/červený odznak znamená ověřený stav spoje. Šedý odznak "zatím bez live dat" znamená, že spoj ještě nevyjel a Golemio ho zatím nesleduje — ne že je na čas. Šedý odznak "žádná data o zpoždění" znamená, že live zpoždění teď stránce nefunguje vůbec (výpadek), ne že jsou spoje na čas. Výluky stránka neukazuje.</p>
       </details>
     </div>
   </section>
@@ -2614,7 +2614,7 @@ function upcomingDepartures(depData, stopName, count){
 // doplněk k jízdnímu řádu, ne náhrada — když pipeline vypadne nebo secret
 // GOLEMIO_API_KEY ještě není nastavený, stránka prostě zpoždění nezobrazí a
 // jízdní řád funguje dál přesně jako předtím. Nikdy nehádá "asi na čas".
-const LIVE_DEP_STALE_MS = 30 * 60 * 1000; // pipeline běží každých 5 min
+const LIVE_DEP_STALE_MS = 45 * 60 * 1000; // pipeline běží každých 15 min, rezerva na 2 vynechané běhy
 let liveDelaysByTrip = null;
 
 async function loadLiveDelays(){
