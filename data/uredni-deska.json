@@ -1,7 +1,17 @@
 {
   "status": "ok",
-  "updated": "2026-11-12T06:07:03.283Z",
+  "updated": "2026-11-13T06:07:04.848Z",
   "items": [
+    {
+      "id": 1266,
+      "title": "Dobíjecí stanice Beřovice Golf na pozemku parcela č.29/1, 645, 644, 837 k. ú. Beřovice",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1266&action=detail",
+      "pubDate": "2026-11-11T23:00:00.000Z",
+      "type": "other",
+      "summary": null,
+      "note": "ROZHODNUTÍ POVOLENÍ STAVBY Výroková část: Úřad Městyse Zlonice – stavební úřad, příslušný podle ustanovení §…",
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14066140"
+    },
     {
       "id": 1265,
       "title": "„Novostavba RD na p.č. 274/14 v k. ú. Lisovice“",
@@ -91,16 +101,6 @@
       "summary": null,
       "note": "Oznámení o přerušení dodávky elektrické energie č. 110061125697 &#13; dne 10. 11. 2026 od 7:30…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=13988488"
-    },
-    {
-      "id": 1256,
-      "title": "Zápis o výsledku voleb - Zlonice",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1256&action=detail",
-      "pubDate": "2026-10-11T22:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "ZÁPIS O VÝSLEDKU VOLEB DO ZASTUPITELSTVA OBCE Ve volbách do zastupitelstva obce (městysu, města, městské…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13956369"
     }
   ]
 }
