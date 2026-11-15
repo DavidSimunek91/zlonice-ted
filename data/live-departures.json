@@ -1,1 +1,1 @@
-{"status":"ok","updated":"2026-11-15T20:10:09.077Z","byTrip":{"590_384_260905":{"isCanceled":false,"isAtStop":false,"delayAvailable":true,"delayMinutes":0,"delaySeconds":0,"scheduled":"2026-11-15T22:13:00+01:00","predicted":"2026-11-15T22:13:00+01:00"}}}
+{"status":"ok","updated":"2026-11-15T20:15:02.941Z","byTrip":{"590_384_260905":{"isCanceled":false,"isAtStop":false,"delayAvailable":true,"delayMinutes":1,"delaySeconds":78,"scheduled":"2026-11-15T22:13:00+01:00","predicted":"2026-11-15T22:14:18+01:00"}}}
