@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "updated": "2026-11-20T12:27:36.710Z",
+  "updated": "2026-11-21T12:01:54.837Z",
   "active": [
     {
       "czNace2008": [
@@ -1033,10 +1033,10 @@
       "czNace2008": [
         "00",
         "471",
-        "55",
         "6820",
         "77290",
-        "82110"
+        "82110",
+        "559"
       ],
       "datumVzniku": "2019-09-03",
       "obchodniJmeno": "Kristina Jarešová"
@@ -1661,6 +1661,13 @@
       ],
       "datumVzniku": "2022-11-10",
       "obchodniJmeno": "TNS Holding s.r.o."
+    },
+    {
+      "czNace2008": [
+        "49410"
+      ],
+      "datumVzniku": "2022-11-14",
+      "obchodniJmeno": "Daniela Ciechomska"
     },
     {
       "czNace2008": [
