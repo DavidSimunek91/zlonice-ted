@@ -1,1 +1,5 @@
-{"status":"ok","updated":"2026-11-22T11:20:04.441Z","byTrip":{"590_485_261117":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-11-22T14:15:00+01:00","predicted":"2026-11-22T14:15:00+01:00"},"590_506_261117":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-11-22T15:54:00+01:00","predicted":"2026-11-22T15:54:00+01:00"},"590_507_261117":{"isCanceled":false,"isAtStop":false,"delayAvailable":false,"delayMinutes":null,"delaySeconds":null,"scheduled":"2026-11-22T18:15:00+01:00","predicted":"2026-11-22T18:15:00+01:00"}}}
+{
+  "status": "error",
+  "updated": "2026-11-22T11:25:03.488Z",
+  "message": "fetch failed"
+}
