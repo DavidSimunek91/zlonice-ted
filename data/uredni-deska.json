@@ -1,7 +1,30 @@
 {
   "status": "ok",
-  "updated": "2026-11-27T06:07:03.666Z",
+  "updated": "2026-11-28T06:07:17.694Z",
   "items": [
+    {
+      "id": 1267,
+      "title": "VSOSO - Rozpočtové opatření č. 1/2026",
+      "link": "https://www.zlonice.cz/uredni-deska?id=1267&action=detail",
+      "pubDate": "2026-11-26T23:00:00.000Z",
+      "type": "rozpocet",
+      "summary": {
+        "prijmy": {
+          "before": "0 Kč",
+          "after": "1 031 000 Kč",
+          "change": "+1 031 000 Kč",
+          "direction": "up"
+        },
+        "vydaje": {
+          "before": "11 108 000 Kč",
+          "after": "15 132 000 Kč",
+          "change": "+4 024 000 Kč",
+          "direction": "up"
+        }
+      },
+      "note": null,
+      "fileUrl": "https://www.zlonice.cz/file.php?oid=14113831"
+    },
     {
       "id": 1266,
       "title": "Dobíjecí stanice Beřovice Golf na pozemku parcela č.29/1, 645, 644, 837 k. ú. Beřovice",
@@ -91,16 +114,6 @@
       "summary": null,
       "note": "ČEZ Distribuce žádá dle zákona o provedení okleštění stromoví v blízkosti elektrického vedení. Pokud tak…",
       "fileUrl": "https://www.zlonice.cz/file.php?oid=14004393"
-    },
-    {
-      "id": 1257,
-      "title": "Oznámení o přerušení dodávky elektrické energie č. 110061125697",
-      "link": "https://www.zlonice.cz/uredni-deska?id=1257&action=detail",
-      "pubDate": "2026-10-20T22:00:00.000Z",
-      "type": "other",
-      "summary": null,
-      "note": "Oznámení o přerušení dodávky elektrické energie č. 110061125697 &#13; dne 10. 11. 2026 od 7:30…",
-      "fileUrl": "https://www.zlonice.cz/file.php?oid=13988488"
     }
   ]
 }
